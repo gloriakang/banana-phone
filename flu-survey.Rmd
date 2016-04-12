@@ -1,0 +1,58 @@
+---
+title: "flu survey"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(readr)
+library(tidyr)
+library(dplyr)
+library(ggplot2)
+
+```
+
+```{r}
+ds = read_csv("surveydata.csv")
+```
+
+### demographics
+
+```{r}
+ppeduc = as.data.frame(table(ds$PPEDUC))
+ppeduc
+q111 = as.data.frame(table(ds$Q11_1))
+q111
+```
+
+```{r}
+a = ggplot(ds) + scale_fill_brewer()
+a + geom_bar(mapping = aes(x = ppagect4, fill = ppagect4)) + xlab("age group")
+a + geom_bar(mapping = aes(x = PPEDUCAT, fill = PPEDUCAT)) + xlab("education")
+a + geom_bar(mapping = aes(x = PPETHM, fill = PPETHM)) + xlab("ethnicity")
+a + geom_bar(mapping = aes(x = PPGENDER, fill = PPGENDER)) + xlab("gender")
+```
+
+### survey
+
+Q1. Before receiving this survey, did you know influenza is different from the stomach flu?
+```{r, echo=FALSE}
+a + geom_bar(mapping = aes(x = Q1, fill = Q1))
+
+a + geom_bar(mapping = aes(x = Q2, fill = Q2))
+a + geom_bar(mapping = aes(x = Q3, fill = Q3))
+```
+
+C. Risk of contracting influenza
+Q11. How do you rate your risk of getting influenza if you visited each of the following locations?
+
+
+
+
+
+D. Actions to avoid contracting influenza
+
+E. Use of vaccine to reduce chance of influenza
+
+F. Actions after contracting influenza
+
