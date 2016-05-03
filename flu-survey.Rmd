@@ -9,7 +9,6 @@ library(readr)
 library(tidyr)
 library(dplyr)
 library(ggplot2)
-
 ```
 
 ```{r}
@@ -45,8 +44,6 @@ a + geom_bar(mapping = aes(x = Q3, fill = Q3))
 
 C. Risk of contracting influenza
 Q11. How do you rate your risk of getting influenza if you visited each of the following locations?
-
-
 
 
 

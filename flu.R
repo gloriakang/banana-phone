@@ -4,6 +4,7 @@ library(dplyr)
 library(ggplot2)
 
 ds = read_csv("surveydata.csv")
+str(ds)
 
 # tables
 ppeduc = as.data.frame(table(ds$PPEDUC))
