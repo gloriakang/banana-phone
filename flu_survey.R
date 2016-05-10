@@ -2,10 +2,10 @@ library(readr)
 library(tidyr)
 library(dplyr)
 library(ggplot2)
-require(likert)
 library(reshape2)
 
 data = as.data.frame(read_csv("surveydata.csv", na = '#NULL!'))
+
 
 # Q7
 
@@ -34,11 +34,12 @@ q7_long <- q7 %>%
   group_by(q, r) %>%
   count(q, r)
 
-
 summary(q7)
 
 ggplot(data=q7_long[!is.na(q7_long$r), ], aes(x=q, y=n, fill=r)) +
          geom_bar(stat='identity', position=position_dodge())
+
+
 
 #likert(q7)
 #summary(lQ7)

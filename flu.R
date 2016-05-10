@@ -1,9 +1,11 @@
+# flu survey 
+
 library(readr)
 library(tidyr)
 library(dplyr)
 library(ggplot2)
 
-ds = read_csv("surveydata.csv")
+data = read.csv("surveydata.csv")
 str(ds)
 
 # tables
