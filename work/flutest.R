@@ -4,13 +4,11 @@ library(dplyr)
 library(ggplot2)
 
 data = read.csv("surveydata.csv")
-
 str(data)
 head(data)
 
-### Q11_1 - Q11_11
+# subsetting cols Q11_1 - Q11_11
 # q11 = data[, 62:72]
-# View(q11)
 # str(q11)
 # summary(q11)
 
@@ -20,15 +18,22 @@ with(data, summary(Q11_1))
 with(data, table(Q11_1, Q11_2))
 
 
+# deleting columns from a dataframe
+dat = subset(dat, select = -badcol)
+
+# renaming columns
+names(dat) = c("name1", "name2", "name3")
+
+# reordering columns in a dataframe
+dat = dat[c("col1", "col3", "col2")]
+
 
 
 
 
 # from flu_survey.R
-
 # data = as.data.frame(read_csv("surveydata.csv", na = '#NULL!'))
 
-# Q7
 # Q7 = data[ ,substr(names(data), 1, 2) == 'Q7']
 # head(Q7); ncol(Q7)
 
@@ -58,11 +63,7 @@ with(data, table(Q11_1, Q11_2))
 # 
 # ggplot(data=q7_long[!is.na(q7_long$r), ], aes(x=q, y=n, fill=r)) +
 #   geom_bar(stat='identity', position=position_dodge())
-# 
-# 
-# 
-# #likert(q7)
-# #summary(lQ7)
+#
 # 
 # # subset of Q7 = lQ7
 # #lQ7 = Q7[ ,1:6]
