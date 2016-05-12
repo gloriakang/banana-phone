@@ -1,5 +1,6 @@
 # flu survey analysis
 
+setwd("~/git/banana-phone/work")
 library(readr)
 library(tidyr)
 library(dplyr)
@@ -8,100 +9,59 @@ library(reshape2)
 
 data = read.csv("surveydata.csv")
 str(data)
-head(data)
+View(data)
+
+
+# Q10 types of transportation
+# Q11 how do you rate your risk of getting influenza at the following locations
+
+
+# subsetting with dplyr
+names(data)
+q7.df = select(data, Q7_1:Q7_7)
+q8.df = select(data, Q8_1:Q8_7)
+q10.df = select(data, Q10_1:Q10_9)
+q11.df = select(data, Q11_1:Q11_11)
+q12.df = select(data, Q12_1:Q12_15)
+q18.df = select(data, Q18_1:Q18_11)
+q22.df = select(data, Q22_1:Q22_9)
+q23.df = select(data, Q23_1:Q23_11)
+q24.df = select(data, Q24_1:Q24_7)
+
+str(q7.df)
+summary(q7.df)
+
+# gather with tidyr, into columns
+q7 = gather(q7.df, "opt", "res", 1:7)
+q8 = gather(q8.df, "opt", "res", 1:7)
+q10 = gather(q10.df, "opt", "res", 1:9)
+q11 = gather(q11.df, "opt", "res", 1:11)
+q12 = gather(q12.df, "opt", "res", 1:15)
+q18 = gather(q18.df, "opt", "res", 1:11)
+q22 = gather(q22.df, "opt", "res", 1:9)
+q23 = gather(q23.df, "opt", "res", 1:11)
+q24 = gather(q24.df, "opt", "res", 1:7)
+
+str(q12) # need to rename
+
 
 # barplot
-table(data$Q1) %>% barplot()
+# ggplot(q7) + geom_bar(aes(x = opt, fill = res), position = "dodge")
+# ggplot(q7.df) + geom_bar(aes(x = Q7_1), position = "dodge")
+
+ggplot(q7) + geom_bar(aes(x = res), position = "dodge") + facet_wrap(~opt)
+ggplot(q8) + geom_bar(aes(x = res), position = "dodge") + facet_wrap(~opt)
+ggplot(q10) + geom_bar(aes(x = res), position = "dodge") + facet_wrap(~opt)
+ggplot(q11) + geom_bar(aes(x = res), position = "dodge") + facet_wrap(~opt)
+ggplot(q12) + geom_bar(aes(x = res), position = "dodge") + facet_wrap(~opt)
+ggplot(q18) + geom_bar(aes(x = res), position = "dodge") + facet_wrap(~opt)
+ggplot(q22) + geom_bar(aes(x = res), position = "dodge") + facet_wrap(~opt)
+ggplot(q23) + geom_bar(aes(x = res), position = "dodge") + facet_wrap(~opt)
+ggplot(q24) + geom_bar(aes(x = res), position = "dodge") + facet_wrap(~opt)
 
 
-# tables
-with(data, table(Q11_1, Q11_2))
 
 
 
 
-# tables
-# ppeduc = as.data.frame(table(ds$PPEDUC))
-# q111 = as.data.frame(table(ds$Q11_1))
-
-# demographics
-# a = ggplot(ds) + scale_fill_brewer()
-# a + geom_bar(mapping = aes(x = ppagect4, fill = ppagect4)) + xlab("age group")
-# a + geom_bar(mapping = aes(x = PPEDUCAT, fill = PPEDUCAT)) + xlab("education")
-# a + geom_bar(mapping = aes(x = PPETHM, fill = PPETHM)) + xlab("ethnicity")
-# a + geom_bar(mapping = aes(x = PPGENDER, fill = PPGENDER)) + xlab("gender")
-
-# C
-#a + geom_bar(mapping = aes(x = Q11_1, binwidth=.5, position = "identity")) + xlab("work")
-#a + geom_bar(mapping = aes(x = Q11_1, fill = Q11_1, position = position_dodge()))
-
-
-##################
-# from flu_survey.R
-
-# data = as.data.frame(read_csv("surveydata.csv", na = '#NULL!'))
-
-# Q7
-# Q7 = data[ ,substr(names(data), 1, 2) == 'Q7']
-# head(Q7); ncol(Q7)
-# 
-# names(Q7) <- c(
-#   Q7_1 = "Bus",
-#   Q7_2 = "Carpool",
-#   Q7_3 = "Subway",
-#   Q7_4 = "Train",
-#   Q7_5 = "Taxi",
-#   Q7_6 = "Airplane",
-#   Q7_7 = "Other",
-#   Q7_8 = "Refused",
-#   Q7_otherText = "Other")
-# str(Q7)
-# 
-# pattern <- 'Q7_[1-6]'
-# columns <- grep(pattern = pattern, x = names(data))
-# q7 <- data[, columns]
-# 
-# 
-# q7_long <- q7 %>%
-#   gather('q', 'r', 1:6) %>%
-#   group_by(q, r) %>%
-#   count(q, r)
-# 
-# summary(q7)
-# 
-# ggplot(data=q7_long[!is.na(q7_long$r), ], aes(x=q, y=n, fill=r)) +
-#   geom_bar(stat='identity', position=position_dodge())
-# 
-# 
-# 
-# #likert(q7)
-# #summary(lQ7)
-# 
-# # subset of Q7 = lQ7
-# #lQ7 = Q7[ ,1:6]
-# #head(lQ7); ncol(lQ7)
-# 
-# 
-# 
-# lQ7 = likert(Q7[ ,1:3], grouping = data$PPGENDER)
-# 
-# 
-# likert(lQ7)
-# 
-# summary(lQ7, center=1.5)
-# summary(lQ7, center=2)
-# 
-# 
-# 
-# # --------
-# # demographics
-# # a = ggplot(ds) + scale_fill_brewer()
-# # a + geom_bar(mapping = aes(x = ppagect4, fill = ppagect4)) + xlab("age group")
-# # a + geom_bar(mapping = aes(x = PPEDUCAT, fill = PPEDUCAT)) + xlab("education")
-# # a + geom_bar(mapping = aes(x = PPETHM, fill = PPETHM)) + xlab("ethnicity")
-# # a + geom_bar(mapping = aes(x = PPGENDER, fill = PPGENDER)) + xlab("gender")
-# 
-# # C
-# #a + geom_bar(mapping = aes(x = Q11_1, binwidth=.5, position = "identity")) + xlab("work")
-# #a + geom_bar(mapping = aes(x = Q11_1, fill = Q11_1, position = position_dodge()))
 
