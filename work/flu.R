@@ -98,7 +98,7 @@ summary(q2.df)
 # q3
 summary(q3.df)
 
-# q7 
+# q7
 ggplot(q7) + geom_bar(aes(x = resp, fill = resp), position = "dodge") + facet_wrap(~opt)
 summary(q7.df)
 
