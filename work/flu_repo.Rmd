@@ -18,12 +18,12 @@ library(dplyr)
 library(ggplot2)
 library(reshape2)
 
-data = read.csv("surveydata.csv", na = '#NULL!')
+data = read.csv("surveydata.csv", na = "#NULL!")
 # str(data); # head(data)
 ```
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
-# subsetting with dplyr: q.df = select(data, Q)
+# subsetting with dplyr: q0.df = select(data, Q0:Q0_end)
 # renaming columns: names(dat) = c("name1", "name2", "name3")
 
 q1.df = select(data, Q1)
@@ -32,83 +32,158 @@ q3.df = select(data, Q3)
 q4.df = select(data, Q4)
 q5.df = select(data, Q5)
 q6.df = select(data, Q6)
-
 q7.df = select(data, Q7_1:Q7_otherText)
-names(q7.df) = c("Bus", "Carpool", "Subway", "Train", "Taxi", "Airplane", "Other", "Refused", "Other text")
-
+names(q7.df) = c("Bus", "Carpool", "Subway",
+                 "Train", "Taxi", "Airplane",
+                 "Other", "Refused", "Other text")
 q8.df = select(data, Q8_1:Q8_otherText)
-names(q8.df) = c("Work", "School", "Shopping", "Visiting people", "Recreation", "Other", "Refused", "Other text")
+names(q8.df) = c("Work", "School", "Shopping",
+                 "Visiting people", "Recreation",
+                 "Other", "Refused", "Other text")
 
 q9.df = select(data, Q9)
-
 q10.df = select(data, Q10_1:Q10_otherText)
-names(q10.df) = c("Bus", "Carpool", "Subway", "Train", "Taxi", "Airplane", "Don't know", "Refused", "Other", "Refused", "Other text")
+names(q10.df) = c("Bus", "Carpool", "Subway",
+                  "Train", "Taxi", "Airplane",
+                  "Don't know", "Other", "Refused",
+                  "Other text")
 
-q11.df = select(data, Q11_1:Q11_OtherText_Codes)
-names(q11.df) = c("Work", "Schools", "Day care", "Stores", "Restaurants", "Libraries", "Hospitals", "Doctor's office", "Public transportation", "Family or friends", "Other", "Other text")
+q11.df = select(data, Q11_1:Q11_OtherText)
+names(q11.df) = c("Work", "Schools", "Day care",
+                  "Stores", "Restaurants", "Libraries",
+                  "Hospitals", "Doctor's office", "Public transportation",
+                  "Family or friends", "Other", "Other text")
 
-q12.df = select(data, Q12_1:Q12_OtherText_Codes)
-names(q12.df) = c()
+q12.df = select(data, Q12_1:Q12_OtherText)
+names(q12.df) = c("Avoid touching my eyes",
+                  "Avoid touching my nose",
+                  "Avoid touching my mouth",
+                  "Wash my hands with soap",
+                  "Use hand sanitizers",
+                  "Clean the surfaces in my home",
+                  "Clean the surfaces at work",
+                  "Eat nutritious food",
+                  "Get adequate rest",
+                  "Get recommended vaccine",
+                  "Take preventive medicine",
+                  "Cover my nose and mouth with a surgical mask",
+                  "Avoid contact with people who are sick",
+                  "Avoid crowded places",
+                  "Other",
+                  "Other text")
 
 q13.df = select(data, Q13)
 q14.df = select(data, Q14)
 q15.df = select(data, Q15)
 q16.df = select(data, Q16)
 q17.df = select(data, Q17)
-
 q18.df = select(data, Q18_1:Q18_otherText)
-names(q18.df) = c
+names(q18.df) = c("The vaccine costs too much",
+                  "The vaccine is not very effective in preventing influenza",
+                  "I am not likely to get influenza",
+                  "Do not know where to get vaccine",
+                  "The side effect of the vaccine are too risky",
+                  "I am allergic to some of the ingredients in the vaccine",
+                  "I do not like shots",
+                  "I just don't get around to doing it",
+                  "I have to travel too far to get vaccine",
+                  "Other",
+                  "Refused",
+                  "Other text")
 
 q19.df = select(data, Q19) 
 q20.df = select(data, Q20) 
 q21.df = select(data, Q21) 
+q22.df = select(data, Q22_1:Q22_OtherText)
+names(q22.df) = c("Go to a doctor's office or medical clinic",
+                  "Decide on treatment without consulting a health practitioner",
+                  "Search the internet for a treatment",
+                  "Get adequate sleep",
+                  "Eat nutritious food",
+                  "Take-over-counter medication for symptoms",
+                  "Take an antiviral medicine",
+                  "Take no action to treat the illness",
+                  "Other",
+                  "Other text")
 
-q22.df = select(data, Q22_1:Q22_OtherText_Codes)
-names(q7.df) = c
-
-q23.df = select(data, Q23_1:Q23_OtherText_Codes)
-names(q7.df) = c
+q23.df = select(data, Q23_1:Q23_OtherText)
+names(q23.df) = c("Stand away from people",
+                  "Avoid public places",
+                  "Avoid public transportation",
+                  "Stay at home",
+                  "Wash my hands with soap more often",
+                  "Use hand sanitizers",
+                  "Clean the surfaces in my home",
+                  "Clean the surfaces I use at work",
+                  "Cover my nose and mouth with a surgical mask",
+                  "Cover my nose and mouth when I sneeze or cough",
+                  "Other",
+                  "Other text")
 
 q24.df = select(data, Q24_1:Q24_otherText)
-names(q7.df) = c
+names(q24.df) = c("Print media such as newspapers and magazines",
+                  "Traditional media such as television and radio",
+                  "Social media such as internet and blogs",
+                  "Word of mouth",
+                  "None",
+                  "Other",
+                  "Refused",
+                  "Other text")
 
-q25.df = select(data, Q25_1:Q25_OtherText_Codes)
-names(q7.df) = c
+q25.df = select(data, Q25_1:Q25_OtherText)
+names(q25.df) = c("Stand away from people",
+                  "Avoid public places",
+                  "Avoid public transportation",
+                  "Stay at home",
+                  "Wash my hands with soap more often",
+                  "Use hand sanitizers",
+                  "Clean the surfaces in my home",
+                  "Clean the surfaces I use at work",
+                  "Cover my nose and mouth with a surgical mask",
+                  "Cover my nose and mouth when I sneeze or cough",
+                  "Other",
+                  "Other text")
 
 q26.df = select(data, Q26)
-
-q27.df = select(data, Q27_1:Q27_OtherText_Codes)
-names(q7.df) = c
+q27.df = select(data, Q27_1:Q27_OtherText)
+names(q27.df) = c("Keep the child away from the others in the residence",
+                  "Keep the child out of school/daycare",
+                  "Stop child's social activities like play dates",
+                  "Other",
+                  "Other text")
 
 q28.df = select(data, Q28)
+q29.df = select(data, Q29_1:Q29_OtherText)
+names(q29.df) = c("A parent brings the child to work",
+                  "A parent stays home",
+                  "Another adult stays home",
+                  "Send the child to school sick",
+                  "Take the child to a relative or friends",
+                  "Other",
+                  "Other text")
 
-q29.df = select(data, Q29_1:Q29_OtherText_Codes)
-names(q7.df) = c
-
-q30.df = select(data, Q30_1:Q30_OtherText_Codes)
-
+q30.df = select(data, Q30_1:Q30_OtherText)
+names(q30.df) = c("I bring the child to work",
+                  "I stay home",
+                  "Another adult stays home",
+                  "Send the child to school sick",
+                  "Take the child to a relative or friends",
+                  "Other",
+                  "Other text")
 
 q31.df = select(data, Q31:Q31_Codes)
-
 q32.df = select(data, Q32:Q32_Codes)
-
 q33.df = select(data, Q33:Q33_Codes)
 
-```
-
-```{r, echo=FALSE, warning=FALSE}
-hh.df = select(data, PRG_Q34_01:Q50) # all household questions
-# summary(hh.df)
+# all household questions
+hh.df = select(data, PRG_Q34_01:Q50)
 
 # HHM1 first household member
 hhm1.df = select(data, Q35:Q42)
 q35.df = select(data, Q35)
 q36.df = select(data, Q36:Q36_Codes)
-
 q37.df = select(data, Q37:Q37_Codes)
-
 q38.df = select(data, Q38:Q38_Codes)
-
 q39.df = select(data, Q39)
 q40.df = select(data, Q40)
 q41.df = select(data, Q41)
@@ -118,7 +193,6 @@ q42.df = select(data, Q42)
 hhm2.df = select(data, Q43:Q50)
 q43.df = select(data, Q43)
 q44.df = select(data, Q44:Q44_Codes)
-
 q45.df = select(data, Q45:Q45_Codes)
 q46.df = select(data, Q46:Q46_Codes)
 q47.df = select(data, Q47)
@@ -127,66 +201,92 @@ q49.df = select(data, Q49)
 q50.df = select(data, Q50)
 ```
 
-```{r, echo=FALSE, warning=FALSE}
-# gather with tidyr: large question frames into columns
-# question = gather(question, "x", "y", col:col) (i think)
 
-q7 = gather(q7.df, "opt", "resp", 1:7)
-q8 = gather(q8.df, "opt", "resp", 1:7)
-q10 = gather(q10.df, "opt", "resp", 1:9)
-q11 = gather(q11.df, "opt", "resp", 1:11)
-q12 = gather(q12.df, "opt", "resp", 1:15)
-q18 = gather(q18.df, "opt", "resp", 1:11)
-q22 = gather(q22.df, "opt", "resp", 1:9)
-q23 = gather(q23.df, "opt", "resp", 1:11)
-q24 = gather(q24.df, "opt", "resp", 1:7)
-q25 = gather(q25.df, "opt", "resp", 1:11)
-q27 = gather(q27.df, "opt", "resp", 1:4)
-q29 = gather(q29.df, "opt", "resp", 1:6)
-q30 = gather(q30.df, "opt", "resp", 1:6)
+
+```{r, echo=FALSE, warning=FALSE}
+# gather with tidyr:question frames into columns
+# question = gather(question, "heading", "values", col:col) (i think)
+
+q1 = gather(q1.df, "option", "response", 1)
+q2 = gather(q2.df, "option", "response", 1)
+q3 = gather(q3.df, "option", "response", 1)
+q4 = gather(q4.df, "option", "response", 1)
+q5 = gather(q5.df, "option", "response", 1)
+q6 = gather(q6.df, "option", "response", 1)
+q7 = gather(q7.df, "option", "response", 1:8)
+q8 = gather(q8.df, "option", "response", 1:7)
+q9 = gather(q9.df, "option", "response", 1)
+q10 = gather(q10.df, "option", "response", 1:9)
+q11 = gather(q11.df, "option", "response", 1:11)
+q12 = gather(q12.df, "option", "response", 1:15)
+q13 = gather(q13.df, "option", "response", 1)
+q14 = gather(q14.df, "option", "response", 1)
+q15 = gather(q15.df, "option", "response", 1)
+q16 = gather(q16.df, "option", "response", 1)
+q17 = gather(q17.df, "option", "response", 1)
+q18 = gather(q18.df, "option", "response", 1:11)
+q19 = gather(q19.df, "option", "response", 1)
+q20 = gather(q20.df, "option", "response", 1)
+q21 = gather(q21.df, "option", "response", 1)
+q22 = gather(q22.df, "option", "response", 1:9)
+q23 = gather(q23.df, "option", "response", 1:11)
+q24 = gather(q24.df, "option", "response", 1:7)
+q25 = gather(q25.df, "option", "response", 1:11)
+q26 = gather(q1.df, "option", "response", 1)
+q27 = gather(q27.df, "option", "response", 1:4)
+q28 = gather(q28.df, "option", "response", 1)
+q29 = gather(q29.df, "option", "response", 1:6)
+q30 = gather(q30.df, "option", "response", 1:6)
 ```
+
 
 ## Summary tables & plots
 
 #### Q1. Before receiving this survey, did you know influenza is different from the stomach flu?
 ```{r, echo=FALSE}
-print(summary(q1.df))
+summary(q1.df)
+ggplot(q1) + geom_bar(aes(x=response, fill=response))
 ```
 
 #### Q2. Have you had an illness with influenza like symptoms since August 2015?
 ```{r, echo=FALSE}
 summary(q2.df)
+ggplot(q2) + geom_bar(aes(x=response, fill=response))
 ```
 
 #### Q3. Has any other person in your household had an illness with influenza like symptoms since August 2015?
 ```{r, echo=FALSE}
 summary(q3.df)
+ggplot(q3) + geom_bar(aes(x=response, fill=response))
 ```
 
 #### Q4. Does your job require you to have a lot of contact with the public?
 ```{r, echo=FALSE}
 summary(q4.df)
+ggplot(q4) + geom_bar(aes(x=response, fill=response))
 ```
 
 #### Q5. Do you have a car that you can use to travel to work?
 ```{r, echo=FALSE}
 summary(q5.df)
+ggplot(q5) + geom_bar(aes(x=response, fill=response))
 ```
 
 #### Q6. Do you regularly use public transportation?
 ```{r, echo=FALSE}
 summary(q6.df)
+ggplot(q6) + geom_bar(aes(x=response, fill=response))
 ```
 
 #### Q7. What types of public transportation do you regularly use? 
 ```{r, echo=FALSE}
-ggplot(q7) + geom_bar(aes(x = resp, fill = resp), position = "dodge") + facet_wrap(~opt)
+ggplot(q7) + geom_bar(aes(x = response, fill = response), position = "dodge") + facet_wrap(~option)
 summary(q7.df)
 ```
 
 #### Q8. For what types of activities do you regularly use public transportation? 
 ```{r, echo=FALSE}
-ggplot(q8) + geom_bar(aes(x = resp, fill = resp), position = "dodge") + facet_wrap(~opt)
+ggplot(q8) + geom_bar(aes(x = response, fill = response), position = "dodge") + facet_wrap(~option)
 summary(q8.df)
 ```
 
@@ -197,13 +297,13 @@ summary(q9.df)
 
 #### Q10. What types of public transportation do other members of your household regularly use? 
 ```{r, echo=FALSE}
-ggplot(q10) + geom_bar(aes(x = resp, fill = resp), position = "dodge") + facet_wrap(~opt)
+ggplot(q10) + geom_bar(aes(x = response, fill = response), position = "dodge") + facet_wrap(~option)
 summary(q10.df)
 ```
 
 #### Q11. How do you rate your risk of getting influenza if you visited each of the following locations?
 ```{r, echo=FALSE}
-ggplot(q11) + geom_bar(aes(x = resp, fill = resp), position = "dodge") + facet_wrap(~opt)
+ggplot(q11) + geom_bar(aes(x = response, fill = response), position = "dodge") + facet_wrap(~option)
 summary(q11.df)
 
 ```
@@ -215,7 +315,7 @@ summary(q13.df)
 
 #### Q12. Which of the following actions do you take to avoid getting sick? 
 ```{r, echo=FALSE}
-ggplot(q12) + geom_bar(aes(x = resp, fill = resp), position = "dodge") + facet_wrap(~opt)
+ggplot(q12) + geom_bar(aes(x = response, fill = response), position = "dodge") + facet_wrap(~option)
 summary(q12.df)
 ```
 
@@ -241,7 +341,7 @@ summary(q17.df)
 
 #### Q18. What are the reasons you would not get an influenza vaccine?
 ```{r, echo=FALSE}
-ggplot(q18) + geom_bar(aes(x = resp, fill = resp), position = "dodge") + facet_wrap(~opt)
+ggplot(q18) + geom_bar(aes(x = response, fill = response), position = "dodge") + facet_wrap(~option)
 summary(q18.df)
 ```
 
@@ -262,19 +362,19 @@ summary(q21.df)
 
 #### Q22. Do you do any of the following when you have influenza symptoms?
 ```{r, echo=FALSE}
-ggplot(q22) + geom_bar(aes(x = resp, fill = resp), position = "dodge") + facet_wrap(~opt)
+ggplot(q22) + geom_bar(aes(x = response, fill = response), position = "dodge") + facet_wrap(~option)
 summary(q22.df)
 ```
 
 #### Q23. Which of the following actions do you take when you have influenza symptoms to avoid someone else from getting sick?
 ```{r, echo=FALSE}
-ggplot(q23) + geom_bar(aes(x = resp, fill = resp), position = "dodge") + facet_wrap(~opt)
+ggplot(q23) + geom_bar(aes(x = response, fill = response), position = "dodge") + facet_wrap(~option)
 summary(q23.df)
 ```
 
 #### Q24. What sources of information do you recall hearing or seeing about influenza outbreaks? 
 ```{r, echo=FALSE}
-ggplot(q24) + geom_bar(aes(x = resp, fill = resp), position = "dodge") + facet_wrap(~opt)
+ggplot(q24) + geom_bar(aes(x = response, fill = response), position = "dodge") + facet_wrap(~option)
 summary(q24.df)
 ```
 
@@ -323,7 +423,6 @@ summary(q32.df)
 ```{r, echo=FALSE}
 summary(q33.df)
 ```
-
 
 
 # Household members
@@ -416,7 +515,7 @@ summary(q50.df)
 ```
 
 
-
+# Analysis
 #### Q1 vs. Q13 table
 Knowing influenza is different from stomach flu; vs. getting the flu vaccine
 ```{r, echo=FALSE}
@@ -425,9 +524,11 @@ a
 summary(a)
 ```
 
+
+# to-do:
 ```
 # need to remove NA's, rename columns
 
-# ggplot(q7) + geom_bar(aes(x = opt, fill = resp), position = "dodge")
+# ggplot(q7) + geom_bar(aes(x = option, fill = response), position = "dodge")
 # ggplot(data = data) + geom_bar(mapping = aes(x = Q1)) + stat_sum()
 ```
