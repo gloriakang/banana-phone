@@ -23,8 +23,8 @@ data = read.csv("surveydata.csv", na = '#NULL!')
 ```
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
-# subsetting with dplyr; # names(data)
-# q#.df = select(data, Q#)
+# subsetting with dplyr: q.df = select(data, Q)
+# renaming columns: names(dat) = c("name1", "name2", "name3")
 
 q1.df = select(data, Q1)
 q2.df = select(data, Q2)
@@ -32,33 +32,68 @@ q3.df = select(data, Q3)
 q4.df = select(data, Q4)
 q5.df = select(data, Q5)
 q6.df = select(data, Q6)
+
 q7.df = select(data, Q7_1:Q7_otherText)
+names(q7.df) = c("Bus", "Carpool", "Subway", "Train", "Taxi", "Airplane", "Other", "Refused", "Other text")
+
 q8.df = select(data, Q8_1:Q8_otherText)
+names(q8.df) = c("Work", "School", "Shopping", "Visiting people", "Recreation", "Other", "Refused", "Other text")
+
 q9.df = select(data, Q9)
+
 q10.df = select(data, Q10_1:Q10_otherText)
+names(q10.df) = c("Bus", "Carpool", "Subway", "Train", "Taxi", "Airplane", "Don't know", "Refused", "Other", "Refused", "Other text")
+
 q11.df = select(data, Q11_1:Q11_OtherText_Codes)
+names(q11.df) = c("Work", "Schools", "Day care", "Stores", "Restaurants", "Libraries", "Hospitals", "Doctor's office", "Public transportation", "Family or friends", "Other", "Other text")
+
 q12.df = select(data, Q12_1:Q12_OtherText_Codes)
+names(q12.df) = c()
+
 q13.df = select(data, Q13)
 q14.df = select(data, Q14)
 q15.df = select(data, Q15)
 q16.df = select(data, Q16)
 q17.df = select(data, Q17)
+
 q18.df = select(data, Q18_1:Q18_otherText)
+names(q18.df) = c
+
 q19.df = select(data, Q19) 
 q20.df = select(data, Q20) 
 q21.df = select(data, Q21) 
+
 q22.df = select(data, Q22_1:Q22_OtherText_Codes)
+names(q7.df) = c
+
 q23.df = select(data, Q23_1:Q23_OtherText_Codes)
+names(q7.df) = c
+
 q24.df = select(data, Q24_1:Q24_otherText)
+names(q7.df) = c
+
 q25.df = select(data, Q25_1:Q25_OtherText_Codes)
+names(q7.df) = c
+
 q26.df = select(data, Q26)
+
 q27.df = select(data, Q27_1:Q27_OtherText_Codes)
+names(q7.df) = c
+
 q28.df = select(data, Q28)
+
 q29.df = select(data, Q29_1:Q29_OtherText_Codes)
+names(q7.df) = c
+
 q30.df = select(data, Q30_1:Q30_OtherText_Codes)
+
+
 q31.df = select(data, Q31:Q31_Codes)
+
 q32.df = select(data, Q32:Q32_Codes)
+
 q33.df = select(data, Q33:Q33_Codes)
+
 ```
 
 ```{r, echo=FALSE, warning=FALSE}
@@ -69,8 +104,11 @@ hh.df = select(data, PRG_Q34_01:Q50) # all household questions
 hhm1.df = select(data, Q35:Q42)
 q35.df = select(data, Q35)
 q36.df = select(data, Q36:Q36_Codes)
+
 q37.df = select(data, Q37:Q37_Codes)
+
 q38.df = select(data, Q38:Q38_Codes)
+
 q39.df = select(data, Q39)
 q40.df = select(data, Q40)
 q41.df = select(data, Q41)
@@ -80,6 +118,7 @@ q42.df = select(data, Q42)
 hhm2.df = select(data, Q43:Q50)
 q43.df = select(data, Q43)
 q44.df = select(data, Q44:Q44_Codes)
+
 q45.df = select(data, Q45:Q45_Codes)
 q46.df = select(data, Q46:Q46_Codes)
 q47.df = select(data, Q47)
