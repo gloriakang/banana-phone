@@ -5,8 +5,12 @@ output:
     theme: cosmo
 ---
 
-```{r setup, echo=FALSE}
-knitr::opts_chunk$set(warning = FALSE, message = FALSE)
+```{r setup, echo=FALSE, message=FALSE}
+knitr::opts_chunk$set(
+	echo = FALSE,
+	message = FALSE,
+	warning = FALSE
+)
 setwd("~/git/banana-phone/work")
 library(readr)
 library(tidyr)
@@ -15,13 +19,12 @@ library(ggplot2)
 library(reshape2)
 
 data = read.csv("surveydata.csv", na = '#NULL!')
-# str(data)
-# head(data)
+# str(data); # head(data)
 ```
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
-# subsetting with dplyr
-# names(data)
+# subsetting with dplyr; # names(data)
+# q#.df = select(data, Q#)
 
 q1.df = select(data, Q1)
 q2.df = select(data, Q2)
@@ -59,9 +62,10 @@ q33.df = select(data, Q33:Q33_Codes)
 ```
 
 ```{r, echo=FALSE, warning=FALSE}
-hh.df = select(data, PRG_Q34_01:Q50)
+hh.df = select(data, PRG_Q34_01:Q50) # all household questions
 # summary(hh.df)
-# HHM1
+
+# HHM1 first household member
 hhm1.df = select(data, Q35:Q42)
 q35.df = select(data, Q35)
 q36.df = select(data, Q36:Q36_Codes)
@@ -72,7 +76,7 @@ q40.df = select(data, Q40)
 q41.df = select(data, Q41)
 q42.df = select(data, Q42)
 
-# HHM2
+# HHM2 second household member
 hhm2.df = select(data, Q43:Q50)
 q43.df = select(data, Q43)
 q44.df = select(data, Q44:Q44_Codes)
@@ -85,7 +89,9 @@ q50.df = select(data, Q50)
 ```
 
 ```{r, echo=FALSE, warning=FALSE}
-# gather with tidyr into columns
+# gather with tidyr: large question frames into columns
+# question = gather(question, "x", "y", col:col) (i think)
+
 q7 = gather(q7.df, "opt", "resp", 1:7)
 q8 = gather(q8.df, "opt", "resp", 1:7)
 q10 = gather(q10.df, "opt", "resp", 1:9)
@@ -105,186 +111,181 @@ q30 = gather(q30.df, "opt", "resp", 1:6)
 
 #### Q1. Before receiving this survey, did you know influenza is different from the stomach flu?
 ```{r, echo=FALSE}
-summary(q1.df)
+print(summary(q1.df))
 ```
 
-Q13. Do you get the flu vaccine?
-```{r, echo=FALSE}
-summary(q13.df)
-```
-
-Q1 vs. Q13 table
-```{r}
-a = with(data, table(Q1, Q13)); a
-summary(a)
-```
-
-Q2. Have you had an illness with influenza like symptoms since August 2015?
+#### Q2. Have you had an illness with influenza like symptoms since August 2015?
 ```{r, echo=FALSE}
 summary(q2.df)
 ```
 
-Q3. Has any other person in your household had an illness with influenza like symptoms since August 2015?
+#### Q3. Has any other person in your household had an illness with influenza like symptoms since August 2015?
 ```{r, echo=FALSE}
 summary(q3.df)
 ```
 
-Q4. Does your job require you to have a lot of contact with the public?
+#### Q4. Does your job require you to have a lot of contact with the public?
 ```{r, echo=FALSE}
 summary(q4.df)
 ```
 
-Q5. Do you have a car that you can use to travel to work?
+#### Q5. Do you have a car that you can use to travel to work?
 ```{r, echo=FALSE}
 summary(q5.df)
 ```
 
-Q6. Do you regularly use public transportation?
+#### Q6. Do you regularly use public transportation?
 ```{r, echo=FALSE}
 summary(q6.df)
 ```
 
-Q7. What types of public transportation do you regularly use? 
+#### Q7. What types of public transportation do you regularly use? 
 ```{r, echo=FALSE}
 ggplot(q7) + geom_bar(aes(x = resp, fill = resp), position = "dodge") + facet_wrap(~opt)
 summary(q7.df)
 ```
 
-Q8. For what types of activities do you regularly use public transportation? 
+#### Q8. For what types of activities do you regularly use public transportation? 
 ```{r, echo=FALSE}
 ggplot(q8) + geom_bar(aes(x = resp, fill = resp), position = "dodge") + facet_wrap(~opt)
 summary(q8.df)
 ```
 
-Q9. Do other members of your household regularly use public transportation?
+#### Q9. Do other members of your household regularly use public transportation?
 ```{r, echo=FALSE}
 summary(q9.df)
 ```
 
-Q10. What types of public transportation do other members of your household regularly use? 
+#### Q10. What types of public transportation do other members of your household regularly use? 
 ```{r, echo=FALSE}
 ggplot(q10) + geom_bar(aes(x = resp, fill = resp), position = "dodge") + facet_wrap(~opt)
 summary(q10.df)
 ```
 
-Q11. How do you rate your risk of getting influenza if you visited each of the following locations?
+#### Q11. How do you rate your risk of getting influenza if you visited each of the following locations?
 ```{r, echo=FALSE}
 ggplot(q11) + geom_bar(aes(x = resp, fill = resp), position = "dodge") + facet_wrap(~opt)
 summary(q11.df)
 
-
 ```
 
-Q12. Which of the following actions do you take to avoid getting sick? 
+#### Q13. Do you get the flu vaccine?
+```{r, echo=FALSE}
+summary(q13.df)
+```
+
+#### Q12. Which of the following actions do you take to avoid getting sick? 
 ```{r, echo=FALSE}
 ggplot(q12) + geom_bar(aes(x = resp, fill = resp), position = "dodge") + facet_wrap(~opt)
 summary(q12.df)
 ```
 
-Q14. How much do you pay to get an influenza vaccine?
+#### Q14. How much do you pay to get an influenza vaccine?
 ```{r, echo=FALSE}
 summary(q14.df)
 ```
 
-Q15. Are you more likely to get a vaccine if others around you get a vaccine?
+#### Q15. Are you more likely to get a vaccine if others around you get a vaccine?
 ```{r, echo=FALSE}
 summary(q15.df)
 ```
 
-Q16. Are you more likely to get a vaccine if others around you do not get a vaccine?
+#### Q16. Are you more likely to get a vaccine if others around you do not get a vaccine?
 ```{r, echo=FALSE}
 summary(q16.df)
 ```
 
-Q17. Do you get a vaccine to protect yourself, protect others, or protect yourself and others?
+#### Q17. Do you get a vaccine to protect yourself, protect others, or protect yourself and others?
 ```{r, echo=FALSE}
 summary(q17.df)
 ```
 
-Q18. What are the reasons you would not get an influenza vaccine?
+#### Q18. What are the reasons you would not get an influenza vaccine?
 ```{r, echo=FALSE}
 ggplot(q18) + geom_bar(aes(x = resp, fill = resp), position = "dodge") + facet_wrap(~opt)
 summary(q18.df)
 ```
 
-Q19. Do you have health insurance?
+#### Q19. Do you have health insurance?
 ```{r, echo=FALSE}
 summary(q19.df)
 ```
 
-Q20. How effective do you think the influenza vaccine is in protecting people from becoming sick with influenza?
+#### Q20. How effective do you think the influenza vaccine is in protecting people from becoming sick with influenza?
 ```{r, echo=FALSE}
 summary(q20.df)
 ```
 
-Q21. Are influenza vaccines covered by your health insurance?
+#### Q21. Are influenza vaccines covered by your health insurance?
 ```{r, echo=FALSE}
 summary(q21.df)
 ```
 
-Q22. Do you do any of the following when you have influenza symptoms?
+#### Q22. Do you do any of the following when you have influenza symptoms?
 ```{r, echo=FALSE}
 ggplot(q22) + geom_bar(aes(x = resp, fill = resp), position = "dodge") + facet_wrap(~opt)
 summary(q22.df)
 ```
 
-Q23. Which of the following actions do you take when you have influenza symptoms to avoid someone else from getting sick?
+#### Q23. Which of the following actions do you take when you have influenza symptoms to avoid someone else from getting sick?
 ```{r, echo=FALSE}
 ggplot(q23) + geom_bar(aes(x = resp, fill = resp), position = "dodge") + facet_wrap(~opt)
 summary(q23.df)
 ```
 
-Q24. What sources of information do you recall hearing or seeing about influenza outbreaks? 
+#### Q24. What sources of information do you recall hearing or seeing about influenza outbreaks? 
 ```{r, echo=FALSE}
 ggplot(q24) + geom_bar(aes(x = resp, fill = resp), position = "dodge") + facet_wrap(~opt)
 summary(q24.df)
 ```
 
-Q25. If you received information from the news, internet or other public media that there was an influenza outbreak in your community would you do any of the following?
+#### Q25. If you received information from the news, internet or other public media that there was an influenza outbreak in your community would you do any of the following?
 ```{r, echo=FALSE}
 summary(q25.df)
 ```
 
-Q26. Does your household have children?
+#### Q26. Does your household have children?
 ```{r, echo=FALSE}
 summary(q26.df)
 ```
 
-Q27. What actions do you take when a child in your household has influenza symptoms?
+#### Q27. What actions do you take when a child in your household has influenza symptoms?
 ```{r, echo=FALSE}
 summary(q27.df)
 ```
 
-Q28. Are you a single parent?
+#### Q28. Are you a single parent?
 ```{r, echo=FALSE}
 summary(q28.df)
 ```
 
-Q29. How do you care for a sick child?
+#### Q29. How do you care for a sick child?
 ```{r, echo=FALSE}
 summary(q29.df)
 ```
 
-Q30. How do you care for a sick child?
+#### Q30. How do you care for a sick child?
 ```{r, echo=FALSE}
 summary(q30.df)
 ```
 
-Q31. How many hours of screen time (time spent watching television, a computer, smartphone, iPad, etc.) do you spend each day on average when you are not sick? Enter 0 if none
+#### Q31. How many hours of screen time (time spent watching television, a computer, smartphone, iPad, etc.) do you spend each day on average when you are not sick? Enter 0 if none
 ```{r, echo=FALSE}
 summary(q31.df)
 ```
 
 
-Q32. How many hours of screen time do you spend each day on average when you are sick? Enter 0 if none
+#### Q32. How many hours of screen time do you spend each day on average when you are sick? Enter 0 if none
 ```{r, echo=FALSE}
 summary(q32.df)
 ```
 
-Q33. How many people, including yourself, reside in your household?
+#### Q33. How many people, including yourself, reside in your household?
 ```{r, echo=FALSE}
 summary(q33.df)
 ```
+
+
 
 # Household members
 ```{r, echo=FALSE}
@@ -292,41 +293,98 @@ summary(hhm1.df)
 summary(hhm2.df)
 ```
 
-# HHM1
-Q35. What is the gender of this member of the household?  Remember, this relates to HHM1_Name who is HHM1_AGE years old.
+## HHM1
+#### Q35. What is the gender of this member of the household?  Remember, this relates to HHM1_Name who is HHM1_AGE years old.
+```{r, echo=FALSE}
+summary(q35.df)
+```
 
-Q36. On average, how many days per week does this member of your household work or attend day care or school outside of your home?
+#### Q36. On average, how many days per week does this member of your household work or attend day care or school outside of your home?
+```{r, echo=FALSE}
+summary(q36.df)
+```
 
-Q37. On average, how many days per week does this member of your household participate in social activities outside of your home?
+#### Q37. On average, how many days per week does this member of your household participate in social activities outside of your home?
+```{r, echo=FALSE}
+summary(q37.df)
+```
 
-Q38. On average, how many days per week does this member of your household use public transportation?
+#### Q38. On average, how many days per week does this member of your household use public transportation?
+```{r, echo=FALSE}
+summary(q38.df)
+```
 
-Q39. How frequently does this member of your household visit a doctorÕs office for wellness appointments?
+#### Q39. How frequently does this member of your household visit a doctorÕs office for wellness appointments?
+```{r, echo=FALSE}
+summary(q39.df)
+```
 
-Q40. How frequently does this member of the household get sick in a typical year?
+#### Q40. How frequently does this member of the household get sick in a typical year?
+```{r, echo=FALSE}
+summary(q40.df)
+```
 
-Q41. How many times has this member of your household had influenza or another respiratory illness in the last two years?
+#### Q41. How many times has this member of your household had influenza or another respiratory illness in the last two years?
+```{r, echo=FALSE}
+summary(q41.df)
+```
 
-Q42. Does this member of your household get an annual influenza vaccine?
+#### Q42. Does this member of your household get an annual influenza vaccine?
+```{r, echo=FALSE}
+summary(q42.df)
+```
 
 
 ## HHM2
-Q43. What is the gender of this member of the household?  Remember, this relates to HHM1_Name who is HHM1_AGE years old.
+#### Q43. What is the gender of this member of the household?  Remember, this relates to HHM1_Name who is HHM1_AGE years old.
+```{r, echo=FALSE}
+summary(q43.df)
+```
 
-Q44. On average, how many days per week does this member of your household work or attend day care or school outside of your home?
+#### Q44. On average, how many days per week does this member of your household work or attend day care or school outside of your home?
+```{r, echo=FALSE}
+summary(q44.df)
+```
 
-Q45. On average, how many days per week does this member of your household participate in social activities outside of your home?
+#### Q45. On average, how many days per week does this member of your household participate in social activities outside of your home?
+```{r, echo=FALSE}
+summary(q45.df)
+```
 
-Q46. On average, how many days per week does this member of your household use public transportation?
+#### Q46. On average, how many days per week does this member of your household use public transportation?
+```{r, echo=FALSE}
+summary(q46.df)
+```
 
-Q47. How frequently does this member of your household visit a doctorÕs office for wellness appointments?
+#### Q47. How frequently does this member of your household visit a doctorÕs office for wellness appointments?
+```{r, echo=FALSE}
+summary(q47.df)
+```
 
-Q48. How frequently does this member of the household get sick in a typical year?
+#### Q48. How frequently does this member of the household get sick in a typical year?
+```{r, echo=FALSE}
+summary(q48.df)
+```
 
-Q49. How many times has this member of your household had influenza or another respiratory illness in the last two years?
+#### Q49. How many times has this member of your household had influenza or another respiratory illness in the last two years?
+```{r, echo=FALSE}
+summary(q49.df)
+```
 
-Q50. Does this member of your household get an annual influenza vaccine?
+#### Q50. Does this member of your household get an annual influenza vaccine?
+```{r, echo=FALSE}
+summary(q50.df)
+```
 
+
+
+#### Q1 vs. Q13 table
+Knowing influenza is different from stomach flu; vs. getting the flu vaccine
+```{r, echo=FALSE}
+a = with(data, table(Q1, Q13))
+a
+summary(a)
+```
 
 ```
 # need to remove NA's, rename columns
