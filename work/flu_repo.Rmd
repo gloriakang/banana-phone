@@ -1,7 +1,8 @@
 ---
 title: "flu survey"
-output: 
-  html_document: 
+output:
+  pdf_document: default
+  html_document:
     theme: cosmo
 ---
 
