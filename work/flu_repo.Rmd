@@ -1,9 +1,9 @@
 ---
 title: "flu survey"
 output:
-  pdf_document: default
   html_document:
     theme: cosmo
+  pdf_document: default
 ---
 
 ```{r setup, echo=FALSE, message=FALSE}
