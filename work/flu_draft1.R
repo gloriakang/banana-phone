@@ -69,10 +69,7 @@ dat = dat[c("col1", "col3", "col2")]
 # #lQ7 = Q7[ ,1:6]
 # #head(lQ7); ncol(lQ7)
 # 
-# 
-# 
 # lQ7 = likert(Q7[ ,1:3], grouping = data$PPGENDER)
-# 
 # 
 # likert(lQ7)
 # 
@@ -93,4 +90,7 @@ dat = dat[c("col1", "col3", "col2")]
 
 # ppeduc = as.data.frame(table(ds$PPEDUC))
 # q111 = as.data.frame(table(ds$Q11_1))
+
+
+
 
