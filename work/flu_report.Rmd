@@ -14,18 +14,60 @@ knitr::opts_chunk$set(
 	warning = FALSE
 )
 setwd("~/git/banana-phone/work")
-library(readr)
 library(tidyr)
 library(dplyr)
 library(ggplot2)
-library(reshape2)
 
 data = read.csv("surveydata.csv", na = "#NULL!")
-# str(data); # head(data)
 ```
 
+```{r}
+# demographics
+
+#PPINCIMP
+income <- data %>%
+  select(PPINCIMP) %>%
+  gather("variable", "response", 1)
+  
+
+
+
+
+
+
+
+```
+
+```{r}
+# test
+q1.df = select(data, Q1)
+q7.df = select(data, Q7_1:Q7_otherText)
+
+names(q7.df) = c("Bus", "Carpool", "Subway",
+                 "Train", "Taxi", "Airplane",
+                 "Other", "Refused", "Other text")
+
+q1 = gather(q1.df, "question", "response", 1)
+q7 = gather(q7.df, "question", "response", 1:8)
+
+
+#### Q1. Before receiving this survey, did you know influenza is different from the stomach flu?
+summary(q1.df)
+ggplot(q1) + geom_bar(aes(x=response, fill=response))
+
+#### Q7. What types of public transportation do you regularly use? 
+ggplot(q7) + geom_bar(aes(x = response, fill = response), position = "dodge") + facet_wrap(~option)
+summary(q7.df)
+
+
+```
+
+
+
+
+
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
-# subsetting with dplyr: q0.df = select(data, Q0:Q0_end)
+# subsetting with dplyr: q1.df = select(data, Q1_start:Q1_end)
 # renaming columns: names(dat) = c("name1", "name2", "name3")
 
 q1.df = select(data, Q1)
@@ -206,7 +248,7 @@ q50.df = select(data, Q50)
 
 
 ```{r, echo=FALSE, warning=FALSE}
-# gather with tidyr:question frames into columns
+# gather with tidyr: question frames into columns
 # question = gather(question, "heading", "values", col:col) (i think)
 
 q1 = gather(q1.df, "option", "response", 1)
