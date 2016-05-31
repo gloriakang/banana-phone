@@ -3,7 +3,8 @@ title: "flu survey"
 output:
   html_document:
     theme: cosmo
-  pdf_document: default
+  pdf_document:
+    highlight: tango
 ---
 
 ```{r setup, echo=FALSE, message=FALSE}
