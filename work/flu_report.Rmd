@@ -1,5 +1,5 @@
 ---
-title: "flu survey"
+title: "Flu Survey Data"
 output:
   html_document:
     fig_caption: yes
@@ -19,6 +19,7 @@ knitr::opts_chunk$set(
 	warning = FALSE
 )
 setwd("~/git/banana-phone/work")
+library(readr)
 library(tidyr)
 library(dplyr)
 library(ggplot2)
@@ -27,50 +28,120 @@ data = read.csv("surveydata.csv", na = "#NULL!")
 ```
 
 ```{r, eval=FALSE, include=FALSE}
-# demographics
+#### demographic summary ####
 
-#PPINCIMP
+# PPINCIMP
 income <- data %>%
   select(PPINCIMP) %>%
   gather("variable", "response", 1)
   
 
-
-
-
-
-
-
 ```
 
 ```{r, eval=FALSE, include=FALSE}
-# test code
+##### test code #####
 
 q1.df = select(data, Q1)
-q7.df = select(data, Q7_1:Q7_otherText)
+q1 = gather(q1.df, "q", "r", 1)
+summary(q1.df)
 
+q2.df = select(data, Q2)
+q2 = gather(q2.df, "option", "response", 1)
+summary(q2.df)
+
+q7.df = select(data, Q7_1:Q7_otherText)
 names(q7.df) = c("Bus", "Carpool", "Subway",
                  "Train", "Taxi", "Airplane",
                  "Other", "Refused", "Other text")
+q7 = gather(q7.df, "q", "r", 1:8)
+summary(q7.df)
 
-q1 = gather(q1.df, "question", "response", 1)
-q7 = gather(q7.df, "question", "response", 1:8)
-
-
+###################
 #### Q1. Before receiving this survey, did you know influenza is different from the stomach flu?
 summary(q1.df)
 ggplot(q1) + geom_bar(aes(x=response, fill=response))
+
+# alternatively, summary(q1.df)
+data %>%
+  group_by(Q1) %>%
+  summarise(count = n())
+
+# Q1 by gender
+q1.gen = data %>%
+  group_by(Q1, PPGENDER)
+q1.gen %>%
+  summarise(count = n())
+ggplot(q1.gen) + geom_bar(aes(x = Q1, fill = PPGENDER), position = "dodge")
+
+
+
+#### Q2. Have you had an illness with influenza like symptoms since August 2015?
+summary(q2.df)
+ggplot(q2) + geom_bar(aes(x=response, fill=response))
+
+# Q2 by gender
+q2.gen = data %>%
+  group_by(Q2, PPGENDER)
+q2.gen %>%
+  summarise(count = n())
+ggplot(q2.gen) + geom_bar(aes(x = Q2, fill = PPGENDER), position = "dodge")
+
+
 
 #### Q7. What types of public transportation do you regularly use? 
 ggplot(q7) + geom_bar(aes(x = response, fill = response), position = "dodge") + facet_wrap(~option)
 summary(q7.df)
 
+# FIX THIS:
+# Q7 by gender
+q7.gen = data %>%
+  group_by(PPGENDER, Q7_1, Q7_2, Q7_3, Q7_4, Q7_5, Q7_6, Q7_7)
+q7.gen %>%
+  summarise(count = n())
+ggplot(q7.gen) + geom_bar(aes(x = Q7_1, fill = PPGENDER), position = "dodge")
+
+
+```
+
+## Working analysis
+
+```{r}
+#' Q1 vs. Q13 table
+#' Knowing influenza is different from stomach flu; vs. getting the flu vaccine
+a = with(data, table(Q1, Q13))
+print(a)
+summary(a)
+
+
+#### Q1. Before receiving this survey, did you know influenza is different from the stomach flu?
+# alternatively, summary(q1.df)
+data %>%
+  group_by(Q1) %>%
+  summarise(count = n())
+
+# Q1 by gender
+q1.gen = data %>%
+  group_by(Q1, PPGENDER)
+q1.gen %>%
+  summarise(count = n())
+ggplot(q1.gen) + geom_bar(aes(x = Q1, fill = PPGENDER), position = "dodge")
+
+
+
+#### Q2. Have you had an illness with influenza like symptoms since August 2015?
+# Q2 by gender
+q2.gen = data %>%
+  group_by(Q2, PPGENDER)
+q2.gen %>%
+  summarise(count = n())
+ggplot(q2.gen) + geom_bar(aes(x = Q2, fill = PPGENDER), position = "dodge")
+
 
 ```
 
 
 
-
+## Survey data by question
 
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
 # subsetting with dplyr: q1.df = select(data, Q1_start:Q1_end)
@@ -255,6 +326,7 @@ q50.df = select(data, Q50)
 
 ```{r, echo=FALSE, warning=FALSE}
 # gather with tidyr: question frames into columns
+# for ggplot2 and nested questions
 # q = gather(q.df, "heading", "values", col:col)
 
 q1 = gather(q1.df, "option", "response", 1)
@@ -569,15 +641,6 @@ summary(q50.df)
 ```
 
 
-## Analysis
-
-#### Q1 vs. Q13 table
-Knowing influenza is different from stomach flu; vs. getting the flu vaccine
-```{r, echo=FALSE}
-a = with(data, table(Q1, Q13))
-a
-summary(a)
-```
 
 
 
