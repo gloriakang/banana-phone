@@ -2,9 +2,14 @@
 title: "flu survey"
 output:
   html_document:
+    fig_caption: yes
+    number_sections: yes
     theme: cosmo
+    toc: yes
   pdf_document:
-    highlight: tango
+    fig_caption: yes
+    number_sections: yes
+    toc: yes
 ---
 
 ```{r setup, echo=FALSE, message=FALSE}
@@ -21,7 +26,7 @@ library(ggplot2)
 data = read.csv("surveydata.csv", na = "#NULL!")
 ```
 
-```{r}
+```{r, eval=FALSE, include=FALSE}
 # demographics
 
 #PPINCIMP
@@ -38,8 +43,9 @@ income <- data %>%
 
 ```
 
-```{r}
-# test
+```{r, eval=FALSE, include=FALSE}
+# test code
+
 q1.df = select(data, Q1)
 q7.df = select(data, Q7_1:Q7_otherText)
 
@@ -69,6 +75,7 @@ summary(q7.df)
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
 # subsetting with dplyr: q1.df = select(data, Q1_start:Q1_end)
 # renaming columns: names(dat) = c("name1", "name2", "name3")
+# q1.df = question subset with renamed columns
 
 q1.df = select(data, Q1)
 q2.df = select(data, Q2)
@@ -246,10 +253,9 @@ q50.df = select(data, Q50)
 ```
 
 
-
 ```{r, echo=FALSE, warning=FALSE}
 # gather with tidyr: question frames into columns
-# question = gather(question, "heading", "values", col:col) (i think)
+# q = gather(q.df, "heading", "values", col:col)
 
 q1 = gather(q1.df, "option", "response", 1)
 q2 = gather(q2.df, "option", "response", 1)
@@ -322,6 +328,7 @@ summary(q6.df)
 ggplot(q6) + geom_bar(aes(x=response, fill=response))
 ```
 
+
 #### Q7. What types of public transportation do you regularly use? 
 ```{r, echo=FALSE}
 ggplot(q7) + geom_bar(aes(x = response, fill = response), position = "dodge") + facet_wrap(~option)
@@ -334,10 +341,12 @@ ggplot(q8) + geom_bar(aes(x = response, fill = response), position = "dodge") + 
 summary(q8.df)
 ```
 
+
 #### Q9. Do other members of your household regularly use public transportation?
 ```{r, echo=FALSE}
 summary(q9.df)
 ```
+
 
 #### Q10. What types of public transportation do other members of your household regularly use? 
 ```{r, echo=FALSE}
@@ -351,6 +360,7 @@ ggplot(q11) + geom_bar(aes(x = response, fill = response), position = "dodge") +
 summary(q11.df)
 
 ```
+
 
 #### Q13. Do you get the flu vaccine?
 ```{r, echo=FALSE}
@@ -559,7 +569,8 @@ summary(q50.df)
 ```
 
 
-# Analysis
+## Analysis
+
 #### Q1 vs. Q13 table
 Knowing influenza is different from stomach flu; vs. getting the flu vaccine
 ```{r, echo=FALSE}
@@ -569,10 +580,10 @@ summary(a)
 ```
 
 
-# to-do:
-```
-# need to remove NA's, rename columns
 
-# ggplot(q7) + geom_bar(aes(x = option, fill = response), position = "dodge")
-# ggplot(data = data) + geom_bar(mapping = aes(x = Q1)) + stat_sum()
-```
+
+## to-do:
+- need to remove NA's
+- ggplot(q7) + geom_bar(aes(x = option, fill = response), position = "dodge")
+- ggplot(data = data) + geom_bar(mapping = aes(x = Q1)) + stat_sum()
+

@@ -1,5 +1,6 @@
 # Flu survey data analysis
 setwd("~/git/banana-phone/work")
+
 library(dplyr)
 library(tidyr)
 library(ggplot2)
