@@ -1,15 +1,15 @@
 ---
 title: "Flu Survey Data"
 output:
-  html_document:
-    fig_caption: yes
-    fig_height: 3
-    theme: cosmo
-    toc: yes
   pdf_document:
     fig_caption: yes
     fig_height: 3
     fig_width: 5
+    toc: yes
+  html_document:
+    fig_caption: yes
+    fig_height: 3
+    theme: cosmo
     toc: yes
 ---
 
