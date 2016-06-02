@@ -1,8 +1,6 @@
 ipynb_checkpoints/
 
-*.csv
+
 
 .DS_Store
-.RData
-.Rhistory
 
