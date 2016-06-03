@@ -8,7 +8,7 @@ library(ggplot2)
 data <- read.csv("surveydata.csv", na = "#NULL!")
 
 
-# select() question data
+# select() question columns
 q7.df <- data %>%
   select(Q7_1:Q7_otherText) %>%
   rename("Bus" = Q7_1,
@@ -22,34 +22,32 @@ q7.df <- data %>%
          "Other text" = Q7_otherText
   )
 
-# gather() into columns for plotting
+# gather() into rows for plotting
 q7 <- q7.df %>%
   gather("q", "r", 1:8)
 
 # group_by() and summarise() counts
 q7 %>%
-  group_by(r, q) %>%
-  summarise(count = n())
+  group_by(q, r) %>%
+  count(q, r)
+
+
+## all together now:
+(
+q7_long <- q7.df %>%
+  gather("q", "r", 1:8) %>%
+  group_by(q, r) %>%
+  count(q, r)
+)
+
+ggplot(data = q7_long[!is.na(q7_long$r), ], aes(x = q, y = n, fill = r)) +
+  geom_bar(stat='identity', position=position_dodge())
+
+
+### ---------------
 
 
 
-
-##### old test code #####
-
-q1.df = select(data, Q1)
-q1 = gather(q1.df, "q", "r", 1)
-summary(q1.df)
-
-q2.df = select(data, Q2)
-q2 = gather(q2.df, "option", "response", 1)
-summary(q2.df)
-
-q7.df = select(data, Q7_1:Q7_otherText)
-names(q7.df) = c("Bus", "Carpool", "Subway",
-                 "Train", "Taxi", "Airplane",
-                 "Other", "Refused", "Other text")
-q7 = gather(q7.df, "q", "r", 1:8)
-summary(q7.df)
 
 
 

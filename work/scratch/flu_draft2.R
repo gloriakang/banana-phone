@@ -1,14 +1,13 @@
 # flu survey analysis
 
 setwd("~/git/banana-phone/work")
+
 library(readr)
 library(tidyr)
 library(dplyr)
 library(ggplot2)
-library(reshape2)
 
 data = read.csv("surveydata.csv", na = '#NULL!')
-str(data)
 View(data)
 
 # subsetting with dplyr
@@ -39,7 +38,7 @@ q31.df = select(data, Q31:Q31_Codes)
 q32.df = select(data, Q32:Q32_Codes)
 q33.df = select(data, Q33:Q33_Codes)
 
-# household member questions
+# all household member questions
 hh.df = select(data, PRG_Q34_01:Q50)
 summary(hh.df)
 
@@ -79,10 +78,35 @@ q25 = gather(q25.df, "opt", "resp", 1:11)
 q27 = gather(q27.df, "opt", "resp",  1:4)
 q29 = gather(q29.df, "opt", "resp", 1:6)
 q30 = gather(q30.df, "opt", "resp", 1:6)
+# q31
+
+
+
+##### test code #####
+
+# same as above, code block for q1
+q1.df = select(data, Q1)
+q1 = gather(q1.df, "q", "r", 1)
+summary(q1.df)
+
+q2.df = select(data, Q2)
+q2 = gather(q2.df, "q", "r", 1)
+summary(q2.df)
+
+q7.df = select(data, Q7_1:Q7_otherText)
+names(q7.df) = c("Bus", "Carpool", "Subway",
+                 "Train", "Taxi", "Airplane",
+                 "Other", "Refused", "Other text")
+q7 = gather(q7.df, "q", "r", 1:8)
+summary(q7.df)
+
+
+
 
 
 
 # ----- summary tables & plots
+
 # q1 did you know influenza is different from the stomach flu?
 summary(q1.df)
 
