@@ -5,7 +5,8 @@ library(dplyr)
 library(tidyr)
 library(ggplot2)
 
-data <- read.csv("surveydata.csv", na = "#NULL!")
+# set null and empty cells to NA
+data <- read.csv("surveydata.csv", na = c("#NULL!", ""))
 
 
 # select() question columns

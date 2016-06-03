@@ -25,7 +25,7 @@ library(tidyr)
 library(dplyr)
 library(ggplot2)
 
-data = read.csv("surveydata.csv", na = "#NULL!")
+data <- read.csv("surveydata.csv", na = c("#NULL!", ""))
 ```
 
 
