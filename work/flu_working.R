@@ -1,6 +1,6 @@
-# Flu survey data analysis
-setwd("~/git/banana-phone/work")
+# Flu working analysis
 
+setwd("~/git/banana-phone/work")
 library(dplyr)
 library(tidyr)
 library(ggplot2)
@@ -9,6 +9,7 @@ library(ggplot2)
 data <- read.csv("surveydata.csv", na = c("#NULL!", ""))
 
 
+# Q7: What types of public transportation do you regularly use?
 # select() question columns
 q7.df <- data %>%
   select(Q7_1:Q7_otherText) %>%
@@ -32,8 +33,7 @@ q7 %>%
   group_by(q, r) %>%
   count(q, r)
 
-
-## all together now:
+# all together now:
 (
 q7_long <- q7.df %>%
   gather("q", "r", 1:8) %>%
@@ -44,8 +44,9 @@ q7_long <- q7.df %>%
 ggplot(data = q7_long[!is.na(q7_long$r), ], aes(x = q, y = n, fill = r)) +
   geom_bar(stat='identity', position=position_dodge())
 
+###
 
-### ---------------
+
 
 
 
