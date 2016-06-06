@@ -30,13 +30,27 @@ data <- read.csv("surveydata.csv", na = c("#NULL!", ""))
 
 
 ```{r, eval=FALSE, include=FALSE}
-######## working demographic summary ########
+### PPINCIMP
 
-# PPINCIMP
-income <- data %>%
+data %>%
   select(PPINCIMP) %>%
   gather("variable", "response", 1)
 
+
+```
+
+# Working analysis
+
+```{r, echo=TRUE, message=FALSE, warning=FALSE}
+# Q1 and Q13: knowing influenza is different from stomach flu; vs. getting the flu vaccine
+with(data, table(Q1, Q13))
+# chisq
+summary(with(data, table(Q1, Q13)))
+
+
+# Q1 and Q2: knowing flu and getting flu
+with(data, table(Q1, Q2))
+summary(with(data, table(Q1, Q2)))
 
 ```
 
@@ -282,44 +296,34 @@ q50 = gather(q50.df, "option", "response", 1)
 ```
 
 
-
-
-# Working analysis
-
-```{r, echo=TRUE, message=FALSE, warning=FALSE}
-# Q1 and Q13: knowing influenza is different from stomach flu; vs. getting the flu vaccine
-with(data, table(Q1, Q13))
-summary(with(data, table(Q1, Q13)))
-
-
-# Q1 and Q2: knowing flu and getting flu
-with(data, table(Q1, Q2))
-summary(with(data, table(Q1, Q2)))
-
-```
-
-
-
 # Survey questions
 
 ### Q1. Before receiving this survey, did you know influenza is different from the stomach flu?
 ```{r, echo=TRUE}
-summary(q1.df)
-ggplot(q1) + geom_bar(aes(x=response, fill=response))
+# table
+with(data, table(Q1))
 
-# alternatively, summary(q1.df)
-data %>%
+(
+q1_a <- data %>%
   group_by(Q1) %>%
-  summarise(count = n())
+  count(Q1)
+)
+
+ggplot(q1_a, aes(x = Q1, y = n, fill = Q1)) + geom_bar(stat = 'identity')
 
 
 # by gender
-q1.gen = data %>%
-  group_by(Q1, PPGENDER)
-q1.gen %>%
-  summarise(count = n())
+with(data, table(Q1, PPGENDER))
 
-ggplot(q1.gen) + geom_bar(aes(x = Q1, fill = PPGENDER), position = "dodge")
+(
+q1_gen <- data %>%
+  group_by(Q1, PPGENDER) %>%
+  count(Q1, PPGENDER)
+)
+
+ggplot(q1_gen, aes(x = Q1, y = n, fill = PPGENDER)) +
+  geom_bar(stat = 'identity', position = position_dodge())
+
 ```
 
 
@@ -366,12 +370,11 @@ ggplot(q6) + geom_bar(aes(x=response, fill=response))
 
 ### Q7. What types of public transportation do you regularly use? 
 ```{r, echo=FALSE}
-ggplot(q7) + geom_bar(aes(x = response, fill = response), position = "dodge") + facet_wrap(~option)
-summary(q7.df)
+# ggplot(q7) + geom_bar(aes(x = response, fill = response), position = "dodge") + facet_wrap(~option)
 
-
-# Gender:
-(q7.gen = data %>%
+# by gender:
+(
+q7_gen <- data %>%
   select(PPGENDER, Q7_1:Q7_otherText) %>%
   rename("Bus" = Q7_1,
          "Carpool" = Q7_2,
@@ -382,16 +385,18 @@ summary(q7.df)
          "Other" = Q7_7,
          "Refused" = Q7_8,
          "Other text" = Q7_otherText) %>%
-  gather("option", "response", Bus:Other) %>%
-  group_by(PPGENDER, option, response)
+  gather("q", "r", Bus:Other) %>%  # exclude Refused and Other text
+  group_by(PPGENDER, q, r) %>%
+  count(PPGENDER, q, r)
 )
-# bar plot
-ggplot(q7.gen) + geom_bar(aes(x = response, fill = PPGENDER), position = "dodge") + facet_wrap(~option)
 
-# count
-q7.gen %>%
-  summarise(count = n())
+# bar plot:
+ggplot(q7_gen[!is.na(q7_gen$r), ], aes(x = r, y = n, fill = PPGENDER)) +
+  geom_bar(stat = 'identity', position = position_dodge()) + facet_wrap(~q)
+
 ```
+
+
 
 
 ### Q8. For what types of activities do you regularly use public transportation? 
@@ -478,19 +483,21 @@ ggplot(q13.gen) + geom_bar(aes(x = Q13, fill = PPGENDER), position = "dodge")
 ggplot(q12) + geom_bar(aes(x = response, fill = response), position = "dodge") + facet_wrap(~option)
 summary(q12.df)
 
+# by gender
 
-# by gender:
-(q.gen = data %>%
+(
+test <- data %>%
   select(PPGENDER, Q12_1:Q12_15) %>%
-  gather("option", "response", Q12_1:Q12_15) %>%
-  group_by(PPGENDER, option, response)
+  gather("q", "r", Q12_1:Q12_15) %>%
+  group_by(PPGENDER, q, r) %>%
+  count(PPGENDER, q, r)
 )
-# bar plot
-ggplot(q.gen) + geom_bar(aes(x = response, fill = PPGENDER), position = "dodge") + facet_wrap(~option)
 
-# count
-q.gen %>%
-  summarise(count = n())
+# bar plot
+ggplot(test[!is.na(test$r), ], aes(x = r, y = n, fill = PPGENDER)) +
+  geom_bar(stat = 'identity', position = position_dodge()) + facet_wrap(~q)
+
+
 
 ```
 
