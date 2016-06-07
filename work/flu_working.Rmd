@@ -1,15 +1,15 @@
 ---
 title: "working"
 output:
-  pdf_document:
-    fig_caption: yes
-    fig_height: 3
-    fig_width: 5
-    toc: yes
   html_document:
     fig_caption: yes
     fig_height: 3
     theme: cosmo
+    toc: yes
+  pdf_document:
+    fig_caption: yes
+    fig_height: 3
+    fig_width: 5
     toc: yes
 ---
 
@@ -26,10 +26,33 @@ data <- read.csv("surveydata.csv", na = c("#NULL!", ""))
 data2 <- read.csv("data2.csv", na = c("#NULL!", ""))
 ```
 
+# Working analysis
+```{r}
+# Q1 and Q2
+with(data, by(Q1, Q2, summary))
+with(data, table(Q1, Q2))
+
+# Q1 and gender
+with(data, by(Q1, PPGENDER, summary))
+
+# Q7
+with(Q7, table(q, r))
+# Q7 and gender
+with(Q7, table(q, r, PPGENDER))
+
+# Q33. How many people, including yourself, reside in your household?
+with(data, summary(Q33))
+# by ethnicity
+with(data, by(Q33, PPETHM, summary))
+
+
+```
+
 
 # Survey questions
 
 ### Q1. Before receiving this survey, did you know influenza is different from the stomach flu?
+
 ```{r, echo=TRUE}
 # all
 with(data, table(Q1))
@@ -37,7 +60,6 @@ q1 <- data %>%
   group_by(Q1) %>%
   count(Q1)
 ggplot(q1, aes(x = Q1, y = n, fill = Q1)) + geom_bar(stat = 'identity')
-
 
 # by gender
 with(data, table(Q1, PPGENDER))
@@ -75,7 +97,6 @@ q2 <- data %>%
   count(Q2)
 ggplot(q2, aes(x = Q2, y = n, fill = Q2)) + geom_bar(stat = 'identity')
 
-
 # by gender
 with(data, table(Q2, PPGENDER))
 q2 <- data %>%
@@ -111,7 +132,6 @@ q3 <- data %>%
   group_by(Q3) %>%
   count(Q3)
 ggplot(q3, aes(x = Q3, y = n, fill = Q3)) + geom_bar(stat = 'identity')
-
 
 # by gender
 with(data, table(Q3, PPGENDER))
@@ -188,8 +208,8 @@ q5 <- data %>%
   count(Q5)
 ggplot(q5, aes(x = Q5, y = n, fill = Q5)) + geom_bar(stat = 'identity')
 
-
 # by gender
+with(data, table(PPGENDER, Q5))
 q5 <- data %>%
   group_by(Q5, PPGENDER) %>%
   count(Q5, PPGENDER)
@@ -212,20 +232,18 @@ ggplot(q5, aes(x = Q5, y = n, fill = PPINCIMP)) +
 
 ```
 
-
 ### Q6. Do you regularly use public transportation?
 
 ```{r, echo=FALSE}
 # all
-#with(data, table(Q6))
-(q6 <- data %>%
+with(data, table(Q6))
+q6 <- data %>%
   group_by(Q6) %>%
   count(Q6)
-)
 ggplot(q6, aes(x = Q6, y = n, fill = Q6)) + geom_bar(stat = 'identity')
 
-
 # by gender
+# with(data, table(PPGENDER, Q6))
 (q6 <- data %>%
   group_by(Q6, PPGENDER) %>%
   count(Q6, PPGENDER)
@@ -248,41 +266,23 @@ ggplot(q6, aes(x = Q6, y = n, fill = PPETHM)) +
 )
 ggplot(q6, aes(x = Q6, y = n, fill = PPINCIMP)) +
   geom_bar(stat = 'identity', position = position_dodge())
-
 ```
 
 
 ### Q7. What types of public transportation do you regularly use?
 
 ```{r, echo=FALSE}
-# move this #
-# Q7 <- data %>%
-#   select(PPGENDER, PPAGE, PPEDUC, PPETHM, PPINCIMP, PPWORK, Q7_1:Q7_otherText) %>%
-#   rename("Bus" = Q7_1,
-#          "Carpool" = Q7_2,
-#          "Subway" = Q7_3,
-#          "Train" = Q7_4,
-#          "Taxi" = Q7_5,
-#          "Airplane" = Q7_6,
-#          "Other" = Q7_7,
-#          "Refused" = Q7_8,
-#          "Other text" = Q7_otherText) %>%
-#     gather("q", "r", Bus:Other)
-
-
 Q7 <- data2 %>%
   select(PPGENDER, PPAGE, PPEDUC, PPETHM, PPINCIMP, PPWORK, Q7_1_Bus:Q7_otherText) %>%
   gather("q", "r", Q7_1_Bus:Q7_7_Other)
 
 # all
-# with(Q7, table(q, r))
-(q7 <- Q7 %>%
+with(Q7, table(q, r))
+q7 <- Q7 %>%
   group_by(q, r) %>%
   count(q, r)
-)
 ggplot(q7[!is.na(q7$r), ], aes(x = r, y = n, fill = r)) +
   geom_bar(stat = 'identity', position = position_dodge()) + facet_wrap(~q)
-
 
 # by gender
 # with(Q7, table(PPGENDER, r, q))
@@ -293,9 +293,8 @@ ggplot(q7[!is.na(q7$r), ], aes(x = r, y = n, fill = r)) +
 ggplot(q7[!is.na(q7$r), ], aes(x = r, y = n, fill = PPGENDER)) +
   geom_bar(stat = 'identity', position = position_dodge()) + facet_wrap(~q)
 
-
 # by ethnicity
-#with(Q7, table(PPETHM, r, q))
+# with(Q7, table(PPETHM, r, q))
 (q7 <- Q7 %>%
   group_by(PPETHM, q, r) %>%
   count(PPETHM, q, r)
@@ -303,9 +302,8 @@ ggplot(q7[!is.na(q7$r), ], aes(x = r, y = n, fill = PPGENDER)) +
 ggplot(q7[!is.na(q7$r), ], aes(x = r, y = n, fill = PPETHM)) +
   geom_bar(stat = 'identity', position = position_dodge()) + facet_wrap(~q)
 
-
 # by income
-#with(Q7, table(q, r, PPINCIMP))
+# with(Q7, table(q, r, PPINCIMP))
 (q7 <- Q7 %>%
   group_by(PPINCIMP, q, r) %>%
   count(PPINCIMP, q, r)
@@ -316,6 +314,31 @@ ggplot(q7[!is.na(q7$r), ], aes(x = r, y = n, fill = PPINCIMP)) +
 ```
 
 
+#### Q12. Which of the following actions do you take to avoid getting sick? 
 
 
+
+#### Q13. Do you get the flu vaccine?
+#### Q14. How much do you pay to get an influenza vaccine?
+
+#### Q15. Are you more likely to get a vaccine if others around you get a vaccine?
+#### Q16. Are you more likely to get a vaccine if others around you do not get a vaccine?
+#### Q17. Do you get a vaccine to protect yourself, protect others, or protect yourself and others?
+#### Q18. What are the reasons you would not get an influenza vaccine?
+#### Q19. Do you have health insurance?
+#### Q20. How effective do you think the influenza vaccine is in protecting people from becoming sick with influenza?
+
+#### Q22. Do you do any of the following when you have influenza symptoms?
+
+#### Q24. What sources of information do you recall hearing or seeing about influenza outbreaks? 
+#### Q25. If you received information from the news, internet or other public media that there was an influenza outbreak in your community would you do any of the following?
+#### Q26. Does your household have children?
+
+#### Q33. How many people, including yourself, reside in your household?
+```{r}
+with(data, summary(Q33))
+# by ethnicity
+with(data, by(Q33, PPETHM, summary))
+
+```
 

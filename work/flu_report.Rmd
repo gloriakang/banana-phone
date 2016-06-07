@@ -41,8 +41,6 @@ with(data, table(PPINCIMP))
 income <- data %>%
   group_by(PPINCIMP) %>%
   count(PPINCIMP)
-
-
 ```
 
 ```{r, echo=TRUE, message=FALSE, warning=FALSE}
@@ -52,7 +50,6 @@ with(data, table(Q1, Q13))
 
 # chisq
 summary(with(data, table(Q1, Q13)))
-
 
 # Q1 and Q2: knowing flu and getting flu
 with(data, table(Q1, Q2))
@@ -222,11 +219,8 @@ q47.df = select(data, Q47)
 q48.df = select(data, Q48)
 q49.df = select(data, Q49)
 q50.df = select(data, Q50)
-```
 
-```{r, echo=FALSE, warning=FALSE}
-# gather with tidyr: question frames into columns
-# q = gather(q.df, "heading", "values", col:col)
+#
 q7 = gather(q7.df, "q", "r", 1:8)
 q8 = gather(q8.df, "q", "r", 1:7)
 q10 = gather(q10.df, "q", "r", 1:9)
@@ -246,205 +240,18 @@ q30 = gather(q30.df, "q", "r", 1:6)
 
 # Survey questions
 
-
 ### Q1. Before receiving this survey, did you know influenza is different from the stomach flu?
-```{r, echo=TRUE}
-# all
-with(data, table(Q1))
-q1 <- data %>%
-  group_by(Q1) %>%
-  count(Q1)
-ggplot(q1, aes(x = Q1, y = n, fill = Q1)) + geom_bar(stat = 'identity')
-
-
-# by gender
-with(data, table(Q1, PPGENDER))
-q1_gender <- data %>%
-  group_by(Q1, PPGENDER) %>%
-  count(Q1, PPGENDER)
-ggplot(q1_gender, aes(x = Q1, y = n, fill = PPGENDER)) +
-  geom_bar(stat = 'identity', position = position_dodge())
-```
-
-
 ### Q2. Have you had an illness with influenza like symptoms since August 2015?
-```{r, echo=TRUE}
-# all
-with(data, table(Q2))
-
-q2 <- data %>%
-  group_by(Q2) %>%
-  count(Q2)
-ggplot(q2, aes(x = Q2, y = n, fill = Q2)) + geom_bar(stat = 'identity')
-
-
-# by gender
-with(data, table(Q2, PPGENDER))
-
-q2_gender <- data %>%
-  group_by(Q2, PPGENDER) %>%
-  count(Q2, PPGENDER)
-ggplot(q2_gender, aes(x = Q2, y = n, fill = PPGENDER)) +
-  geom_bar(stat = 'identity', position = position_dodge())
-```
-
-
 ### Q3. Has any other person in your household had an illness with influenza like symptoms since August 2015?
-```{r, echo=FALSE}
-# all
-with(data, table(Q3))
-
-q3 <- data %>%
-  group_by(Q3) %>%
-  count(Q3)
-ggplot(q3, aes(x = Q3, y = n, fill = Q3)) + geom_bar(stat = 'identity')
-
-
-# by gender
-with(data, table(Q3, PPGENDER))
-
-q3_gender <- data %>%
-  group_by(Q3, PPGENDER) %>%
-  count(Q3, PPGENDER)
-ggplot(q3_gender, aes(x = Q3, y = n, fill = PPGENDER)) +
-  geom_bar(stat = 'identity', position = position_dodge())
-```
-
-
 ### Q4. Does your job require you to have a lot of contact with the public?
-```{r, echo=FALSE}
-# all
-with(data, table(Q4))
-
-q4 <- data %>%
-  group_by(Q4) %>%
-  count(Q4)
-ggplot(q4, aes(x = Q4, y = n, fill = Q4)) + geom_bar(stat = 'identity')
-
-
-# by gender
-with(data, table(Q4, PPGENDER))
-
-q4_gender <- data %>%
-  group_by(Q4, PPGENDER) %>%
-  count(Q4, PPGENDER)
-ggplot(q4_gender, aes(x = Q4, y = n, fill = PPGENDER)) +
-  geom_bar(stat = 'identity', position = position_dodge())
-```
-
 ### Q5. Do you have a car that you can use to travel to work?
-```{r, echo=FALSE}
-# all
-with(data, table(Q5))
-
-q5 <- data %>%
-  group_by(Q5) %>%
-  count(Q5)
-ggplot(q5, aes(x = Q5, y = n, fill = Q5)) + geom_bar(stat = 'identity')
-
-
-# by gender
-q5_gender <- data %>%
-  group_by(Q5, PPGENDER) %>%
-  count(Q5, PPGENDER)
-ggplot(q5_gender, aes(x = Q5, y = n, fill = PPGENDER)) +
-  geom_bar(stat = 'identity', position = position_dodge())
-```
-
-
 ### Q6. Do you regularly use public transportation?
-```{r, echo=FALSE}
-# all
-#with(data, table(Q6))
-(q6 <- data %>%
-  group_by(Q6) %>%
-  count(Q6)
-)
-ggplot(q6, aes(x = Q6, y = n, fill = Q6)) + geom_bar(stat = 'identity')
-
-
-# by gender
-(q6 <- data %>%
-  group_by(Q6, PPGENDER) %>%
-  count(Q6, PPGENDER)
-)
-ggplot(q6, aes(x = Q6, y = n, fill = PPGENDER)) +
-  geom_bar(stat = 'identity', position = position_dodge())
-
-# 
-
-
-```
-
-
 ### Q7. What types of public transportation do you regularly use? 
-```{r, echo=FALSE}
-# move
-Q7 <- data %>%
-  select(PPGENDER, PPAGE, PPEDUC, PPETHM, PPINCIMP, PPWORK, Q7_1:Q7_otherText) %>%
-  rename("Bus" = Q7_1,
-         "Carpool" = Q7_2,
-         "Subway" = Q7_3,
-         "Train" = Q7_4,
-         "Taxi" = Q7_5,
-         "Airplane" = Q7_6,
-         "Other" = Q7_7,
-         "Refused" = Q7_8,
-         "Other text" = Q7_otherText) %>%
-    gather("q", "r", Bus:Other)
-
-# all
-with(Q7, table(q, r))
-(q7 <- Q7 %>%
-  count(q, r)
-)
-ggplot(q7[!is.na(q7$r), ], aes(x = q, y = n, fill = r)) +
-  geom_bar(stat = 'identity', position = position_dodge())
-
-
-# by gender
-with(Q7, table(PPGENDER, r, q))
-(q7 <- Q7 %>%
-  group_by(PPGENDER, q, r) %>%
-  count(PPGENDER, q, r)
-)
-ggplot(q7[!is.na(q7$r), ], aes(x = r, y = n, fill = PPGENDER)) +
-  geom_bar(stat = 'identity', position = position_dodge()) + facet_wrap(~q)
-
-
-# by ethnicity
-#with(Q7, table(PPETHM, r, q))
-(q7 <- Q7 %>%
-  group_by(PPETHM, q, r) %>%
-  count(PPETHM, q, r)
-)
-ggplot(q7[!is.na(q7$r), ], aes(x = r, y = n, fill = PPETHM)) +
-  geom_bar(stat = 'identity', position = position_dodge()) + facet_wrap(~q)
-
-
-# by income
-#with(Q7, table(q, r, PPINCIMP))
-(q7 <- Q7 %>%
-  group_by(PPINCIMP, q, r) %>%
-  count(PPINCIMP, q, r)
-)
-ggplot(q7[!is.na(q7$r), ], aes(x = r, y = n, fill = PPINCIMP)) +
-  geom_bar(stat = 'identity', position = position_dodge()) + facet_wrap(~q)
-
-
-```
-
-
-
-
-
-
 
 ### Q8. For what types of activities do you regularly use public transportation? 
 ```{r, echo=FALSE}
 ggplot(q8) + geom_bar(aes(x = response, fill = response), position = "dodge") + facet_wrap(~option)
 summary(q8.df)
-
 
 ## Gender:
 (q.gen = data %>%
@@ -463,26 +270,10 @@ summary(q8.df)
 # bar plot
 ggplot(q.gen) + geom_bar(aes(x = response, fill = PPGENDER), position = "dodge") + facet_wrap(~option)
 
-# count
-q.gen %>%
-  summarise(count = n())
-
 ```
-
 
 #### Q9. Do other members of your household regularly use public transportation?
-```{r, echo=FALSE}
-summary(q9.df)
-ggplot(q9) + geom_bar(aes(x=response, fill=response))
-```
-
-
 #### Q10. What types of public transportation do other members of your household regularly use? 
-```{r, echo=FALSE}
-ggplot(q10) + geom_bar(aes(x = response, fill = response), position = "dodge") + facet_wrap(~option)
-summary(q10.df)
-
-```
 
 ### Q11. How do you rate your risk of getting influenza if you visited each of the following locations?
 ```{r, echo=FALSE}
@@ -539,14 +330,9 @@ ggplot(test[!is.na(test$r), ], aes(x = r, y = n, fill = PPGENDER)) +
   geom_bar(stat = 'identity', position = position_dodge()) + facet_wrap(~q)
 
 
-
 ```
 
 #### Q14. How much do you pay to get an influenza vaccine?
-```{r, echo=FALSE}
-summary(q14.df)
-ggplot(q14) + geom_bar(aes(x=response, fill=response))
-```
 
 #### Q15. Are you more likely to get a vaccine if others around you get a vaccine?
 ```{r, echo=FALSE}
@@ -694,22 +480,12 @@ q.gen %>%
 ```
 
 #### Q24. What sources of information do you recall hearing or seeing about influenza outbreaks? 
-```{r, echo=FALSE}
-ggplot(q24) + geom_bar(aes(x = response, fill = response), position = "dodge") + facet_wrap(~option)
-summary(q24.df)
-```
+
 
 #### Q25. If you received information from the news, internet or other public media that there was an influenza outbreak in your community would you do any of the following?
-```{r, echo=FALSE}
-summary(q25.df)
-ggplot(q25) + geom_bar(aes(x=response, fill=response), position = "dodge") + facet_wrap(~option)
-```
 
 #### Q26. Does your household have children?
-```{r, echo=FALSE}
-summary(q26.df)
-ggplot(q26) + geom_bar(aes(x=response, fill=response))
-```
+
 
 ### Q27. What actions do you take when a child in your household has influenza symptoms?
 ```{r, echo=FALSE}
@@ -827,116 +603,45 @@ ggplot(q33.gen) + geom_bar(aes(x = Q33, fill = PPGENDER), position = "dodge")
 ```
 
 
-# Household members
 
-```{r, echo=FALSE}
-summary(hhm1.df)
-summary(hhm2.df)
-```
+# Household members
 
 ## HHM1
 #### Q35. What is the gender of this member of the household?  Remember, this relates to HHM1_Name who is HHM1_AGE years old.
-```{r, echo=FALSE}
-summary(q35.df)
-ggplot(q35) + geom_bar(aes(x=response, fill=response))
 
-```
 
 #### Q36. On average, how many days per week does this member of your household work or attend day care or school outside of your home?
-```{r, echo=FALSE}
-summary(q36.df)
-ggplot(q36) + geom_bar(aes(x=response, fill=response))
-```
+
 
 #### Q37. On average, how many days per week does this member of your household participate in social activities outside of your home?
-```{r, echo=FALSE}
-summary(q37.df)
-ggplot(q37) + geom_bar(aes(x=response, fill=response))
-```
+
 
 #### Q38. On average, how many days per week does this member of your household use public transportation?
-```{r, echo=FALSE}
-summary(q38.df)
-ggplot(q38) + geom_bar(aes(x=response, fill=response))
-```
 
 #### Q39. How frequently does this member of your household visit a doctor's office for wellness appointments?
-```{r, echo=FALSE}
-summary(q39.df)
-ggplot(q39) + geom_bar(aes(x=response, fill=response))
-```
 
 #### Q40. How frequently does this member of the household get sick in a typical year?
-```{r, echo=FALSE}
-summary(q40.df)
-ggplot(q40) + geom_bar(aes(x=response, fill=response))
-```
 
-#### Q41. How many times has this member of your household had influenza or another respiratory illness in the last two years?
-```{r, echo=FALSE}
-summary(q41.df)
-ggplot(q41) + geom_bar(aes(x=response, fill=response))
-```
+
+#### Q41. How many times has this member of your household had influenza or another respiratory illness in the last two years?x=response, fill=response))
 
 #### Q42. Does this member of your household get an annual influenza vaccine?
-```{r, echo=FALSE}
-summary(q42.df)
-ggplot(q42) + geom_bar(aes(x=response, fill=response))
-```
-
 
 ## HHM2
 #### Q43. What is the gender of this member of the household?  Remember, this relates to HHM1_Name who is HHM1_AGE years old.
-```{r, echo=FALSE}
-summary(q43.df)
-ggplot(q43) + geom_bar(aes(x=response, fill=response))
-```
 
 #### Q44. On average, how many days per week does this member of your household work or attend day care or school outside of your home?
-```{r, echo=FALSE}
-summary(q44.df)
-ggplot(q44) + geom_bar(aes(x=response, fill=response))
-```
 
 #### Q45. On average, how many days per week does this member of your household participate in social activities outside of your home?
-```{r, echo=FALSE}
-summary(q45.df)
-ggplot(q45) + geom_bar(aes(x=response, fill=response))
-```
 
 #### Q46. On average, how many days per week does this member of your household use public transportation?
-```{r, echo=FALSE}
-summary(q46.df)
-ggplot(q46) + geom_bar(aes(x=response, fill=response))
-```
 
 #### Q47. How frequently does this member of your household visit a doctor's office for wellness appointments?
-```{r, echo=FALSE}
-summary(q47.df)
-ggplot(q47) + geom_bar(aes(x=response, fill=response))
-```
 
 #### Q48. How frequently does this member of the household get sick in a typical year?
-```{r, echo=FALSE}
-summary(q48.df)
-ggplot(q48) + geom_bar(aes(x=response, fill=response))
-
-```
-
 
 #### Q49. How many times has this member of your household had influenza or another respiratory illness in the last two years?
-```{r, echo=FALSE}
-summary(q49.df)
-ggplot(q49) + geom_bar(aes(x=response, fill=response))
-
-```
-
 
 #### Q50. Does this member of your household get an annual influenza vaccine?
-```{r, echo=FALSE}
-summary(q50.df)
-ggplot(q50) + geom_bar(aes(x=response, fill=response))
-
-```
 
 
