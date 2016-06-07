@@ -23,6 +23,7 @@ library(dplyr)
 library(ggplot2)
 
 data <- read.csv("surveydata.csv", na = c("#NULL!", ""))
+data2 <- read.csv("data2.csv", na = c("#NULL!", ""))
 ```
 
 
@@ -255,30 +256,36 @@ ggplot(q6, aes(x = Q6, y = n, fill = PPINCIMP)) +
 
 ```{r, echo=FALSE}
 # move this #
-Q7 <- data %>%
-  select(PPGENDER, PPAGE, PPEDUC, PPETHM, PPINCIMP, PPWORK, Q7_1:Q7_otherText) %>%
-  rename("Bus" = Q7_1,
-         "Carpool" = Q7_2,
-         "Subway" = Q7_3,
-         "Train" = Q7_4,
-         "Taxi" = Q7_5,
-         "Airplane" = Q7_6,
-         "Other" = Q7_7,
-         "Refused" = Q7_8,
-         "Other text" = Q7_otherText) %>%
-    gather("q", "r", Bus:Other)
+# Q7 <- data %>%
+#   select(PPGENDER, PPAGE, PPEDUC, PPETHM, PPINCIMP, PPWORK, Q7_1:Q7_otherText) %>%
+#   rename("Bus" = Q7_1,
+#          "Carpool" = Q7_2,
+#          "Subway" = Q7_3,
+#          "Train" = Q7_4,
+#          "Taxi" = Q7_5,
+#          "Airplane" = Q7_6,
+#          "Other" = Q7_7,
+#          "Refused" = Q7_8,
+#          "Other text" = Q7_otherText) %>%
+#     gather("q", "r", Bus:Other)
+
+
+Q7 <- data2 %>%
+  select(PPGENDER, PPAGE, PPEDUC, PPETHM, PPINCIMP, PPWORK, Q7_1_Bus:Q7_otherText) %>%
+  gather("q", "r", Q7_1_Bus:Q7_7_Other)
 
 # all
-#with(Q7, table(q, r))
+# with(Q7, table(q, r))
 (q7 <- Q7 %>%
+  group_by(q, r) %>%
   count(q, r)
 )
-ggplot(q7[!is.na(q7$r), ], aes(x = q, y = n, fill = r)) +
-  geom_bar(stat = 'identity', position = position_dodge())
+ggplot(q7[!is.na(q7$r), ], aes(x = r, y = n, fill = r)) +
+  geom_bar(stat = 'identity', position = position_dodge()) + facet_wrap(~q)
 
 
 # by gender
-#with(Q7, table(PPGENDER, r, q))
+# with(Q7, table(PPGENDER, r, q))
 (q7 <- Q7 %>%
   group_by(PPGENDER, q, r) %>%
   count(PPGENDER, q, r)
@@ -305,10 +312,6 @@ ggplot(q7[!is.na(q7$r), ], aes(x = r, y = n, fill = PPETHM)) +
 )
 ggplot(q7[!is.na(q7$r), ], aes(x = r, y = n, fill = PPINCIMP)) +
   geom_bar(stat = 'identity', position = position_dodge()) + facet_wrap(~q)
-
-
-
-
 
 ```
 
