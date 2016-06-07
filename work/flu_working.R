@@ -96,7 +96,7 @@ data2 <- data %>%
 
 (
 q7_test <- data2 %>%
-  select(PPGENDER, 34:40) %>%
+  select(PPGENDER, 34:42) %>%
   gather("q", "r", Bus:Other) %>%
   group_by(PPGENDER, q, r) %>%
   count(PPGENDER, q, r)
@@ -104,3 +104,11 @@ q7_test <- data2 %>%
 
 ggplot(q7_test[!is.na(q7_test$r), ], aes(x = r, y = n, fill = PPGENDER)) +
   geom_bar(stat = 'identity', position = position_dodge()) + facet_wrap(~q)
+
+
+#
+
+
+
+
+

@@ -1,6 +1,16 @@
 ---
-title: "Working"
-output: html_document
+title: "working"
+output:
+  pdf_document:
+    fig_caption: yes
+    fig_height: 3
+    fig_width: 5
+    toc: yes
+  html_document:
+    fig_caption: yes
+    fig_height: 3
+    theme: cosmo
+    toc: yes
 ---
 
 ```{r setup, include=FALSE}
@@ -15,38 +25,238 @@ library(ggplot2)
 data <- read.csv("surveydata.csv", na = c("#NULL!", ""))
 ```
 
-# Survey questions
-### Q1. Before receiving this survey, did you know influenza is different from the stomach flu?
 
+# Survey questions
+
+### Q1. Before receiving this survey, did you know influenza is different from the stomach flu?
 ```{r, echo=TRUE}
-# summary
+# all
 with(data, table(Q1))
 q1 <- data %>%
   group_by(Q1) %>%
   count(Q1)
+ggplot(q1, aes(x = Q1, y = n, fill = Q1)) + geom_bar(stat = 'identity')
 
-ggplot(q1, aes(x = Q1, y = n, fill = Q1)) +
-  geom_bar(stat = 'identity')
 
 # by gender
 with(data, table(Q1, PPGENDER))
-q1_g <- data %>%
+q1 <- data %>%
   group_by(Q1, PPGENDER) %>%
   count(Q1, PPGENDER)
+ggplot(q1, aes(x = Q1, y = n, fill = PPGENDER)) +
+  geom_bar(stat = 'identity', position = position_dodge())
 
-ggplot(q1_g, aes(x = Q1, y = n, fill = PPGENDER)) +
+# by ethnicity
+with(data, table(Q1, PPETHM))
+q1 <- data %>%
+  group_by(Q1, PPETHM) %>%
+  count(Q1, PPETHM)
+ggplot(q1, aes(x = Q1, y = n, fill = PPETHM)) +
+  geom_bar(stat = 'identity', position = position_dodge())
+
+# by income
+with(data, table(Q1, PPINCIMP))
+q1 <- data %>%
+  group_by(Q1, PPINCIMP) %>%
+  count(Q1, PPINCIMP)
+ggplot(q1, aes(x = Q1, y = n, fill = PPINCIMP)) +
+  geom_bar(stat = 'identity', position = position_dodge())
+```
+
+
+### Q2. Have you had an illness with influenza like symptoms since August 2015?
+
+```{r, echo=TRUE}
+# all
+with(data, table(Q2))
+q2 <- data %>%
+  group_by(Q2) %>%
+  count(Q2)
+ggplot(q2, aes(x = Q2, y = n, fill = Q2)) + geom_bar(stat = 'identity')
+
+
+# by gender
+with(data, table(Q2, PPGENDER))
+q2 <- data %>%
+  group_by(Q2, PPGENDER) %>%
+  count(Q2, PPGENDER)
+ggplot(q2, aes(x = Q2, y = n, fill = PPGENDER)) +
+  geom_bar(stat = 'identity', position = position_dodge())
+
+# by ethnicity
+with(data, table(Q2, PPETHM))
+q2 <- data %>%
+  group_by(Q2, PPETHM) %>%
+  count(Q2, PPETHM)
+ggplot(q2, aes(x = Q2, y = n, fill = PPETHM)) +
+  geom_bar(stat = 'identity', position = position_dodge())
+
+# by income
+with(data, table(Q2, PPINCIMP))
+q2 <- data %>%
+  group_by(Q2, PPINCIMP) %>%
+  count(Q2, PPINCIMP)
+ggplot(q2, aes(x = Q2, y = n, fill = PPINCIMP)) +
+  geom_bar(stat = 'identity', position = position_dodge())
+```
+
+
+### Q3. Has any other person in your household had an illness with influenza like symptoms since August 2015?
+
+```{r, echo=FALSE}
+# all
+with(data, table(Q3))
+q3 <- data %>%
+  group_by(Q3) %>%
+  count(Q3)
+ggplot(q3, aes(x = Q3, y = n, fill = Q3)) + geom_bar(stat = 'identity')
+
+
+# by gender
+with(data, table(Q3, PPGENDER))
+q3 <- data %>%
+  group_by(Q3, PPGENDER) %>%
+  count(Q3, PPGENDER)
+ggplot(q3, aes(x = Q3, y = n, fill = PPGENDER)) +
+  geom_bar(stat = 'identity', position = position_dodge())
+
+# by ethnicity
+with(data, table(Q3, PPETHM))
+q3 <- data %>%
+  group_by(Q3, PPETHM) %>%
+  count(Q3, PPETHM)
+ggplot(q3, aes(x = Q3, y = n, fill = PPETHM)) +
+  geom_bar(stat = 'identity', position = position_dodge())
+
+# by income
+with(data, table(Q3, PPINCIMP))
+q3 <- data %>%
+  group_by(Q3, PPINCIMP) %>%
+  count(Q3, PPINCIMP)
+ggplot(q3, aes(x = Q3, y = n, fill = PPINCIMP)) +
   geom_bar(stat = 'identity', position = position_dodge())
 
 ```
 
 
+### Q4. Does your job require you to have a lot of contact with the public?
+
+```{r, echo=FALSE}
+# all
+with(data, table(Q4))
+q4 <- data %>%
+  group_by(Q4) %>%
+  count(Q4)
+ggplot(q4, aes(x = Q4, y = n, fill = Q4)) + geom_bar(stat = 'identity')
+
+
+# by gender
+with(data, table(Q4, PPGENDER))
+q4 <- data %>%
+  group_by(Q4, PPGENDER) %>%
+  count(Q4, PPGENDER)
+ggplot(q4, aes(x = Q4, y = n, fill = PPGENDER)) +
+  geom_bar(stat = 'identity', position = position_dodge())
+
+# by ethnicity
+with(data, table(Q4, PPETHM))
+q4 <- data %>%
+  group_by(Q4, PPETHM) %>%
+  count(Q4, PPETHM)
+ggplot(q4, aes(x = Q4, y = n, fill = PPETHM)) +
+  geom_bar(stat = 'identity', position = position_dodge())
+
+# by income 
+with(data, table(Q4, PPINCIMP))
+q4 <- data %>%
+  group_by(Q4, PPINCIMP) %>%
+  count(Q4, PPINCIMP)
+ggplot(q4, aes(x = Q4, y = n, fill = PPINCIMP)) +
+  geom_bar(stat = 'identity', position = position_dodge())
+
+```
+
+
+### Q5. Do you have a car that you can use to travel to work?
+
+```{r, echo=FALSE}
+# all
+with(data, table(Q5))
+q5 <- data %>%
+  group_by(Q5) %>%
+  count(Q5)
+ggplot(q5, aes(x = Q5, y = n, fill = Q5)) + geom_bar(stat = 'identity')
+
+
+# by gender
+q5 <- data %>%
+  group_by(Q5, PPGENDER) %>%
+  count(Q5, PPGENDER)
+ggplot(q5, aes(x = Q5, y = n, fill = PPGENDER)) +
+  geom_bar(stat = 'identity', position = position_dodge())
+
+# by ethnicity 
+q5 <- data %>%
+  group_by(Q5, PPETHM) %>%
+  count(Q5, PPETHM)
+ggplot(q5, aes(x = Q5, y = n, fill = PPETHM)) +
+  geom_bar(stat = 'identity', position = position_dodge())
+
+# by income 
+q5 <- data %>%
+  group_by(Q5, PPINCIMP) %>%
+  count(Q5, PPINCIMP)
+ggplot(q5, aes(x = Q5, y = n, fill = PPINCIMP)) +
+  geom_bar(stat = 'identity', position = position_dodge())
+
+```
+
+
+### Q6. Do you regularly use public transportation?
+
+```{r, echo=FALSE}
+# all
+#with(data, table(Q6))
+(q6 <- data %>%
+  group_by(Q6) %>%
+  count(Q6)
+)
+ggplot(q6, aes(x = Q6, y = n, fill = Q6)) + geom_bar(stat = 'identity')
+
+
+# by gender
+(q6 <- data %>%
+  group_by(Q6, PPGENDER) %>%
+  count(Q6, PPGENDER)
+)
+ggplot(q6, aes(x = Q6, y = n, fill = PPGENDER)) +
+  geom_bar(stat = 'identity', position = position_dodge())
+
+# by ethnicity 
+(q6 <- data %>%
+  group_by(Q6, PPETHM) %>%
+  count(Q6, PPETHM)
+)
+ggplot(q6, aes(x = Q6, y = n, fill = PPETHM)) +
+  geom_bar(stat = 'identity', position = position_dodge())
+
+# by income 
+(q6 <- data %>%
+  group_by(Q6, PPINCIMP) %>%
+  count(Q6, PPINCIMP)
+)
+ggplot(q6, aes(x = Q6, y = n, fill = PPINCIMP)) +
+  geom_bar(stat = 'identity', position = position_dodge())
+
+```
+
 
 ### Q7. What types of public transportation do you regularly use?
 
 ```{r, echo=FALSE}
-# summary
+# move this #
 Q7 <- data %>%
-  select(Q7_1:Q7_otherText) %>%
+  select(PPGENDER, PPAGE, PPEDUC, PPETHM, PPINCIMP, PPWORK, Q7_1:Q7_otherText) %>%
   rename("Bus" = Q7_1,
          "Carpool" = Q7_2,
          "Subway" = Q7_3,
@@ -56,30 +266,49 @@ Q7 <- data %>%
          "Other" = Q7_7,
          "Refused" = Q7_8,
          "Other text" = Q7_otherText) %>%
-  gather("q", "r", Bus:Other) %>%
-  count(q, r)
+    gather("q", "r", Bus:Other)
 
-ggplot(Q7[!is.na(Q7$r), ], aes(x = r, y = n, fill = r)) + geom_bar(stat = 'identity', position = position_dodge()) + facet_wrap(~q)
+# all
+#with(Q7, table(q, r))
+(q7 <- Q7 %>%
+  count(q, r)
+)
+ggplot(q7[!is.na(q7$r), ], aes(x = q, y = n, fill = r)) +
+  geom_bar(stat = 'identity', position = position_dodge())
 
 
 # by gender
-q7_g <- data %>%
-  select(PPGENDER, Q7_1:Q7_otherText) %>%
-  rename("Bus" = Q7_1,
-         "Carpool" = Q7_2,
-         "Subway" = Q7_3,
-         "Train" = Q7_4,
-         "Taxi" = Q7_5,
-         "Airplane" = Q7_6,
-         "Other" = Q7_7,
-         "Refused" = Q7_8,
-         "Other text" = Q7_otherText) %>%
-  gather("q", "r", Bus:Other) %>%  # exclude Refused and Other text
+#with(Q7, table(PPGENDER, r, q))
+(q7 <- Q7 %>%
   group_by(PPGENDER, q, r) %>%
   count(PPGENDER, q, r)
-
-ggplot(q7_g[!is.na(q7_g$r), ], aes(x = r, y = n, fill = PPGENDER)) +
+)
+ggplot(q7[!is.na(q7$r), ], aes(x = r, y = n, fill = PPGENDER)) +
   geom_bar(stat = 'identity', position = position_dodge()) + facet_wrap(~q)
+
+
+# by ethnicity
+#with(Q7, table(PPETHM, r, q))
+(q7 <- Q7 %>%
+  group_by(PPETHM, q, r) %>%
+  count(PPETHM, q, r)
+)
+ggplot(q7[!is.na(q7$r), ], aes(x = r, y = n, fill = PPETHM)) +
+  geom_bar(stat = 'identity', position = position_dodge()) + facet_wrap(~q)
+
+
+# by income
+#with(Q7, table(q, r, PPINCIMP))
+(q7 <- Q7 %>%
+  group_by(PPINCIMP, q, r) %>%
+  count(PPINCIMP, q, r)
+)
+ggplot(q7[!is.na(q7$r), ], aes(x = r, y = n, fill = PPINCIMP)) +
+  geom_bar(stat = 'identity', position = position_dodge()) + facet_wrap(~q)
+
+
+
+
 
 ```
 
