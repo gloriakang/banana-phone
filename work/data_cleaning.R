@@ -1,3 +1,4 @@
+setwd("~/git/banana-phone/work")
 # data cleaning
 library(dplyr)
 library(tidyr)
@@ -144,7 +145,7 @@ data2 <- data %>%
 
 
 # save without index column
-write.csv(data2, file = "data2.csv", row.names = FALSE)
+write.csv(data2, file = "surveydata2.csv", row.names = FALSE)
 
 
 

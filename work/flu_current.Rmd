@@ -26,7 +26,7 @@ library(ggplot2)
 library(psych)
 
 data <- read.csv("surveydata.csv", na = c("#NULL!", ""))
-data2 <- read.csv("data2.csv", na = c("#NULL!", ""))
+data2 <- read.csv("surveydata2.csv", na = c("#NULL!", ""))
 ```
 
 # Working analysis
