@@ -8,6 +8,35 @@ data <- read.csv("surveydata.csv", na = c("#NULL!", ""))
 
 with(data, table(Q1))
 with(data, table(Q1, PPGENDER))
+with(data, table(Q1, Q2))
+with(data, by(Q1, Q2, summary))
+with(data, summary(Q33))
+
+with(Q7, table(q, r))
+with(Q7, table(PPGENDER, r, q))
+
+
+# those infected + HHC infected
+# by gender
+with(data, table(Q2, Q3))
+a <- filter(data, Q2=='Yes', Q3=='Yes')
+with(a, table(PPGENDER))
+
+
+# example plots
+ggplot(data, aes(x = Q1)) + geom_bar()
+ggplot(data, aes(x = Q33)) + geom_histogram(binwidth = 2)
+
+
+# stats
+
+
+
+
+
+
+
+
 
 
 ### Q1
@@ -89,10 +118,8 @@ data2 <- data %>%
 ggplot(q7_test[!is.na(q7_test$r), ], aes(x = r, y = n, fill = PPGENDER)) +
   geom_bar(stat = 'identity', position = position_dodge()) + facet_wrap(~q)
 
-
-
 ###
-ggplot(data, aes(x = Q1)) + geom_bar()
+
 
 
 
