@@ -5,15 +5,25 @@ library(tidyr)
 library(ggplot2)
 
 data <- read.csv("surveydata.csv", na = c("#NULL!", ""))
+data2 <- read.csv("surveydata2.csv", na = c("#NULL!", ""))
+data_unw <- read.csv("surveydata_unw.csv", na = c("#NULL!", ""))
 
+View(data_unw)
+
+
+# weighted
 with(data, table(Q1))
 with(data, table(Q1, PPGENDER))
 with(data, table(Q1, Q2))
 with(data, by(Q1, Q2, summary))
 with(data, summary(Q33))
-
 with(Q7, table(q, r))
 with(Q7, table(PPGENDER, r, q))
+
+
+# unweighted
+with(data_unw, table(Q1, useNA = 'always'))
+
 
 
 # those infected + HHC infected
@@ -29,11 +39,6 @@ ggplot(data, aes(x = Q33)) + geom_histogram(binwidth = 2)
 
 
 # stats
-
-
-
-
-
 
 
 

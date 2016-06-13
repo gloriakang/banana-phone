@@ -25,8 +25,13 @@ library(dplyr)
 library(ggplot2)
 library(psych)
 
+# weighted data
 data <- read.csv("surveydata.csv", na = c("#NULL!", ""))
+# renamed cols
 data2 <- read.csv("surveydata2.csv", na = c("#NULL!", ""))
+# unweighted data -- what is the difference?
+data_unw <- read.csv("surveydata_unw.csv", na = c("#NULL!", ""))
+
 ```
 
 # Working analysis
