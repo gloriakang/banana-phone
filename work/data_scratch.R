@@ -3,33 +3,41 @@ setwd("~/git/banana-phone/work")
 library(dplyr)
 library(tidyr)
 library(ggplot2)
+library(psych)
+library(foreign)
 
-data <- read.csv("surveydata.csv", na = c("#NULL!", ""))
+# weighted
+data <- read.csv("surveydata.csv", na = c("#NULL!", "", "Refused"))
+# renamed cols
 data2 <- read.csv("surveydata2.csv", na = c("#NULL!", ""))
-data_unw <- read.csv("surveydata_unw.csv", na = c("#NULL!", ""))
-
+# unweighted
+data_unw <- read.spss("datafile.sav", to.data.frame = TRUE)
 View(data_unw)
 
 
 # weighted
 with(data, table(Q1))
+with(data, prop.table(table(Q1)))
+
 with(data, table(Q1, PPGENDER))
+with(data, prop.table(table(Q1, PPGENDER)))
+
 with(data, table(Q1, Q2))
 with(data, by(Q1, Q2, summary))
 with(data, summary(Q33))
 with(Q7, table(q, r))
 with(Q7, table(PPGENDER, r, q))
 
+data$weight
 
 # unweighted
-with(data_unw, table(Q1, useNA = 'always'))
-
+with(data_unw, table(Q1))
 
 
 # those infected + HHC infected
-# by gender
 with(data, table(Q2, Q3))
 a <- filter(data, Q2=='Yes', Q3=='Yes')
+# by gender
 with(a, table(PPGENDER))
 
 
@@ -39,8 +47,6 @@ ggplot(data, aes(x = Q33)) + geom_histogram(binwidth = 2)
 
 
 # stats
-
-
 
 
 
