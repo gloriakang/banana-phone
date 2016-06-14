@@ -1,5 +1,6 @@
-setwd("~/git/banana-phone/work")
 # data cleaning
+
+setwd("~/git/banana-phone/work")
 library(dplyr)
 library(tidyr)
 
@@ -7,9 +8,9 @@ library(tidyr)
 data <- read.csv("surveydata.csv")
 varlabels <- read.csv("varlabels.csv", header = FALSE)
 
-var <- varlabels %>%
-  select(V1, V3)
-# write.csv(var, file = "var_raw.csv")
+#var <- varlabels %>%
+#  select(V1, V3)
+#write.csv(var, file = "var_raw.csv")
 
 
 # rename data columns

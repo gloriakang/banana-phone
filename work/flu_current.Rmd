@@ -1,17 +1,16 @@
 ---
 title: "Working report"
 output:
+  pdf_document:
+    fig_caption: yes
+    fig_height: 3
+    fig_width: 5
+    toc: yes
   html_document:
     fig_caption: yes
     fig_height: 4
     highlight: tango
     theme: cosmo
-    toc: yes
-  pdf_document:
-    fig_caption: yes
-    fig_height: 3
-    fig_width: 5
-    highlight: tango
     toc: yes
 ---
 
@@ -19,13 +18,11 @@ output:
 knitr::opts_chunk$set(echo = TRUE)
 
 setwd("~/git/banana-phone/work")
-library(knitr)
-library(readr)
-library(tidyr)
 library(dplyr)
+library(tidyr)
 library(ggplot2)
 library(psych)
-library(foreign)
+#library(foreign)
 
 # weighted data
 data <- read.csv("surveydata.csv", na = c("#NULL!", "", "Refused"))
@@ -39,17 +36,27 @@ data2 <- read.csv("surveydata2.csv", na = c("#NULL!", "", "Refused"))
 #### Working analysis
 
 ```{r, eval=FALSE, include=FALSE}
-
+# Q1 proportions
 with(data, prop.table(table(Q1)))
 
-# Q1 and Q2
+# Q1 and Q2 counts
 #with(data, by(Q1, Q2, summary))
 with(data, table(Q1, Q2))
 
-# Q1 and gender
-with(data, by(Q1, PPGENDER, summary))
-with(data, table(Q1, Q2))
+# Q1 and Q2 proportions
+with(data, prop.table(table(Q1, Q2)))
+with(data, prop.table(table(Q1, Q2), margin = 1))
+with(data, prop.table(table(Q1, Q2), margin = 2))
 
+# Q1 and GENDER
+with(data, table(Q1, PPGENDER))
+with(data, prop.table(table(PPGENDER, Q1), margin = 1))
+with(data, prop.table(table(PPGENDER, Q1), margin = 2))
+
+```
+
+
+```{r, eval=FALSE, include=FALSE}
 # Q7.
 with(Q7, table(q, r))
 # Q7. and gender
@@ -59,16 +66,16 @@ with(Q7, table(q, r, PPGENDER))
 with(data, summary(Q33))
 ggplot(data, aes(x = Q33)) + geom_histogram(binwidth = 2)
 
-# by ethnicity
+# ethnicity
 with(data, by(Q33, PPETHM, summary))
 ggplot(data, aes(x = PPETHM, y = Q33)) + geom_boxplot() + coord_flip()
 
 
-## Q2 those infected + Q3 HHC infected
+# Q2 those infected + Q3 HHC infected
 with(data, table(Q2, Q3))
 # by gender
 test <- filter(data, Q2=='Yes', Q3=='Yes')
-with(test, table(PPGENDER))
+a = with(test, table(PPGENDER))
 
 # chi square?
 summary(with(data, table(Q2, Q3)))
@@ -79,13 +86,11 @@ testq2 <- c(rep("Yes", 385), rep("No", 1598))
 testq3 <- c(rep("Yes", 236), rep("No", 149), rep("Yes", 145), rep("No",1453))
 table(testq2, testq3)
 summary(table(testq2, testq3))
-
 ```
 
 
 ```{r, eval=FALSE, include=FALSE}
 ### using psych package ###
-
 a <- describe(data)
 View(a)
 
@@ -96,16 +101,16 @@ View(a)
 
 
 # Survey questions
-
 ### Q1. Before receiving this survey, did you know influenza is different from the stomach flu?
 
 ```{r, echo=TRUE, message=FALSE, warning=TRUE}
-# all
+# Q1 table
 with(data, table(Q1))
 q1 <- data %>%
   group_by(Q1) %>%
   count(Q1)
 ggplot(q1, aes(x = Q1, y = n, fill = Q1)) + geom_bar(stat = 'identity')
+
 
 # by gender
 with(data, table(Q1, PPGENDER))
@@ -115,6 +120,7 @@ q1 <- data %>%
 ggplot(q1, aes(x = Q1, y = n, fill = PPGENDER)) +
   geom_bar(stat = 'identity', position = position_dodge())
 
+
 # by ethnicity
 with(data, table(Q1, PPETHM))
 q1 <- data %>%
@@ -122,6 +128,7 @@ q1 <- data %>%
   count(Q1, PPETHM)
 ggplot(q1, aes(x = Q1, y = n, fill = PPETHM)) +
   geom_bar(stat = 'identity', position = position_dodge())
+
 
 # by income
 with(data, table(Q1, PPINCIMP))
@@ -132,7 +139,7 @@ ggplot(q1, aes(x = Q1, y = n, fill = PPINCIMP)) +
   geom_bar(stat = 'identity', position = position_dodge())
 ```
 
-### Q2. Have you had an illness with influenza like symptoms since August 2015?
+### Q2. Have you had an illness with influenza-like symptoms since August 2015?
 
 ```{r, echo=TRUE}
 # all
@@ -362,15 +369,21 @@ Q8 <- data2 %>%
 
 
 ```
+
 #### Q10. What types of public transportation do other members of your household regularly use?
 
-Q <- data2 %>%
+Q10 <- data2 %>%
   select(PPGENDER, PPAGE, PPEDUC, PPETHM, PPINCIMP, PPWORK, Q:Q) %>%
   gather("q", "r", Q:Q)
+  
+```{r, echo=FALSE}
 
+
+```
 
 
 #### Q11. How do you rate your risk of getting influenza if you visited each of the following locations?
+
 ```{r}
 Q11 <- data2 %>%
   select(PPGENDER, PPAGE, PPEDUC, PPETHM, PPINCIMP, PPWORK, Q11_1_Work:Q11_OtherText_Codes) %>%
@@ -382,7 +395,7 @@ with(Q11, table(q, r))
 q11 <- Q11 %>%
   group_by(q, r) %>%
   count(q, r)
-ggplot(q1[!is.na(q11$r), ], aes(x = r, y = n, fill = r)) +
+ggplot(q11[!is.na(q11$r), ], aes(x = r, y = n, fill = r)) +
   geom_bar(stat = 'identity', position = position_dodge()) + facet_wrap(~q)
 
 # by gender
@@ -459,18 +472,25 @@ Q18 <- data2 %>%
   select(PPGENDER, PPAGE, PPEDUC, PPETHM, PPINCIMP, PPWORK, Q:Q) %>%
   gather("q", "r", Q:Q)
 
+```{r, echo=FALSE}
+
+
+```
 
 #### Q19. Do you have health insurance?
+
 ```{r, echo=FALSE}
 
 
 ```
 #### Q20. How effective do you think the influenza vaccine is in protecting people from becoming sick with influenza?
+
 ```{r, echo=FALSE}
 
 
 ```
 #### Q21. Are influenza vaccines covered by your health insurance?
+
 ```{r, echo=FALSE}
 
 
@@ -481,6 +501,10 @@ Q22 <- data2 %>%
   select(PPGENDER, PPAGE, PPEDUC, PPETHM, PPINCIMP, PPWORK, Q:Q) %>%
   gather("q", "r", Q:Q)
 
+```{r, echo=FALSE}
+
+
+```
 
 #### Q23. Which of the following actions do you take when you have influenza symptoms to avoid someone else from getting sick?
 
@@ -488,6 +512,10 @@ Q23 <- data2 %>%
   select(PPGENDER, PPAGE, PPEDUC, PPETHM, PPINCIMP, PPWORK, Q:Q) %>%
   gather("q", "r", Q:Q)
 
+```{r, echo=FALSE}
+
+
+```
 
 #### Q24. What sources of information do you recall hearing or seeing about influenza outbreaks? 
 
@@ -495,6 +523,10 @@ Q24 <- data2 %>%
   select(PPGENDER, PPAGE, PPEDUC, PPETHM, PPINCIMP, PPWORK, Q:Q) %>%
   gather("q", "r", Q:Q)
 
+```{r, echo=FALSE}
+
+
+```
 
 #### Q25. If you received information from the news, internet or other public media that there was an influenza outbreak in your community would you do any of the following?
 
@@ -502,6 +534,10 @@ Q25 <- data2 %>%
   select(PPGENDER, PPAGE, PPEDUC, PPETHM, PPINCIMP, PPWORK, Q:Q) %>%
   gather("q", "r", Q:Q)
 
+```{r, echo=FALSE}
+
+
+```
 
 #### Q26. Does your household have children?
 ```{r, echo=FALSE}
@@ -514,6 +550,10 @@ Q27 <- data2 %>%
   select(PPGENDER, PPAGE, PPEDUC, PPETHM, PPINCIMP, PPWORK, Q:Q) %>%
   gather("q", "r", Q:Q)
 
+```{r, echo=FALSE}
+
+
+```
 
 #### Q28. Are you a single parent?
 ```{r, echo=FALSE}
@@ -526,6 +566,10 @@ Q29 <- data2 %>%
   select(PPGENDER, PPAGE, PPEDUC, PPETHM, PPINCIMP, PPWORK, Q:Q) %>%
   gather("q", "r", Q:Q)
 
+```{r, echo=FALSE}
+
+
+```
 
 #### Q30. How do you care for a sick child?
 
@@ -533,6 +577,10 @@ Q30 <- data2 %>%
   select(PPGENDER, PPAGE, PPEDUC, PPETHM, PPINCIMP, PPWORK, Q:Q) %>%
   gather("q", "r", Q:Q)
 
+```{r, echo=FALSE}
+
+
+```
 
 #### Q31. How many hours of screen time (time spent watching television, a computer, smartphone, iPad, etc.) do you spend each day on average when you are not sick? Enter 0 if none
 
@@ -578,72 +626,105 @@ with(data, by(Q33, PPETHM, summary))
 ```
 
 #### Q36. On average, how many days per week does this member of your household work or attend day care or school outside of your home?
+
 ```{r, echo=FALSE}
 
 
 ```
 
 #### Q37. On average, how many days per week does this member of your household participate in social activities outside of your home?
+
 ```{r, echo=FALSE}
 
 
 ```
 
 #### Q38. On average, how many days per week does this member of your household use public transportation?
+
 ```{r, echo=FALSE}
 
 
 ```
 
 #### Q39. How frequently does this member of your household visit a doctor's office for wellness appointments?
+
 ```{r, echo=FALSE}
 
 
 ```
 
 #### Q40. How frequently does this member of the household get sick in a typical year?
+
 ```{r, echo=FALSE}
 
 
 ```
 
-#### Q41. How many times has this member of your household had influenza or another respiratory illness in the last two years?x=response, fill=response))
+#### Q41. How many times has this member of your household had influenza or another respiratory illness in the last two years?
+
 ```{r, echo=FALSE}
 
 
 ```
 
 #### Q42. Does this member of your household get an annual influenza vaccine?
+
 ```{r, echo=FALSE}
 
 
 ```
+
 
 ## HHM2
 
 #### Q43. What is the gender of this member of the household?  Remember, this relates to HHM1_Name who is HHM1_AGE years old.
+
 ```{r, echo=FALSE}
 
 
 ```
 
+
 #### Q44. On average, how many days per week does this member of your household work or attend day care or school outside of your home?
 
+```{r, echo=FALSE}
+
+
+```
 
 #### Q45. On average, how many days per week does this member of your household participate in social activities outside of your home?
 
+```{r, echo=FALSE}
+
+
+```
 
 #### Q46. On average, how many days per week does this member of your household use public transportation?
 
+```{r, echo=FALSE}
+
+
+```
 
 #### Q47. How frequently does this member of your household visit a doctor's office for wellness appointments?
 
+```{r, echo=FALSE}
+
+
+```
 
 #### Q48. How frequently does this member of the household get sick in a typical year?
 
+```{r, echo=FALSE}
+
+
+```
 
 #### Q49. How many times has this member of your household had influenza or another respiratory illness in the last two years?
+```{r, echo=FALSE}
 
+
+```
 
 #### Q50. Does this member of your household get an annual influenza vaccine?
 ```{r, echo=FALSE}
