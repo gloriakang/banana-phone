@@ -4,15 +4,16 @@ library(dplyr)
 library(tidyr)
 library(ggplot2)
 library(psych)
-library(foreign)
+#library(foreign)
 
 # weighted
 data <- read.csv("surveydata.csv", na = c("#NULL!", "", "Refused"))
 # renamed cols
-data2 <- read.csv("surveydata2.csv", na = c("#NULL!", ""))
+data2 <- read.csv("surveydata2.csv", na = c("#NULL!", "", "Refused"))
 # unweighted
 data_unw <- read.spss("datafile.sav", to.data.frame = TRUE)
-View(data_unw)
+
+View(data)
 
 
 # weighted
