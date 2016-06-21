@@ -13,7 +13,15 @@ varlabels <- read.csv("varlabels.csv", header = FALSE)
 #write.csv(var, file = "var_raw.csv")
 
 
-# rename data columns
+# remap levels
+
+
+# recoding
+#data$scode <- revalue(data$sex, c("M"="1", "F"="2"))
+
+
+
+# data2: rename data columns
 data2 <- data %>%
   # Q7
   rename("Q7_1_Bus" = Q7_1,
@@ -144,9 +152,15 @@ data2 <- data %>%
          "Q30_5_Take the child to a relative or friends" = Q30_5,
          "Q30_6_Other" = Q30_6)
 
-
 # save without index column
 write.csv(data2, file = "surveydata2.csv", row.names = FALSE)
+
+
+
+data2 <- read.csv("surveydata2.csv")
+
+
+
 
 
 
