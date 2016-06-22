@@ -3,8 +3,7 @@ title: "Working report"
 output:
   pdf_document:
     fig_caption: yes
-    fig_height: 3.5
-    fig_width: 7
+    fig_height: 3
     toc: yes
   html_document:
     fig_caption: yes
@@ -33,10 +32,47 @@ library(psych)
 # unweighted data2 -- what is the difference?
 #data2_unw <- read.csv("surveydata2_unw.csv", na = c("#NULL!", ""))
 #data2_unw <- read.spss("data2file.sav", to.data2.frame = TRUE)
+```
+
+
+#### Working analysis
+
+```{r}
+# did you have the flu last year?
+with(data2, table(Q2))
+with(data2, addmargins(table(Q2, PPGENDER)))
+
+# of those sick, 56% were female, 43% were male
+with(sick, prop.table(table(PPGENDER)))
+
+# income of sick group
+with(data2, addmargins(table(PPINCIMP, Q2)))
+with(data2, prop.table(table(PPINCIMP, Q2)), margin = 1)
+
+# filter sick group only
+sick <- data2 %>%
+  filter(Q2=='Yes')
+
+
+sick1 <- sick %>%
+  select(PPGENDER, PPAGE, PPEDUC, PPETHM, PPINCIMP, PPWORK, Q7_1_Bus:Q7_otherText) %>%
+  gather("q", "r", Q7_1_Bus:Q7_7_Other) %>%
+  group_by(PPGENDER, q, r) %>%
+  summarise(n = n())
+sick1
+
+
+
+# sick demographics
+sick2 <- sick %>%
+  select(PPGENDER, PPAGE, PPEDUC, PPETHM, PPINCIMP, PPWORK) %>%
+  group_by(PPGENDER) %>%
+  summarize(count(n))
+
 
 ```
 
-#### Working analysis
+
 
 ```{r, eval=FALSE, include=FALSE}
 # use this one
@@ -65,9 +101,6 @@ with(data2, prop.table(table(Q1, Q2), margin = 1))
 with(data2, prop.table(table(Q1, Q2), margin = 2))
 
 
-# sick
-sick <- filter(data2, Q2=='Yes')
-
 # sick and getting flu vaccine
 with(sick, table(Q13))
 with(data2, table(Q2, Q13))
@@ -80,10 +113,7 @@ with(Q11, table(q, r))
 risk <- Q11 %>%
   filter(r=='High Risk, Very Likely')
 
-```
 
-
-```{r, eval=FALSE, include=FALSE}
 # Q7.
 with(Q7, table(q, r))
 
