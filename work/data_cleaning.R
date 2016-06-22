@@ -3,26 +3,106 @@
 setwd("~/git/banana-phone/work")
 library(dplyr)
 library(tidyr)
+library(car)
 
-# read data and names
-data <- read.csv("surveydata.csv")
-varlabels <- read.csv("varlabels.csv", header = FALSE)
+data0 <- read.csv("surveydata.csv", na = c("#NULL!", "", "Refused"), stringsAsFactors = FALSE)
+data1 <- data0
 
-#var <- varlabels %>%
-#  select(V1, V3)
-#write.csv(var, file = "var_raw.csv")
+# demographic factors
+
+#levels(data$ppagecat)
+#levels(data$ppagect4)
+#levels(data$PPEDUC)
+#levels(data$PPEDUCAT)
+#levels(data$PPETHM)
+#levels(data$PPHOUSE)
+
+# 1. create labels
+PPINCIMP.lab <- c("Less than $5,000",
+              "$5,000 to $7,499",
+              "$7,500 to $9,999",
+              "$10,000 to $12,499",
+              "$12,500 to $14,999",
+              "$15,000 to $19,999",
+              "$20,000 to $24,999",
+              "$25,000 to $29,999",
+              "$30,000 to $34,999",
+              "$35,000 to $39,999",
+              "$40,000 to $49,999",
+              "$50,000 to $59,999",
+              "$60,000 to $74,999",
+              "$75,000 to $84,999",
+              "$85,000 to $99,999",
+              "$100,000 to $124,999",
+              "$125,000 to $149,999",
+              "$150,000 to $174,999",
+              "$175,000 or more")
+
+# 2. data$col <- factor(data$column, levels, exclude = NA)
+
+# income
+data1$PPINCIMP <- ordered(data0$PPINCIMP, levels = PPINCIMP.lab, exclude = NA)
+levels(data1$PPINCIMP)
 
 
-# remap levels
+
+# to do
+#levels(data$PPMARIT)
+#levels(data$PPMSACAT)
+#levels(data$PPRENT)
+#levels(data$PPWORK)
 
 
-# recoding
-#data$scode <- revalue(data$sex, c("M"="1", "F"="2"))
+# question factors
+# 1. list factors
+q11.lab <- c("High Risk, Very Likely", "Medium Risk, Somewhat Likely",
+               "Low Risk, Not Likely", "Don_t Know", "Refused")
+
+# 2. set to each column
+data1$Q11_1 <- factor(data0$Q11_1, levels = q11.lab, exclude = NA)
+data1$Q11_2 <- factor(data0$Q11_2, levels = q11.lab, exclude = NA)
+data1$Q11_3 <- factor(data0$Q11_3, levels = q11.lab, exclude = NA)
+data1$Q11_4 <- factor(data0$Q11_4, levels = q11.lab, exclude = NA)
+data1$Q11_5 <- factor(data0$Q11_5, levels = q11.lab, exclude = NA)
+data1$Q11_6 <- factor(data0$Q11_6, levels = q11.lab, exclude = NA)
+data1$Q11_7 <- factor(data0$Q11_7, levels = q11.lab, exclude = NA)
+data1$Q11_8 <- factor(data0$Q11_8, levels = q11.lab, exclude = NA)
+data1$Q11_9 <- factor(data0$Q11_9, levels = q11.lab, exclude = NA)
+data1$Q11_10 <- factor(data0$Q11_10, levels = q11.lab, exclude = NA)
+data1$Q11_11 <- factor(data0$Q11_11, levels = q11.lab, exclude = NA)
+
+# addNA(data1$Q11_11, ifany = FALSE)
+#ignore this for now
+# as.numeric(as.factor(data1$Q12_1))
 
 
+#--- try something ---
+# as.numeric(as.factor(data1$Q12_1))
+#as.factor(data1$Q12_1)
 
-# data2: rename data columns
-data2 <- data %>%
+
+# to do
+#q12 <- c()
+#data$Q12_1
+#data$Q12_15
+#q15 <- c()
+#data$Q15
+#q16 <- c()
+#data$Q16
+
+
+# data1
+
+
+### save data as surveydata1.csv ###
+#write.csv(data1, file = "surveydata1.csv", row.names = FALSE)
+#read.csv("surveydata1.csv", as.is = TRUE)
+
+
+# data2
+
+# rename data columns
+data2 <- data1 %>%
   # Q7
   rename("Q7_1_Bus" = Q7_1,
          "Q7_2_Carpool" = Q7_2,
@@ -152,15 +232,10 @@ data2 <- data %>%
          "Q30_5_Take the child to a relative or friends" = Q30_5,
          "Q30_6_Other" = Q30_6)
 
-# save without index column
+# save data2 as surveydata2.csv
 write.csv(data2, file = "surveydata2.csv", row.names = FALSE)
 
-
-
-data2 <- read.csv("surveydata2.csv")
-
-
-
-
-
-
+# 
+#a = read.csv("surveydata2.csv", as.is = TRUE)
+#b = as.factor(a$PPINCIMP)
+#as.numeric(b)
