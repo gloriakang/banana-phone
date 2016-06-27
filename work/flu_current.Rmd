@@ -17,21 +17,16 @@ output:
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
 
-# data2
-source("data_cleaning.R")
+# source("data_cleaning.R")
 setwd("~/git/banana-phone/work")
 
 library(dplyr)
 library(tidyr)
 library(ggplot2)
 library(psych)
-#library(foreign)
 
-# data2 <- read.csv("surveydata2.csv", stringsAsFactors = FALSE,
-#                 na = c("#NULL!", "", "Refused"))
-# unweighted data2 -- what is the difference?
-#data2_unw <- read.csv("surveydata2_unw.csv", na = c("#NULL!", ""))
-#data2_unw <- read.spss("data2file.sav", to.data2.frame = TRUE)
+load("data2")
+
 ```
 
 
@@ -397,79 +392,89 @@ ggplot(q6, aes(x = Q6, y = n, fill = PPINCIMP)) +
 
 
 ```{r}
+# look at patterned names
+# grep("Q7", names(data2))
+
+# make long data
 Q7 <- data2 %>%
-  select(PPGENDER, PPAGE, PPEDUC, PPETHM, PPINCIMP, PPWORK, Q7_1_Bus:Q7_otherText) %>%
-  gather("q", "r", Q7_1_Bus:Q7_7_Other)
+  gather("Q7_q", "Q7_r", starts_with("Q7_"), -contains("Text"), -contains("Refused"), na.rm = TRUE)
+
+#grep("Q7", names(Q7))
+#View(Q7[c(1, 34, 35, 423:424)])
 
 
-# Q7
-with(Q7, table(q, r))
+with(Q7, table(Q7_q, Q7_r))
 q7 <- Q7 %>%
-  count(q, r)
+  count(Q7_q, Q7_r)
 
 # flip coordinates
-ggplot(q7[!is.na(q7$r), ], aes(x = r, y = n, fill = r)) +
-  geom_bar(stat = 'identity', position = position_dodge()) + facet_wrap(~q) + coord_flip()
+ggplot(q7[!is.na(q7$Q7_r), ], aes(x = Q7_r, y = n, fill = Q7_r)) +
+  geom_bar(stat = 'identity', position = position_dodge()) + facet_wrap(~Q7_q) + coord_flip()
 
 
 # by gender
 # with(Q7, table(PPGENDER, r, q))
 (q7 <- Q7 %>%
-  group_by(PPGENDER, q, r) %>%
-  count(PPGENDER, q, r)
+  group_by(PPGENDER, Q7_q, Q7_r) %>%
+  count(PPGENDER, Q7_q, Q7_r)
 )
-ggplot(q7[!is.na(q7$r), ], aes(x = r, y = n, fill = PPGENDER)) +
-  geom_bar(stat = 'identity', position = position_dodge()) + facet_wrap(~q)
+ggplot(q7[!is.na(q7$Q7_r), ], aes(x = Q7_r, y = n, fill = PPGENDER)) +
+  geom_bar(stat = 'identity', position = position_dodge()) + facet_wrap(~Q7_q)
 
 # by ethnicity
 # with(Q7, table(PPETHM, r, q))
 (q7 <- Q7 %>%
-  group_by(PPETHM, q, r) %>%
-  count(PPETHM, q, r)
+  group_by(PPETHM, Q7_q, Q7_r) %>%
+  count(PPETHM, Q7_q, Q7_r)
 )
-ggplot(q7[!is.na(q7$r), ], aes(x = r, y = n, fill = PPETHM)) +
-  geom_bar(stat = 'identity', position = position_dodge()) + facet_wrap(~q)
+ggplot(q7[!is.na(q7$Q7_r), ], aes(x = Q7_r, y = n, fill = PPETHM)) +
+  geom_bar(stat = 'identity', position = position_dodge()) + facet_wrap(~Q7_q)
 
 # by income
 # with(Q7, table(q, r, PPINCIMP))
 (q7 <- Q7 %>%
-  group_by(PPINCIMP, q, r) %>%
-  count(PPINCIMP, q, r)
+  group_by(PPINCIMP, Q7_q, Q7_r) %>%
+  count(PPINCIMP, Q7_q, Q7_r)
 )
-ggplot(q7[!is.na(q7$r), ], aes(x = r, y = n, fill = PPINCIMP)) +
-  geom_bar(stat = 'identity', position = position_dodge()) + facet_wrap(~q)
+ggplot(q7[!is.na(q7$Q7_r), ], aes(x = Q7_r, y = n, fill = PPINCIMP)) +
+  geom_bar(stat = 'identity', position = position_dodge()) + facet_wrap(~Q7_q)
+
 ```
 
 #### Q8. For what types of activities do you regularly use public transportation?
 
 ```{r}
-Q8 <- data2 %>%
-  select(PPGENDER, PPAGE, PPEDUC, PPETHM, PPINCIMP, PPWORK, Q8_1_Work:Q8_otherText) %>%
-  gather("q", "r", Q8_1_Work:Q8_6_Other)
+Q8 <- data_q %>%
+  gather("Q8_q", "Q8_r", starts_with("Q8_"), -contains("otherText"), -contains("Refused"))
 
-with(Q8, table(q, r))
+with(Q8, table(Q8_q, Q8_r))
 q8 <- Q8 %>%
-  count(q, r)
+  count(Q8_q, Q8_r)
 
+#data_q <- Q8
 ```
 
 #### Q9. Do other members of your household regularly use public transportation?
 ```{r}
 with(data2, table(Q9))
 
-
 ```
 
 #### Q10. What types of public transportation do other members of your household regularly use?
 
 ```{r}
-Q10 <- data2 %>%
-  select(PPGENDER, PPAGE, PPEDUC, PPETHM, PPINCIMP, PPWORK, Q10_1_Bus:Q10_9_Refused) %>%
-  gather("q", "r", Q10_1_Bus:Q10_8_Other)
+#Q10 <- data2 %>%
+#  select(CaseID, PPGENDER, PPAGE, PPEDUC, PPETHM, PPINCIMP, PPWORK, #Q10_1_Bus:Q10_9_Refused) %>%
+#  gather("Q10_q", "Q10_r", Q10_1_Bus:Q10_8_Other)
 
-with(Q10, table(q, r))
+
+Q10 <- data2 %>%
+  gather("Q10_q", "Q10_r", starts_with("Q10_"), -contains("Text"), -contains("Refused"), na.rm = TRUE)
+
+
+with(Q10, table(Q10_q, Q10_r))
 q10 <- Q10 %>%
-  count(q, r)
+  count(Q10_q, Q10_r)
 
 ```
 
