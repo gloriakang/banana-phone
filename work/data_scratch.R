@@ -7,13 +7,18 @@ library(psych)
 #library(foreign)
 
 # weighted
-data <- read.csv("surveydata.csv", na = c("#NULL!", "", "Refused"))
+data <- read.csv("data/surveydata.csv", na = c("#NULL!", "", "Refused"))
+
+load("clean/new_name")
+load("clean/old_name")
+names(data) <- new_name
+names(data) <- old_name
+
 # renamed cols
 data2 <- read.csv("surveydata2.csv", na = c("#NULL!", "", "Refused"))
 # unweighted
 data_unw <- read.spss("datafile.sav", to.data.frame = TRUE)
 
-View(data)
 
 
 # weighted
@@ -31,9 +36,6 @@ with(Q7, table(PPGENDER, r, q))
 
 data$weight
 
-# unweighted
-with(data_unw, table(Q1))
-
 
 # those infected + HHC infected
 with(data, table(Q2, Q3))
@@ -48,6 +50,39 @@ ggplot(data, aes(x = Q33)) + geom_histogram(binwidth = 2)
 
 
 # stats
+
+##################
+
+##### ----- question factors ----- #####
+
+# list factors
+q11.lab <- c("High Risk, Very Likely", "Medium Risk, Somewhat Likely",
+             "Low Risk, Not Likely", "Don_t Know", "Refused")
+
+# names of factors
+(n = data1 %>%
+  select(starts_with("Q11_")) %>%
+  select(-contains("Text")) %>%
+  names())
+
+# list column numbers
+grep('Q11', names(data1))
+
+# set factors to columns
+data1$Q11_1_Work <- factor(data1$Q11_1_Work, levels = q11.lab, exclude = NA)
+data1$Q11_2_Schools <- factor(data1$Q11_2_Schools, levels = q11.lab, exclude = NA)
+data1$Q11_3_Day.care <- factor(data1$Q11_3_Day.care, levels = q11.lab, exclude = NA)
+data1$Q11_4_Stores <- factor(data1$Q11_4_Stores, levels = q11.lab, exclude = NA)
+data1$Q11_5_Restaurants <- factor(data1$Q11_5_Restaurants, levels = q11.lab, exclude = NA)
+data1$Q11_6_Libraries <- factor(data1$Q11_6_Libraries, levels = q11.lab, exclude = NA)
+data1$Q11_7_Hospitals <- factor(data1$Q11_7_Hospitals, levels = q11.lab, exclude = NA)
+data1$Q11_8_Doctor_s.office <- factor(data1$Q11_8_Doctor_s.office, levels = q11.lab, exclude = NA)
+data1$Q11_9_Public.transportation <- factor(data1$Q11_9_Public.transportation, levels = q11.lab, exclude = NA)
+data1$Q11_10_Family.or.friends <- factor(data1$Q11_10_Family.or.friends, levels = q11.lab, exclude = NA)
+data1$Q11_11_Other <- factor(data1$Q11_11_Other, levels = q11.lab, exclude = NA)
+
+
+##########################
 
 
 

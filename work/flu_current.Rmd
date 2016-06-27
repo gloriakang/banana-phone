@@ -1,15 +1,15 @@
 ---
 title: "Working report"
 output:
+  pdf_document:
+    fig_caption: yes
+    fig_height: 3
+    toc: yes
   html_document:
     fig_caption: yes
     fig_height: 4
     highlight: tango
     theme: cosmo
-    toc: yes
-  pdf_document:
-    fig_caption: yes
-    fig_height: 3
     toc: yes
 ---
 
@@ -17,15 +17,19 @@ output:
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
 
+rm(list = ls())
 setwd("~/git/banana-phone/work")
+library(knitr)
 library(dplyr)
 library(tidyr)
 library(ggplot2)
 library(psych)
 
-#source("data_cleaning.R")
-load("data2")
-#data3 <- read.csv("data/data2.csv", na = c("#NULL!", "", "Refused"))
+# source("data_cleaning.R")
+load("clean/all.Rdata")
+
+# set new names
+names(data2) <- new_name
 
 ```
 
