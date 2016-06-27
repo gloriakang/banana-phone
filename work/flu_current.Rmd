@@ -1,15 +1,15 @@
 ---
 title: "Working report"
 output:
-  pdf_document:
-    fig_caption: yes
-    fig_height: 3
-    toc: yes
   html_document:
     fig_caption: yes
     fig_height: 4
     highlight: tango
     theme: cosmo
+    toc: yes
+  pdf_document:
+    fig_caption: yes
+    fig_height: 3
     toc: yes
 ---
 
@@ -17,22 +17,22 @@ output:
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
 
-# source("data_cleaning.R")
 setwd("~/git/banana-phone/work")
-
 library(dplyr)
 library(tidyr)
 library(ggplot2)
 library(psych)
 
+#source("data_cleaning.R")
 load("data2")
+#data3 <- read.csv("data/data2.csv", na = c("#NULL!", "", "Refused"))
 
 ```
 
 
 #### Working analysis
 
-```{r}
+```{r, eval=FALSE, include=FALSE}
 # did you have the flu last year?
 with(data2, table(Q2))
 with(data2, addmargins(table(Q2, PPGENDER)))
@@ -62,7 +62,7 @@ sick1
 sick2 <- sick %>%
   select(PPGENDER, PPAGE, PPEDUC, PPETHM, PPINCIMP, PPWORK) %>%
   group_by(PPGENDER) %>%
-  summarize(count(n))
+  summarize(n = n())
 
 
 ```
@@ -162,7 +162,9 @@ View(a)
 
 ```{r}
 # Q1 summary
+
 with(data2, table(Q1))
+
 q1 <- data2 %>%
   count(Q1)
 
@@ -444,14 +446,12 @@ ggplot(q7[!is.na(q7$Q7_r), ], aes(x = Q7_r, y = n, fill = PPINCIMP)) +
 #### Q8. For what types of activities do you regularly use public transportation?
 
 ```{r}
-Q8 <- data_q %>%
+Q8 <- data2 %>%
   gather("Q8_q", "Q8_r", starts_with("Q8_"), -contains("otherText"), -contains("Refused"))
 
 with(Q8, table(Q8_q, Q8_r))
 q8 <- Q8 %>%
   count(Q8_q, Q8_r)
-
-#data_q <- Q8
 ```
 
 #### Q9. Do other members of your household regularly use public transportation?
@@ -489,6 +489,7 @@ Q11 <- data2 %>%
 
 # all
 with(Q11, table(q, r))
+
 q11 <- Q11 %>%
   count(q, r)
 ggplot(q11[!is.na(q11$r), ], aes(x = r, y = n, fill = r)) +

@@ -6,8 +6,8 @@ library(tidyr)
 library(car)
 
 # data_w = weighted data
-data_W <- read.csv("data/surveydata.csv", na = c("#NULL!", ""), stringsAsFactors = FALSE)
-data_UNW <- read.csv("data/surveydata_unw.csv", na = c("#NULL!", ""), stringsAsFactors = FALSE)
+data_W <- read.csv("data/surveydata.csv", na = c("#NULL!", "", "Refused"), stringsAsFactors = FALSE)
+data_UNW <- read.csv("data/surveydata_unw.csv", na = c("#NULL!", "", "Refused"), stringsAsFactors = FALSE)
 
 
 
@@ -145,13 +145,12 @@ data_rename <- data_W %>%
 
 # save data_rename
 write.csv(data_rename, file = "data/data_rename.csv", row.names = FALSE)
-data_w <- read.csv("data/data_rename.csv", na = c("#NULL!", ""))
+data_w <- read.csv("data/data_rename.csv", na = c("#NULL!", "", "Refused"))
+
 
 rm(data_W)
 rm(data_UNW)
 rm(data_rename)
-
-
 
 
 ##### ----- create factors for dataset ----- #####
@@ -208,7 +207,8 @@ levels(data1$PPINCIMP)
 
 
 ##### ----- question factors ----- #####
-# 1. list factors
+
+# list factors
 q11.lab <- c("High Risk, Very Likely", "Medium Risk, Somewhat Likely",
                "Low Risk, Not Likely", "Don_t Know", "Refused")
 
@@ -221,18 +221,50 @@ q11.lab <- c("High Risk, Very Likely", "Medium Risk, Somewhat Likely",
 # list column numbers
 grep('Q11', names(data1))
 
-# 2. set factors to columns
-data1[62]<- factor(n[1], levels = q11.lab, exclude = NA)
-data1[63] <- factor(n[2], levels = q11.lab, exclude = NA)
-data1[64] <- factor(n[3], levels = q11.lab, exclude = NA)
-data1[65] <- factor(n[4], levels = q11.lab, exclude = NA)
-data1[66] <- factor(n[5], levels = q11.lab, exclude = NA)
-data1[67] <- factor(n[6], levels = q11.lab, exclude = NA)
-data1[68] <- factor(n[7], levels = q11.lab, exclude = NA)
-data1[69] <- factor(n[8], levels = q11.lab, exclude = NA)
-data1[70] <- factor(n[9], levels = q11.lab, exclude = NA)
-data1[71] <- factor(n[10], levels = q11.lab, exclude = NA)
-data1[72] <- factor(n[11], levels = q11.lab, exclude = NA)
+# set factors to columns
+data1$Q11_1_Work <- factor(data1$Q11_1_Work, levels = q11.lab, exclude = NA)
+data1$Q11_2_Schools <- factor(data1$Q11_2_Schools, levels = q11.lab, exclude = NA)
+
+data1$Q11_3_Day.care <- factor(data1$Q11_3_Day.care, levels = q11.lab, exclude = NA)
+data1$Q11_4_Stores <- factor(data1$Q11_4_Stores, levels = q11.lab, exclude = NA)
+data1$Q11_5_Restaurants <- factor(data1$Q11_5_Restaurants, levels = q11.lab, exclude = NA)
+data1$Q11_6_Libraries <- factor(data1$Q11_6_Libraries, levels = q11.lab, exclude = NA)
+data1$Q11_7_Hospitals <- factor(data1$Q11_7_Hospitals, levels = q11.lab, exclude = NA)
+data1$Q11_8_Doctor_s.office <- factor(data1$Q11_8_Doctor_s.office, levels = q11.lab, exclude = NA)
+data1$Q11_9_Public.transportation <- factor(data1$Q11_9_Public.transportation, levels = q11.lab, exclude = NA)
+data1$Q11_10_Family.or.friends <- factor(data1$Q11_10_Family.or.friends, levels = q11.lab, exclude = NA)
+data1$Q11_11_Other <- factor(data1$Q11_11_Other, levels = q11.lab, exclude = NA)
+
+
+## list factors
+#q12.lab <- c("")
+
+## names of factors
+#(n = data1 %>%
+#  select(starts_with("Q12_")) %>%
+#  select(-contains("Text")) %>%
+#  names())
+
+## list column numbers
+#grep('Q12', names(data1))
+
+## set factors to columns
+# data1[] <- factor(n[1], levels = q12.lab, exclude = NA)
+#data$Q12_1
+#data$Q12_15
+
+
+
+# list factors
+# names of factors
+# list column numbers
+# set factors to columns
+
+
+# list factors
+# names of factors
+# list column numbers
+# set factors to columns
 
 
 
@@ -246,9 +278,7 @@ data1[72] <- factor(n[11], levels = q11.lab, exclude = NA)
 
 
 # to do
-#q12 <- c()
-#data$Q12_1
-#data$Q12_15
+
 #q15 <- c()
 #data$Q15
 #q16 <- c()
@@ -259,6 +289,7 @@ data1[72] <- factor(n[11], levels = q11.lab, exclude = NA)
 ##### ----- save r object ----- #####
 data2 = data1
 save(data2, file = "data2")
+write.csv(data2, file = "data/data2.csv", row.names = FALSE)
 
 rm(data_w)
 rm(data1)
