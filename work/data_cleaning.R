@@ -3,14 +3,14 @@
 setwd("~/git/banana-phone/work")
 library(dplyr)
 library(tidyr)
-library(foreign)
+#library(foreign)
 
 # load surveydata.csv
 data_W <- read.csv("data/surveydata.csv", na = c("#NULL!", "", "Refused"), stringsAsFactors = FALSE)
 data_UNW <- read.csv("data/surveydata_unw.csv", na = c("#NULL!", "", "Refused"), stringsAsFactors = FALSE)
 
 
-##### ----- rename original columns in data1 ----- #####
+##### ----- rename sub-columns ----- #####
 data_new_name <- data_W %>%
   # Q7
   rename("Q7_1_Bus" = Q7_1,
@@ -142,7 +142,7 @@ data_new_name <- data_W %>%
          "Q30_6_Other" = Q30_6)
 
 
-# save list of names
+# save lists of names
 old_name <- names(data_W)
 new_name <- names(data_new_name)
 
@@ -153,24 +153,21 @@ save(new_name, file = "clean/new_name")
 write.csv(data_new_name, file = "clean/data_new_name.csv", row.names = FALSE)
 
 
-#
 rm(data_W)
 rm(data_UNW)
 rm(data_new_name)
 
 
-
-# reload data
-data_w <- read.csv("clean/data_new_name.csv", na = c("#NULL!", "", "Refused", "NA"), stringsAsFactors = FALSE)
-
+# load renamed data
+data <- read.csv("clean/data_new_name.csv", na = c("#NULL!", "", "Refused", "NA"), stringsAsFactors = FALSE)
 
 
-##### ----- create factors for dataset ----- #####
-# NOTE: put old names back
-data1 <- data_w
+## NOTE: putting old names back
+data1 <- data
 names(data1) <- old_name
 
 
+##### ----- create factors ----- #####
 # demographic factors
 #levels(data$ppagecat)
 #levels(data$ppagect4)
@@ -204,7 +201,7 @@ PPINCIMP.lab <- c("Less than $5,000",
 ### data1$column <- factor(data_w$column, levels = , exclude = NA)
 
 # income PPINCIMP
-data1$PPINCIMP <- ordered(data_w$PPINCIMP, levels = PPINCIMP.lab, exclude = NA)
+data1$PPINCIMP <- ordered(data$PPINCIMP, levels = PPINCIMP.lab, exclude = NA)
 levels(data1$PPINCIMP)
 
 
