@@ -1,10 +1,11 @@
 # Data cleaning part 2
 # load renamed file, switch back to old names, 
 
+rm(list = ls())
 
 # load new_name data
-setwd("~/git/banana-phone/work")
-load("clean/cleaning1.Rdata")
+load("~/clean/clean1.Rdata")
+
 data <- read.csv("clean/data_new_name.csv", na = c("#NULL!", "", "Refused", "NA"))
 
 # use old names

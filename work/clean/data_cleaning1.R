@@ -160,6 +160,6 @@ rm(data_new_name)
 rm(data_W)
 rm(data_UNW)
 
-save(list = ls(), file ="clean/cleaning1.RData")
+save(list = ls(all = TRUE), file ="clean/clean1.RData")
 
 
