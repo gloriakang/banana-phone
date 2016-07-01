@@ -1,11 +1,13 @@
-# data cleaning
+# Data cleaning part 1
+# Reads original data file, renames columns, and saves 'clean_1.Rdata'
+# output = new_name, old_name
 
 setwd("~/git/banana-phone/work")
 library(dplyr)
 library(tidyr)
 #library(foreign)
 
-# load surveydata.csv
+## load surveydata.csv (change input files as needed)
 data_W <- read.csv("data/surveydata.csv", na = c("#NULL!", "", "Refused"), stringsAsFactors = FALSE)
 data_UNW <- read.csv("data/surveydata_unw.csv", na = c("#NULL!", "", "Refused"), stringsAsFactors = FALSE)
 
@@ -158,6 +160,6 @@ rm(data_new_name)
 rm(data_W)
 rm(data_UNW)
 
-save(list = ls(), file ='clean/clean_1.RData')
+save(list = ls(), file ="clean/cleaning1.RData")
 
 
