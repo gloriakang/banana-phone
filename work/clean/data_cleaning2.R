@@ -1,11 +1,12 @@
 # Data cleaning part 2
-# load renamed file, switch back to old names, 
+# load renamed file, switch back to old names, list factors
+# apply new names, save as data2
+# output = cleaning_all.Rdata
 
 rm(list = ls())
 
 # load new_name data
-load("~/clean/clean1.Rdata")
-
+load('clean/cleaning1.Rdata')
 data <- read.csv("clean/data_new_name.csv", na = c("#NULL!", "", "Refused", "NA"))
 
 # use old names
@@ -40,8 +41,8 @@ data1$PPEDUCAT <- ordered(data$PPEDUCAT, levels = PPEDUCAT.lab)
 
 #
 levels(data1$PPETHM)
-PPETHM.lab <- c("White, Non-Hispanic", "Black or African American, Non-Hispanic",
-                "Other, Non-Hispanic", "Hispanic", "2+ races, Non-Hispanic")
+PPETHM.lab <- c("White, Non-Hispanic", "Black, Non-Hispanic",
+                "Hispanic", "Other, Non-Hispanic", "2+ Races, Non-Hispanic")
 data1$PPETHM <- factor(data$PPETHM, levels = PPETHM.lab)
 
 
@@ -58,8 +59,8 @@ data1$PPINCIMP <- ordered(data$PPINCIMP, levels = PPINCIMP.lab)
 
 #
 levels(data1$PPMARIT)
-PPMARIT.lab <- c("Married", "Widowed", "Divorced",
-                 "Separated", "Never married", "Living with partner")
+PPMARIT.lab <- c("Never married", "Living with partner", "Married",
+                 "Separated", "Divorced", "Widowed")
 data1$PPMARIT <- factor(data$PPMARIT, levels = PPMARIT.lab)
 
 
@@ -116,9 +117,9 @@ data1$Q50 <- factor(data1$Q50, levels = c("Yes, always", "Yes, sometimes", "No, 
 ##### ----- save r object ----- #####
 # apply new names
 names(data1) <- new_name
-
+# save as data2
 data2 <- data1
-save(data2, new_name, old_name, file = "clean/all.Rdata")
+save(data2, new_name, old_name, file = "clean/cleaning_all.Rdata")
 
 
 
