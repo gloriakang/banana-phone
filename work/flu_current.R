@@ -70,6 +70,52 @@ sick2 <- sick %>%
   summarize(n = n())
 
 
+########################## example plots ##############################
+# Q1
+with(data2, table(Q1))
+q1 <- data2 %>%
+  count(Q1)
+
+# plot
+ggplot(data2[!is.na(data2$Q1), ]) + geom_bar(mapping = aes(x = Q1, fill = Q1))
+
+# alternative plot:
+#ggplot(q1[!is.na(q1$Q1), ], aes(x = Q1, y = n, fill = Q1)) +
+#  geom_bar(stat = 'identity', position = position_dodge())
+
+
+
+# by gender, PPGENDER
+with(data2, table(PPGENDER, Q1))
+q1 <- data2 %>%
+  count(Q1, PPGENDER)
+
+# plot with facet
+ggplot(data2[!is.na(data2$Q1), ]) + geom_bar(mapping = aes(x = Q1, fill = Q1), position = position_dodge()) + facet_wrap(~PPGENDER)
+
+# plot with facet
+#ggplot(q1[!is.na(q1$Q1), ], aes(x = Q1, y = n, fill = Q1)) +
+#  geom_bar(stat = 'identity', position = position_dodge()) + facet_wrap(~PPGENDER)
+
+
+
+# by ethnicity, PPETHM
+with(data2, table(PPETHM, Q1))
+q1 <- data2 %>%
+  count(Q1, PPETHM)
+
+# plot
+#ggplot(q1[!is.na(q1$Q1), ], aes(x = Q1, y = n, fill = PPETHM)) +
+#  geom_bar(stat = 'identity', position = position_dodge())
+ggplot(data2[!is.na(data2$Q1), ]) + geom_bar(mapping = aes(x = Q1, fill = PPETHM), position = position_dodge())
+
+# plot with facet
+ggplot(data2[!is.na(data2$Q1), ]) + geom_bar(mapping = aes(x = Q1, fill = Q1), position = position_dodge()) + facet_wrap(~PPETHM)
+
+############################################################
+
+
+
 
 # use this one
 ggplot(data2[!is.na(data2$Q1), ]) + geom_bar(mapping = aes(x = Q1, fill = Q1))
