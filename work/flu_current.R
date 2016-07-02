@@ -15,7 +15,7 @@ load("clean/all.Rdata")
 names(data2) <- new_name
 
 
-#------- start --------#
+#------- start here --------#
 
 # get freq counts into a list where each element in a list is a dataframe
 lapply(X = data2[3:19], FUN = function(x){aggregate(data.frame(count = x), list(value = x), length)})
@@ -40,7 +40,6 @@ with(data_UNW, table(Q1))
 data_UNW %>%
   count(Q1)
 
-
 # Q2
 with(data2, table(Q2))
 data2 %>%
@@ -51,15 +50,13 @@ data_UNW %>%
   count(Q2)
 
 
-
-
 ##### ----- Working analysis ----- #####
 
 # did you have the flu last year?
 with(data2, table(Q2))
 with(data2, addmargins(table(Q2, PPGENDER)))
 
-# of those sick, 56% were female, 43% were male
+#' of those sick, 56% were female, 43% were male
 with(sick, prop.table(table(PPGENDER)))
 
 # income of sick group
@@ -70,24 +67,20 @@ with(data2, prop.table(table(PPINCIMP, Q2)), margin = 1)
 sick <- data2 %>%
   filter(Q2=='Yes')
 
-
-sick1 <- sick %>%
+sick %>%
   select(PPGENDER, PPAGE, PPEDUC, PPETHM, PPINCIMP, PPWORK, Q7_1_Bus:Q7_otherText) %>%
   gather("q", "r", Q7_1_Bus:Q7_7_Other) %>%
   group_by(PPGENDER, q, r) %>%
   summarise(n = n())
-sick1
-
 
 # sick demographics
-sick2 <- sick %>%
+sick %>%
   select(PPGENDER, PPAGE, PPEDUC, PPETHM, PPINCIMP, PPWORK) %>%
   group_by(PPGENDER) %>%
   summarize(n = n())
 
 
-########################## example plots ##############################
-
+# ------------------------- #
 
 
 # Q1 proportions
@@ -113,6 +106,8 @@ with(data2, prop.table(table(Q1, Q2), margin = 2))
 with(sick, table(Q13))
 with(data2, table(Q2, Q13))
 
+
+# -------------------------- #
 
 # perceived risk
 with(Q11, table(q, r))
@@ -160,6 +155,10 @@ summary(table(testq2, testq3))
 
 
 
-########### using psych package ##############
+########## --- using psych --- ##########
 a <- describe(data2)
 View(a)
+
+
+
+
