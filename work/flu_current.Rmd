@@ -38,26 +38,25 @@ names(data2) <- new_name
 with(data2, table(Q1))
 
 # plot
-a = ggplot(data2[!is.na(data2$Q1), ])
-a + geom_bar(mapping = aes(x = Q1, fill = Q1))
+g1 = ggplot(data2[!is.na(data2$Q1), ])
+g1 + geom_bar(mapping = aes(x = Q1, fill = Q1))
 
 
 # PPGENDER
 with(data2, table(PPGENDER, Q1))
 # plot with facet
-a + geom_bar(mapping = aes(x = Q1, fill = Q1), position = position_dodge()) + facet_wrap(~PPGENDER)
-
+g1 + geom_bar(mapping = aes(x = Q1, fill = Q1), position = position_dodge()) + facet_wrap(~PPGENDER)
 
 # PPETHM
 with(data2, table(PPETHM, Q1))
 # plot
-a + geom_bar(mapping = aes(x = Q1, fill = PPETHM), position = position_dodge())
+g1 + geom_bar(mapping = aes(x = Q1, fill = PPETHM), position = position_dodge())
 
 
 # PPINCIMP
 with(data2, table(PPINCIMP, Q1))
 # plot
-a + geom_bar(mapping = aes(x = Q1, fill = PPINCIMP), position = position_dodge())
+g1 + geom_bar(mapping = aes(x = Q1, fill = PPINCIMP), position = position_dodge())
 
 ```
 
