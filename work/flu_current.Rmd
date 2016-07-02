@@ -1,9 +1,11 @@
 ---
 title: "Working report"
+fontsize: 10pt
 output:
   html_document:
     fig_caption: yes
-    fig_height: 4
+    fig_height: 3
+    fig_width: 6
     highlight: tango
     theme: cosmo
     toc: yes
@@ -37,7 +39,7 @@ names(data2) <- new_name
 with(data2, table(Q1))
 
 # plot
-g1 = ggplot(data2[!is.na(data2$Q1), ])
+g1 <- ggplot(data2[!is.na(data2$Q1), ])
 g1 + geom_bar(mapping = aes(x = Q1, fill = Q1))
 
 
