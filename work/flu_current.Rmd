@@ -31,9 +31,42 @@ names(data2) <- new_name
 ```
 
 
+
+```{r}
+# tables
+
+t <- function(x, ...) {
+  print(addmargins(table(x, ...))) # counts
+  print(addmargins(prop.table(table(x, ...))))
+}
+
+t2 <- function(x, y, ...) {
+  print(addmargins(table(x, y)))
+  print(addmargins(prop.table(table(x, y, ...))))
+}
+
+
+x = data2$Q1
+y = data2$PPGENDER
+
+t(data2$Q1)
+t2(x, y)
+
+y = data2$PPETHM
+
+with(data2, prop.table(table(Q1, Q2)))
+with(data2, prop.table(table(Q1, Q2), margin = 1))
+with(data2, prop.table(table(Q1, Q2), margin = 2))
+
+```
+
+
+
 # Survey questions
 
 ### Q1. Before receiving this survey, did you know influenza is different from the stomach flu?
+
+
 
 ```{r}
 with(data2, table(Q1))
