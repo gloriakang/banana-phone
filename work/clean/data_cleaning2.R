@@ -1,6 +1,6 @@
 # Data cleaning part 2
 # load renamed file, switch back to old names, list factors
-# save copy of data2 as numeric
+# to do: save copy of data2 as numeric
 # apply new names, save as data2
 # output = cleaning_all.Rdata
 
@@ -14,12 +14,6 @@ data <- read.csv("clean/data_new_name.csv", na = c("#NULL!", "", "Refused", "NA"
 names(data) <- old_name
 data1 <- data
 
-
-### fix this part ###
-#for (i in colnames(salary)) {
-#  salaryNum[,i] <- as.numeric(salary[,i])
-#}
-# run cor() funtion
 
 ##### ----- create factors ----- #####
 #
@@ -73,7 +67,7 @@ data1$PPMARIT <- factor(data$PPMARIT, levels = PPMARIT.lab)
 
 ##### ----- question factors ----- #####
 
-# note: names of factors should be old names
+# names of factors should be old names
 #data1 %>%
 #  select(starts_with("Q11_")) %>%
 #  select(-contains("Text")) %>%  # prob don't need this

@@ -5,17 +5,35 @@ library(tidyr)
 library(ggplot2)
 library(psych)
 
-#data_W <- read.csv("data/surveydata.csv", na = c("#NULL!", "", "Refused"), stringsAsFactors = FALSE)
-#data_UNW <- read.csv("data/surveydata_unw.csv", na = c("#NULL!", "", "Refused"), stringsAsFactors = FALSE)
+# data_W <- read.csv("data/surveydata.csv", na = c("#NULL!", "", "Refused"), stringsAsFactors = FALSE)
 
 # source("data_cleaning.R")
-load("clean/all.Rdata")
+load("clean/cleaning_all.Rdata")
+load("clean/plotting1.Rdata")
+names(data2) <- old_name
 
-# set new names
-names(data2) <- new_name
 
-#------- start here --------#
 
+# ------------ start here ------------- #
+
+# contingency tables
+mytab = table(data2$Q2, data2$PPGENDER)
+addmargins(mytab)
+
+library(prettyR)
+xtab(Q2 ~ PPETHM, data = data2)
+
+xtab(PPGENDER ~ Q1, data = data2)
+
+
+
+
+
+
+
+
+
+## ----------------------------------------- ##
 # make separate file focusing on subset of data
 # sick vs. not sick
 
@@ -27,24 +45,29 @@ names(data2) <- new_name
 
 
 
-# ----------------------- #
+# ------------------------------------- #
 # get freq counts into a list where each element in a list is a dataframe
-lapply(X = data2[3:19], FUN = function(x){aggregate(data.frame(count = x), list(value = x), length)})
+
+# table of variable counts
+lapply(X = data2[5:19], FUN = function(x){aggregate(data.frame(count = x), list(response = x), length)})
+# Q1 - Q6
+lapply(X = data2[28:33], FUN = function(x){aggregate(data.frame(count = x), list(response = x), length)})
+# Q7
+lapply(X = data2[34:42], FUN = function(x){aggregate(data.frame(count = x), list(response = x), length)})
+# Q8
+lapply(X = data2[43:50], FUN = function(x){aggregate(data.frame(count = x), list(response = x), length)})
+
+# tapply
+tapply(data2$Q1, data2$PPGENDER, FUN = function(x){aggregate(data.frame(count = x), list(group = x), length)})
 
 
 
 
-
-# ---------------------- #
+# ----------------------------------- #
 
 # Q1 tables
 with(data2, table(Q1))
 data2 %>%
-  count(Q1)
-
-# unweighted Q1
-with(data_UNW, table(Q1))
-data_UNW %>%
   count(Q1)
 
 # Q2
@@ -52,12 +75,8 @@ with(data2, table(Q2))
 data2 %>%
   count(Q2)
 
-with(data_UNW, table(Q2))
-data_UNW %>%
-  count(Q2)
 
-
-##### ----- Working analysis ----- #####
+##### -------------- Working analysis --------------- #####
 
 # did you have the flu last year?
 with(data2, table(Q2))
@@ -87,8 +106,8 @@ sick %>%
   summarize(n = n())
 
 
-# ------------------------- #
 
+# --------------------------------------- #
 
 # Q1 proportions
 with(data2, prop.table(table(Q1)))
@@ -114,7 +133,7 @@ with(sick, table(Q13))
 with(data2, table(Q2, Q13))
 
 
-# -------------------------- #
+# -------------------------------------------- #
 
 # perceived risk
 with(Q11, table(q, r))
@@ -124,12 +143,10 @@ risk <- Q11 %>%
   filter(r=='High Risk, Very Likely')
 
 
-# Q7.
+# Q7
 with(Q7, table(q, r))
-
-# Q7. and gender
+# Q7 and gender
 with(Q7, table(q, r, PPGENDER))
-
 
 
 # Q33. How many people, including yourself, reside in your household?
@@ -162,15 +179,17 @@ summary(table(testq2, testq3))
 
 
 
-########## --- using psych --- ##########
+### ----------- library(psych) ----------- ###
+
 a <- describe(data2)
 View(a)
 
 
 
-### ------------------------- ###
-# tables
 
+### --------- trying to make a function --------- ###
+
+# tables
 t <- function(x, ...) {
   print(addmargins(table(x, ...))) # counts
   print(addmargins(prop.table(table(x, ...))))
@@ -180,7 +199,6 @@ t2 <- function(x, y, ...) {
   print(addmargins(table(x, y)))
   print(addmargins(prop.table(table(x, y, ...))))
 }
-
 
 x = data2$Q1
 y = data2$PPGENDER

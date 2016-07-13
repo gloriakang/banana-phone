@@ -1,5 +1,5 @@
 # Data cleaning part 1
-# Reads original data file, renames columns, and saves 'clean_1.Rdata'
+# Reads original data file, renames columns, and saves 'cleaning1.Rdata'
 # output = new_name, old_name
 
 setwd("~/git/banana-phone/work")
@@ -160,6 +160,6 @@ rm(data_new_name)
 rm(data_W)
 rm(data_UNW)
 
-save(list = ls(all = TRUE), file ="clean/cleaning1.RData")
+save(list = ls(all.names = TRUE), file ="clean/cleaning1.RData")
 
 

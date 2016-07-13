@@ -16,7 +16,6 @@ output:
     toc: yes
 ---
 
-
 This R markdown report contains general summaries of questions by demographics.
 
 
@@ -28,8 +27,10 @@ library(dplyr)
 library(tidyr)
 library(ggplot2)
 
-# data2, new_name, old_name
+# load data2, new_name, old_name
 load("clean/cleaning_all.Rdata")
+# load ggplot variables
+load("clean/plotting1.Rdata")
 
 # set new names
 names(data2) <- new_name
@@ -39,6 +40,8 @@ names(data2) <- new_name
 
 ```{r}
 
+options(digits = 4)
+
 
 ```
 
@@ -46,20 +49,22 @@ names(data2) <- new_name
 
 # Survey questions
 
+
 ### Q1. Before receiving this survey, did you know influenza is different from the stomach flu?
 
 ```{r}
-with(data2, table(Q1))
+with(data2, (table(Q1)))
 
-# plot g1
-g1 <- ggplot(data2[!is.na(data2$Q1), ])
+# plot g1 <- ggplot(data2[!is.na(data2$Q1), ])
 g1 + geom_bar(mapping = aes(x = Q1, fill = Q1))
 
 
 # PPGENDER
-with(data2, table(PPGENDER, Q1))
+with(data2, addmargins(table(PPGENDER, Q1)))
+
 # plot with facet
 g1 + geom_bar(mapping = aes(x = Q1, fill = Q1), position = position_dodge()) + facet_wrap(~PPGENDER)
+
 
 # PPETHM
 with(data2, table(PPETHM, Q1))
@@ -79,7 +84,6 @@ g1 + geom_bar(mapping = aes(x = Q1, fill = PPINCIMP), position = position_dodge(
 with(data2, table(Q2))
 
 # plot
-g2 = ggplot(data2[!is.na(data2$Q2), ])
 g2 + geom_bar(mapping = aes(x = Q2, fill = Q2))
 
 
@@ -106,7 +110,6 @@ g2 + geom_bar(mapping = aes(x = Q2, fill = PPINCIMP), position = position_dodge(
 with(data2, table(Q3))
 
 # plot
-g3 = ggplot(data2[!is.na(data2$Q3), ])
 g3 + geom_bar(mapping = aes(x = Q3, fill = Q3))
 
 
@@ -133,7 +136,6 @@ g3 + geom_bar(mapping = aes(x = Q3, fill = PPINCIMP), position = position_dodge(
 with(data2, table(Q4))
 
 # plot
-g4 = ggplot(data2[!is.na(data2$Q4), ])
 g4 + geom_bar(mapping = aes(x = Q4, fill = Q4))
 
 
@@ -160,7 +162,6 @@ g4 + geom_bar(mapping = aes(x = Q4, fill = PPINCIMP), position = position_dodge(
 with(data2, table(Q5))
 
 # plot
-g5 = ggplot(data2[!is.na(data2$Q5), ])
 g5 + geom_bar(mapping = aes(x = Q5, fill = Q5))
 
 
@@ -185,8 +186,7 @@ g5 + geom_bar(mapping = aes(x = Q5, fill = PPINCIMP), position = position_dodge(
 ```{r}
 with(data2, table(Q6))
 
-# plot
-g6 = ggplot(data2[!is.na(data2$Q6), ])
+# plot g6 <- ggplot(data2[!is.na(data2$Q6), ])
 g6 + geom_bar(mapping = aes(x = Q6, fill = Q6))
 
 
@@ -285,7 +285,8 @@ with(q8_long, table(PPINCIMP, Q8_q, Q8_r))
 
 ```
 
-#### Q9. Do other members of your household regularly use public transportation?
+### Q9. Do other members of your household regularly use public transportation?
+
 ```{r}
 with(data2, table(Q9))
 
