@@ -16,6 +16,10 @@ output:
     toc: yes
 ---
 
+
+This R markdown report contains general summaries of questions by demographics.
+
+
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
 rm(list = ls())
@@ -24,6 +28,7 @@ library(dplyr)
 library(tidyr)
 library(ggplot2)
 
+# data2, new_name, old_name
 load("clean/cleaning_all.Rdata")
 
 # set new names
@@ -33,30 +38,7 @@ names(data2) <- new_name
 
 
 ```{r}
-# tables
 
-t <- function(x, ...) {
-  print(addmargins(table(x, ...))) # counts
-  print(addmargins(prop.table(table(x, ...))))
-}
-
-t2 <- function(x, y, ...) {
-  print(addmargins(table(x, y)))
-  print(addmargins(prop.table(table(x, y, ...))))
-}
-
-
-x = data2$Q1
-y = data2$PPGENDER
-
-t(data2$Q1)
-t2(x, y)
-
-y = data2$PPETHM
-
-with(data2, prop.table(table(Q1, Q2)))
-with(data2, prop.table(table(Q1, Q2), margin = 1))
-with(data2, prop.table(table(Q1, Q2), margin = 2))
 
 ```
 
@@ -66,12 +48,10 @@ with(data2, prop.table(table(Q1, Q2), margin = 2))
 
 ### Q1. Before receiving this survey, did you know influenza is different from the stomach flu?
 
-
-
 ```{r}
 with(data2, table(Q1))
 
-# plot
+# plot g1
 g1 <- ggplot(data2[!is.na(data2$Q1), ])
 g1 + geom_bar(mapping = aes(x = Q1, fill = Q1))
 

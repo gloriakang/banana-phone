@@ -14,9 +14,20 @@ load("clean/all.Rdata")
 # set new names
 names(data2) <- new_name
 
-
 #------- start here --------#
 
+# make separate file focusing on subset of data
+# sick vs. not sick
+
+
+
+
+
+
+
+
+
+# ----------------------- #
 # get freq counts into a list where each element in a list is a dataframe
 lapply(X = data2[3:19], FUN = function(x){aggregate(data.frame(count = x), list(value = x), length)})
 
@@ -24,11 +35,7 @@ lapply(X = data2[3:19], FUN = function(x){aggregate(data.frame(count = x), list(
 
 
 
-
-
-
-
-# ----------------------#
+# ---------------------- #
 
 # Q1 tables
 with(data2, table(Q1))
@@ -161,4 +168,29 @@ View(a)
 
 
 
+### ------------------------- ###
+# tables
+
+t <- function(x, ...) {
+  print(addmargins(table(x, ...))) # counts
+  print(addmargins(prop.table(table(x, ...))))
+}
+
+t2 <- function(x, y, ...) {
+  print(addmargins(table(x, y)))
+  print(addmargins(prop.table(table(x, y, ...))))
+}
+
+
+x = data2$Q1
+y = data2$PPGENDER
+
+t(data2$Q1)
+t2(x, y)
+
+y = data2$PPETHM
+
+with(data2, prop.table(table(Q1, Q2)))
+with(data2, prop.table(table(Q1, Q2), margin = 1))
+with(data2, prop.table(table(Q1, Q2), margin = 2))
 
