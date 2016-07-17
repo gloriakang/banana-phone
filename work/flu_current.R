@@ -3,7 +3,8 @@ rm(list = ls())
 library(dplyr)
 library(tidyr)
 library(ggplot2)
-library(psych)
+library(prettyR)
+library(gmodels)
 
 # data_W <- read.csv("data/surveydata.csv", na = c("#NULL!", "", "Refused"), stringsAsFactors = FALSE)
 
@@ -13,18 +14,20 @@ load("clean/plotting1.Rdata")
 names(data2) <- old_name
 
 
-
 # ------------ start here ------------- #
-
 # contingency tables
-mytab = table(data2$Q2, data2$PPGENDER)
-addmargins(mytab)
 
-library(prettyR)
-xtab(Q2 ~ PPETHM, data = data2)
+# crosstab of gender by Q1; odds ratio, risk ratio
+xtab(PPGENDER ~ Q1, data2)
 
-xtab(PPGENDER ~ Q1, data = data2)
 
+# joint freq, conditional %, marginal prop
+with(data2, CrossTable(PPGENDER, Q1, prop.chisq = F))
+with(data2, CrossTable(PPETHM, Q1, prop.chisq = F))
+
+#
+with(data2, addmargins(table(PPINCIMP, Q1), 1:2))
+with(data2, prop.table(table(PPINCIMP, Q1), 2))
 
 
 
@@ -39,6 +42,14 @@ xtab(PPGENDER ~ Q1, data = data2)
 
 
 
+
+
+
+
+
+
+# -------------------------------------------#
+# TO DO: re-group income levels
 
 
 

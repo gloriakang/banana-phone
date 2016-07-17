@@ -17,28 +17,29 @@ data1 <- data
 
 ##### ----- create factors ----- #####
 #
-levels(data1$ppagecat)
-ppagecat.lab <- c("18-24", "25-34", "35-44", "45-54", "55-64", "65-74", "75+")
-data1$ppagecat <- ordered(data$ppagecat, levels = ppagecat.lab)
+#levels(data1$ppagecat)
+#ppagecat.lab <- c("18-24", "25-34", "35-44", "45-54", "55-64", "65-74", "75+")
+#data1$ppagecat <- ordered(data$ppagecat, levels = ppagecat.lab)
 
 #
-levels(data1$ppagect4)
-ppagect4.lab <- c("18-29", "30-44", "45-59", "60+")
-data1$ppagect4 <- ordered(data$ppagect4, levels = ppagect4.lab)
+#levels(data1$ppagect4)
+#ppagect4.lab <- c("18-29", "30-44", "45-59", "60+")
+#data1$ppagect4 <- ordered(data$ppagect4, levels = ppagect4.lab)
 
 #
 levels(data1$PPEDUC)
 PPEDUC.lab <- c("No formal education", "1st, 2nd, 3rd, or 4th grade", "5th or 6th grade",
                 "7th or 8th grade", "9th grade", "10th grade",
-                "11th grade", "12th grade NO DIPLOMA", "HIGH SCHOOL GRADUATE or GED",
+                "11th grade", "12th grade NO DIPLOMA",
+                "HIGH SCHOOL GRADUATE - high school DIPLOMA or the equivalent (GED)",
                 "Some college, no degree", "Associate degree", "Bachelors degree",
                 "Masters degree", "Professional or Doctorate degree")
-data1$PPEDUC <- ordered(data$PPEDUC, levels = PPEDUC.lab)
+data1$PPEDUC <- factor(data$PPEDUC, levels = PPEDUC.lab)
 
 #
 levels(data1$PPEDUCAT)
-PPEDUCAT.lab <- c("Less than HS", "HS", "Some college", "Bachelor or higher")
-data1$PPEDUCAT <- ordered(data$PPEDUCAT, levels = PPEDUCAT.lab)
+PPEDUCAT.lab <- c("Less than high school", "High school", "Some college", "Bachelor_s degree or higher")
+data1$PPEDUCAT <- factor(data$PPEDUCAT, levels = PPEDUCAT.lab)
 
 #
 levels(data1$PPETHM)
