@@ -5,7 +5,6 @@
 setwd("~/git/banana-phone/work")
 library(dplyr)
 library(tidyr)
-#library(foreign)
 
 ## load surveydata.csv (change input files as needed)
 data_W <- read.csv("data/surveydata.csv", na = c("#NULL!", "", "Refused"), stringsAsFactors = FALSE)
@@ -13,6 +12,7 @@ data_UNW <- read.csv("data/surveydata_unw.csv", na = c("#NULL!", "", "Refused"),
 
 
 ##### ----- rename sub-columns ----- #####
+
 data_new_name <- data_W %>%
   # Q7
   rename("Q7_1_Bus" = Q7_1,

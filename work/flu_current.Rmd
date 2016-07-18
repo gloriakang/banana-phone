@@ -21,7 +21,7 @@ This R markdown report contains general summaries of questions by demographics.
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = F, warning = T, message = F)
 
-rm(list = ls())
+rm(list=ls(all.names=TRUE))
 setwd("~/git/banana-phone/work")
 library(dplyr)
 library(tidyr)
@@ -31,6 +31,7 @@ library(prettyR)
 library(epitools)
 
 options(digits = 3)
+par(mfrow = c(2, 2))
 
 # load data2, new_name, old_name
 load("clean/cleaning_all.Rdata")
@@ -48,20 +49,21 @@ names(data2) <- new_name
 
 
 
+
 ```
 
 
 # Survey questions
+
 ### Q1. Before receiving this survey, did you know influenza is different from the stomach flu?
 
 
 ```{r, echo=TRUE}
-par(mfrow = c(2, 2))
 
 ## PPGENDER
 # oddsratio with reversed columns
-a = with(data2, table(PPGENDER, Q1))
-oddsratio(a, rev = "columns")
+a <- with(data2, table(PPGENDER, Q1))
+oddsratio(a, rev = "neither")
 
 # SPSS table: joint freq, conditional %, marginal prop
 with(data2, CrossTable(PPGENDER, Q1, prop.chisq = F))
