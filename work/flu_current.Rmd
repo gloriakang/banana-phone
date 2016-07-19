@@ -38,15 +38,14 @@ load("clean/cleaning_all.Rdata")
 # load ggplot variables
 load("clean/plotting1.Rdata")
 
-# set new names
-names(data2) <- new_name
+# data for old names
+data <- data2
+names(data) <- old_name
 
 ```
 
 
-
 ```{r}
-
 
 
 
@@ -57,8 +56,11 @@ names(data2) <- new_name
 
 ### Q1. Before receiving this survey, did you know influenza is different from the stomach flu?
 
-
 ```{r, echo=TRUE}
+
+# glm1 = glm(y ~ x, family=binomial)
+# exp(glm1$coef[2])
+
 
 ## PPGENDER
 # oddsratio with reversed columns
@@ -231,13 +233,14 @@ g6 + geom_bar(mapping = aes(x = Q6, fill = PPINCIMP), position = position_dodge(
 ```{r}
 # make long data
 q7_long <- data2 %>%
-  gather("Q7_q", "Q7_r", starts_with("Q7_"), -contains("Text"), -contains("Refused"), na.rm = TRUE)
+  gather(Q7_q, Q7_r, Q7_1_Bus:Q7_7_Other) %>%
+    summarise(n = count())
 
 with(q7_long, table(Q7_q, Q7_r))
 
-q7 <- q7_long %>%
+q7_long %>%
   group_by(Q7_q, Q7_r, PPGENDER, PPETHM, PPINCIMP, ppagecat) %>%
-  summarise(n = n())
+  summarise(n = count())
 
 # flip coordinates
 ggplot(q7[!is.na(q7$Q7_r), ], aes(x = Q7_r, y = n, fill = Q7_r)) +

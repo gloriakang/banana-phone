@@ -7,8 +7,8 @@ library(prettyR)
 library(gmodels)
 
 # data_W <- read.csv("data/surveydata.csv", na = c("#NULL!", "", "Refused"), stringsAsFactors = FALSE)
-
 # source("data_cleaning.R")
+
 load("clean/cleaning_all.Rdata")
 load("clean/plotting1.Rdata")
 names(data2) <- old_name

@@ -1,8 +1,9 @@
 # plotting1.R
-rm(list = ls())
+rm(list=ls(all.names=TRUE))
 library(ggplot2)
-load("clean/cleaning_all.Rdata")
 
+# load data2
+load("clean/cleaning_all.Rdata")
 
 g1 <- ggplot(data2[!is.na(data2$Q1), ]) + theme(text = element_text(size = 10))
 g2 <- ggplot(data2[!is.na(data2$Q2), ]) + theme(text = element_text(size = 10))
@@ -32,5 +33,5 @@ g33 <- ggplot(data2[!is.na(data2$Q33), ]) + theme(text = element_text(size = 10)
 
 
 
-rm(new_name); rm(old_name)
+rm(new_name); rm(old_name); rm(data2)
 save(list = ls(all.names = TRUE), file ="clean/plotting1.RData")
