@@ -16,13 +16,15 @@ output:
     toc: yes
 ---
 
-This R markdown report contains general summaries of questions by demographics.
+This R markdown file contains general summaries of questions by demographics.
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = F, warning = T, message = F)
-
-rm(list=ls(all.names=TRUE))
 setwd("~/git/banana-phone/work")
+source("clean/data_cleaning2.R")
+source("clean/plotting1.R")
+rm(list=ls(all.names=TRUE))
+
 library(dplyr)
 library(tidyr)
 library(ggplot2)
@@ -31,14 +33,13 @@ library(prettyR)
 library(epitools)
 
 options(digits = 3)
-par(mfrow = c(2, 2))
 
 # load data2, new_name, old_name
 load("clean/cleaning_all.Rdata")
 # load ggplot variables
 load("clean/plotting1.Rdata")
 
-# data for old names
+# data = original names; data2 = new names
 data <- data2
 names(data) <- old_name
 
@@ -57,45 +58,52 @@ names(data) <- old_name
 ### Q1. Before receiving this survey, did you know influenza is different from the stomach flu?
 
 ```{r, echo=TRUE}
-
 # glm1 = glm(y ~ x, family=binomial)
 # exp(glm1$coef[2])
 
 
-## PPGENDER
-# oddsratio with reversed columns
-a <- with(data2, table(PPGENDER, Q1))
-oddsratio(a, rev = "neither")
+my.function <- function(v1, v2, ...) {
+  a = table(v1, v2)
+  b = addmargins(table(v1, v2))
+}
 
-# SPSS table: joint freq, conditional %, marginal prop
-with(data2, CrossTable(PPGENDER, Q1, prop.chisq = F))
+with(data2, my.function(Q1, Q2))
+
+
+## GENDER
+with(data2, addmargins(table(PPGENDER, Q1)))
+
+# odds ratio
+oddsratio(with(data2, table(PPGENDER, Q1)), rev = "neither")
 
 # xtab table
 xtab(PPGENDER ~ Q1, data2)
 
-# plot
-g1 + geom_bar(mapping = aes(x = Q1, fill = Q1), position = position_dodge()) + facet_wrap(~PPGENDER)
+# SPSS table: joint freq, conditional %, marginal prop
+with(data2, CrossTable(PPGENDER, Q1, prop.chisq = F))
 
+g1 + geom_bar(mapping = aes(x = Q1, fill = Q1),
+              position = position_dodge()) + facet_wrap(~PPGENDER)
 
-## ppagecat
-a = with(data2, table(ppagecat, Q1))
-oddsratio(a, rev = "columns")
+## AGE
+oddsratio(with(data2, table(ppagecat, Q1)))
 
-
-## PPEDUCAT
+## EDUCATION
 xtab(PPEDUCAT ~ Q1, data2)
-g1 + geom_bar(mapping = aes(x = PPEDUCAT, fill = Q1), position = position_stack())
-g1 + geom_bar(mapping = aes(x = PPEDUCAT, fill = Q1), position = position_fill())
+g1 + geom_bar(mapping = aes(x = PPEDUCAT, fill = Q1),
+              position = position_stack())
+g1 + geom_bar(mapping = aes(x = PPEDUCAT, fill = Q1),
+              position = position_fill())
 
-
-## PPETHM
+## ETHNICITY
 xtab(PPETHM ~ Q1, data2)
-g1 + geom_bar(mapping = aes(x = Q1, fill = PPETHM), position = position_dodge())
+g1 + geom_bar(mapping = aes(x = PPETHM, fill = Q1),
+              position = position_dodge())
 
-
-## PPINCIMP
+## INCOME
 xtab(PPINCIMP ~ Q1, data2)
-g1 + geom_bar(mapping = aes(x = Q1, fill = PPINCIMP), position = position_dodge())
+g1 + geom_bar(mapping = aes(x = PPINCIMP, fill = Q1),
+              position = position_dodge()) + coord_flip()
 
 ```
 
