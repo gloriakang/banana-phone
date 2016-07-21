@@ -62,18 +62,18 @@ names(data) <- old_name
 # exp(glm1$coef[2])
 
 
-my.function <- function(v1, v2, dnn = c(v1, v2)) {
-  a <- table(v1, v2, dnn = list.names(v1, v2), deparse.level = 2)
-  b <- addmargins(table(v1, v2))
-  #dimnames
-  list(a, b)
-}
-
-with(data2, my.function(Q1, Q2))
-
-a = with(data2, table(Q1, Q2))
-dimnames(b)
-
+# my.function <- function(v1, v2, dnn = c(v1, v2)) {
+#   a <- table(v1, v2, dnn = list.names(v1, v2), deparse.level = 2)
+#   b <- addmargins(table(v1, v2))
+#   #dimnames
+#   list(a, b)
+# }
+# 
+# with(data2, my.function(Q1, Q2))
+# 
+# a = with(data2, table(Q1, Q2))
+# dimnames(b)
+# 
 
 ## GENDER
 with(data2, addmargins(table(PPGENDER, Q1)))
