@@ -1,11 +1,6 @@
 ---
 title: "Working report"
-fontsize: 10pt
 output:
-  pdf_document:
-    fig_caption: yes
-    fig_height: 3
-    toc: yes
   html_document:
     fig_caption: yes
     fig_height: 3
@@ -14,6 +9,11 @@ output:
     theme: cosmo
     toc: yes
     toc_depth: 4
+  pdf_document:
+    fig_caption: yes
+    fig_height: 3
+    toc: yes
+fontsize: 10pt
 ---
 
 This R markdown file contains general summaries of questions by demographics.
@@ -37,7 +37,9 @@ load("clean/cleaning2.RData")
 # load ggplot variables
 load("clean/plotting1.RData")
 
-# data = original names; data2 = new names
+# data = old names; data2 = new names
+names(data2) <- new_name
+
 data <- data2
 names(data) <- old_name
 
