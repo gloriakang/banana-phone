@@ -1,9 +1,12 @@
 # plotting1.R
+
 rm(list=ls(all.names=TRUE))
+setwd("~/git/banana-phone/work")
 library(ggplot2)
 
 # load data2
-load("clean/cleaning_all.Rdata")
+load("clean/cleaning2.RData")
+
 
 # + theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
@@ -36,4 +39,4 @@ g33 <- ggplot(data2[!is.na(data2$Q33), ]) + theme(text = element_text(size = 10)
 
 
 rm(new_name); rm(old_name); rm(data2)
-save(list = ls(all.names = TRUE), file ="clean/plotting1.RData")
+save(list = ls(all.names = TRUE), file = "clean/plotting1.RData")

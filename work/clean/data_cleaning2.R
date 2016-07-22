@@ -5,7 +5,7 @@
 setwd("~/git/banana-phone/work")
 rm(list=ls(all.names=TRUE))
 
-# load new_name data
+# load data_new_name
 load('clean/cleaning1.Rdata')
 data <- read.csv("clean/data_new_name.csv", na.strings = c("#NULL!", "", "Refused", "NA"))
 
@@ -61,37 +61,15 @@ PPINCIMP.lab <- c("Less than $5,000", "$5,000 to $7,499", "$7,500 to $9,999",
                   "$175,000 or more")
 data1$PPINCIMP <- factor(data1$PPINCIMP, levels = PPINCIMP.lab)
 
-
-# reset the "default" level on categorical variables
-recode = function(col, map, ref) {
-  relevel(as.factor(map[col]), ref=ref)
-}
-
-# re-group and recode income levels
-income.map = c(rep("under $20k", 6),
-               rep("$20k to $40k", 4),
-               rep("$40k to $75k", 3),
-               rep("over $75k", 6))
-data1$income = recode(data1$PPINCIMP, income.map, "under $20k")
-table(data1$income)
-
-
 # marital status cat 6
 levels(data1$PPMARIT)
 PPMARIT.lab <- c("Never married", "Living with partner", "Married",
                  "Separated", "Divorced", "Widowed")
 data1$PPMARIT <- factor(data1$PPMARIT, levels = PPMARIT.lab)
-# recode marital staus
-marital.map <- c("single", "partnered", "partnered", "single", "single", "single")
-data1$marital = recode(data1$PPMARIT, marital.map, "single")
 
 
 # employment status
 levels(data1$PPWORK)
-# recode employment
-work.map <- c(rep("unemployed", 5),
-              rep("employed", 2))
-data1$work = recode(data1$PPWORK, work.map, "employed")
 
 
 # internet status
@@ -99,6 +77,7 @@ data1$PPNET <- relevel(data1$PPNET, "Yes")
 
 
 ################# question factors ####################
+
 yesnodk.lab <- c("Yes", "No", "Don_t know")
 q11.lab <- c("High Risk, Very Likely", "Medium Risk, Somewhat Likely",
              "Low Risk, Not Likely", "Don_t Know")
@@ -290,14 +269,10 @@ levels(data1$Q50)
 
 ############ ----- save r object ----- ############
 
-# apply new names
-names(data1) <- new_name
 
-# save as data2
+# data = original, data1 = cleaned factors, data2 = copy of data1
 data2 <- data1
-save(data2, new_name, old_name, file = "clean/cleaning_all.Rdata")
-
-
+save(data2, new_name, old_name, file = "clean/cleaning2.RData")
 
 
 
