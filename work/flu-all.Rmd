@@ -32,6 +32,7 @@ library(gmodels)
 library(prettyR)
 library(epitools)
 
+
 # load data2, new_name, old_name
 load("clean/cleaning2.RData")
 # load ggplot variables
