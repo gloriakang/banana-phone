@@ -3,11 +3,13 @@
 # apply new names, save as data2
 # output = cleaning_all.Rdata
 setwd("~/git/banana-phone/work")
-rm(list=ls(all.names=TRUE))
+rm(list = ls(all.names = TRUE))
+
+library(car)
 
 # load data_new_name
 load('clean/cleaning1.Rdata')
-data <- read.csv("clean/data_new_name.csv", na.strings = c("#NULL!", "", "Refused", "NA"))
+data <- read.csv("clean/data_new_name.csv", na = c("#NULL!", "", "Refused", "NA"))
 
 # use old names
 names(data) <- old_name
@@ -17,9 +19,10 @@ data1 <- data
 ################# list factors ################
 
 # age cat 7
-levels(data1$ppagecat)
+#table(data1$ppagecat)
 #ppagecat.lab <- c("18-24", "25-34", "35-44", "45-54", "55-64", "65-74", "75+")
 #data1$ppagecat <- factor(data$ppagecat, levels = ppagecat.lab)
+levels(data1$ppagecat)
 
 # age cat 4
 levels(data1$ppagect4)
@@ -77,7 +80,7 @@ data1$PPNET <- relevel(data1$PPNET, "Yes")
 
 
 ################# question factors ####################
-
+yn.lab <- c("Yes", "No")
 yesnodk.lab <- c("Yes", "No", "Don_t know")
 q11.lab <- c("High Risk, Very Likely", "Medium Risk, Somewhat Likely",
              "Low Risk, Not Likely", "Don_t Know")
@@ -85,7 +88,7 @@ always.lab <- c("Always", "Sometimes", "Never")
 likely.lab <- c("Yes, more likely", "No, no effect", "No, less likely")
 
 
-data1$Q1 <- relevel(data1$Q1, "Yes")
+data1$Q1 <- factor(data1$Q1, levels = yn.lab)
 data1$Q2 <- relevel(data1$Q2, "Yes")
 data1$Q3 <- factor(data1$Q3, levels = yesnodk.lab)
 levels(data1$Q3)

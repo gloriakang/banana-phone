@@ -1,0 +1,116 @@
+---
+title: "Working report"
+output:
+  html_document:
+    fig_caption: yes
+    fig_height: 3
+    fig_width: 6
+    highlight: tango
+    theme: cosmo
+    toc: yes
+    toc_depth: 4
+  pdf_document:
+    fig_caption: yes
+    fig_height: 3
+    toc: yes
+fontsize: 10pt
+---
+
+This report contains general summaries of questions by demographics.
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = F, warning = F, message = F)
+setwd("~/git/banana-phone/work")
+source("clean/data_cleaning2.R")
+source("clean/plotting1.R")
+rm(list=ls(all.names=TRUE))
+
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+library(knitr)
+library(xtable)
+library(gmodels)
+library(prettyR)
+library(epitools)
+
+# load data2, new_name, old_name
+load("clean/cleaning2.RData")
+# load ggplot variables
+load("clean/plotting1.RData")
+
+# data = old names; data2 = new names
+names(data2) <- new_name
+
+data <- data2
+names(data) <- old_name
+
+```
+
+
+```{r}
+
+
+
+```
+
+
+# Survey questions
+
+### Q1. Before receiving this survey, did you know influenza is different from the stomach flu?
+
+```{r Q1}
+# glm1 = glm(y ~ x, family=binomial)
+# exp(glm1$coef[2])
+
+# my.function <- function(v1, v2, dnn = c(v1, v2)) {
+#   a <- table(v1, v2, dnn = list.names(v1, v2), deparse.level = 2)
+#   b <- addmargins(table(v1, v2))
+#   #dimnames
+#   list(a, b)
+# }
+# 
+# with(data2, my.function(Q1, Q2))
+# 
+# a = with(data2, table(Q1, Q2))
+# dimnames(b)
+# 
+
+
+## GENDER
+kable(with(data2, addmargins(table(PPGENDER, Q1))))
+
+# odds ratio
+oddsratio(with(data2, table(PPGENDER, Q1)), rev = "neither")
+
+# xtab table
+xtab(PPGENDER ~ Q1, data2)
+
+# SPSS table: joint freq, conditional %, marginal prop
+with(data2, CrossTable(PPGENDER, Q1, prop.chisq = F))
+
+g1 + geom_bar(mapping = aes(x = Q1, fill = Q1),
+              position = position_dodge()) + facet_wrap(~PPGENDER)
+
+## AGE
+oddsratio(with(data2, table(ppagecat, Q1)))
+
+## EDUCATION
+xtab(PPEDUCAT ~ Q1, data2)
+g1 + geom_bar(mapping = aes(x = PPEDUCAT, fill = Q1),
+              position = position_stack())
+g1 + geom_bar(mapping = aes(x = PPEDUCAT, fill = Q1),
+              position = position_fill())
+
+## ETHNICITY
+xtab(PPETHM ~ Q1, data2)
+g1 + geom_bar(mapping = aes(x = PPETHM, fill = Q1),
+              position = position_dodge())
+
+## INCOME
+xtab(PPINCIMP ~ Q1, data2)
+g1 + geom_bar(mapping = aes(x = PPINCIMP, fill = Q1),
+              position = position_dodge()) + coord_flip()
+
+```
+

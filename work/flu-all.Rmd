@@ -1,37 +1,34 @@
 ---
-title: "Working report"
+title: "Working analysis"
 output:
   html_document:
     fig_caption: yes
     fig_height: 3
     fig_width: 6
     highlight: tango
+    keep_md: yes
     theme: cosmo
     toc: yes
     toc_depth: 4
-  pdf_document:
-    fig_caption: yes
-    fig_height: 3
-    toc: yes
 fontsize: 10pt
 ---
 
-This R markdown file contains general summaries of questions by demographics.
+This report contains a general summary of all survey questions.
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = F, warning = T, message = F)
+knitr::opts_chunk$set(echo = F, warning = F, message = F)
 setwd("~/git/banana-phone/work")
 source("clean/data_cleaning2.R")
 source("clean/plotting1.R")
-rm(list=ls(all.names=TRUE))
+rm(list = ls(all.names = TRUE))
 
 library(dplyr)
 library(tidyr)
 library(ggplot2)
+library(knitr)
 library(gmodels)
 library(prettyR)
 library(epitools)
-
 
 # load data2, new_name, old_name
 load("clean/cleaning2.RData")
@@ -40,17 +37,8 @@ load("clean/plotting1.RData")
 
 # data = old names; data2 = new names
 names(data2) <- new_name
-
 data <- data2
 names(data) <- old_name
-
-```
-
-
-```{r}
-
-
-
 ```
 
 
@@ -58,26 +46,12 @@ names(data) <- old_name
 
 ### Q1. Before receiving this survey, did you know influenza is different from the stomach flu?
 
-```{r, echo=TRUE}
+```{r, Q1}
 # glm1 = glm(y ~ x, family=binomial)
 # exp(glm1$coef[2])
 
-
-# my.function <- function(v1, v2, dnn = c(v1, v2)) {
-#   a <- table(v1, v2, dnn = list.names(v1, v2), deparse.level = 2)
-#   b <- addmargins(table(v1, v2))
-#   #dimnames
-#   list(a, b)
-# }
-# 
-# with(data2, my.function(Q1, Q2))
-# 
-# a = with(data2, table(Q1, Q2))
-# dimnames(b)
-# 
-
 ## GENDER
-with(data2, addmargins(table(PPGENDER, Q1)))
+kable(with(data2, addmargins(table(PPGENDER, Q1))))
 
 # odds ratio
 oddsratio(with(data2, table(PPGENDER, Q1)), rev = "neither")
@@ -117,7 +91,7 @@ g1 + geom_bar(mapping = aes(x = PPINCIMP, fill = Q1),
 ### Q2. Have you had an illness with influenza-like symptoms since August 2015?
 
 
-```{r}
+```{r Q2}
 
 ## PPGENDER
 xtab(PPGENDER ~ Q2, data2)

@@ -1,34 +1,149 @@
 ---
-title: "Untitled"
-author: ""
-date: ""
+title: "analysis: subset"
 output: 
   html_document:
     fig_height: 3
     fig_width: 5
     keep_md: yes
-    theme: paper
-  pdf_document:
-    fig_height: 3
-    fig_width: 5
-  word_document:
-    fig_height: 3
-    fig_width: 5
 ---
 
-```{r, setup, include=FALSE}
-require(mosaic)   # Load additional packages here 
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = F, warning = F, message = F, tidy = F, size = "small")
+setwd("~/git/banana-phone/work")
+rm(list = ls(all.names = TRUE))
 
-# Some customization.  You can alter or delete as desired (if you know what you are doing).
-trellis.par.set(theme=theme.mosaic()) # change default color scheme for lattice
-knitr::opts_chunk$set(
-  tidy=FALSE,     # display code as typed
-  size="small")   # slightly smaller font for code
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+#library(mosaic)
+
+#trellis.par.set(theme=theme.mosaic()) # change default color scheme for lattice
+```
+
+```{r load_data}
+# load data2, new_name, old_name; ggplot variables
+load("clean/cleaning2.RData")
+#load("clean/plotting1.RData")
+
+data <- data2
+names(data) <- old_name  # data = old names
+names(data2) <- new_name  # data2 = new names
+```
+
+Apply weights column to data and compare to unweighted counts
+
+```{r}
+library(survey)
+
+# survey design object
+options(survey.lonely.psu = "adjust")
+des <- svydesign(ids = ~1, weights = ~weight, data = data2[is.na(data2$weight)==F,])
+```
+
+```{r}
+# Q1 tables
+with(data2, summary(Q1))  # unweighted
+svytable(~Q1, design = des, round = T)  # weighted
+
+# Q1 by gender, unweighted
+with(data2, table(Q1, PPGENDER))
+with(data2, prop.table(table(Q1, PPGENDER), margin = 2))
+
+# consider full sample design + weights
+svytable(~Q1 + PPGENDER, design = des, round = T)
+prop.table(svytable(~Q1 + PPGENDER, design = des), margin = 2)
+
+# prop table with standard errors
+svyby(formula = ~Q1, by = ~PPGENDER, design = des, FUN = svymean, na.rm = T)
+
+# Q1 by gender + race with SE
+svyby(formula = ~Q1, by = ~PPGENDER + PPETHM, design = des, FUN = svymean, na.rm = T)
+
 ```
 
 
 ```{r}
+# Q2 by gender
+with(data2, table(Q2, PPGENDER))  # unweighted
+glm(Q2 ~ PPGENDER, data = data2, family = binomial())
 
+contrasts(data2$Q2)
+contrasts(data2$PPGENDER)
+summary(data2$Q2)
+```
+
+```{r}
+fit1 <- glm(Q2 ~ PPGENDER, data = data2, family = binomial()) # unweighted
+summary(fit1)
+
+# doest work
+#fit2 <- glm(Q2 ~ PPGENDER, weights = weight, data = data2)
+
+
+
+
+
+```
+
+
+
+```{r}
+# first recode
+
+#brfss_11$employ<-recode(brfss_11$employ, recodes="1:2='Employed'; 2:6='nilf'; 7='retired'; 8='unable'; else=NA", as.factor.result=T)
+#brfss_11$employ<-relevel(brfss_11$employ, ref='Employed')
+
+#df$Q2 <- factor(data2$Q2, levels = c(0, 1), labels = c("Yes", "No"))
+#df$Q2 <- as.numeric(df$Q2)
+
+x = df$Q2
+str(df$Q2)
+
+#svyglm(Q2 ~ PPGENDER, des)
+
+# regression?
+# Next we apply this logic to a regression case. First we fit the OLS model for our BMI outcome using education and age as predictors:
+#Next we incorporate case weights
+#fit2<-lm(bmi~educ+agec, data=brfss_11, weights = cntywt)
+#summary(fit2)
+
+```
+
+
+```{r}
+# count total number of unweighted records
+nrow(data2)
+unwtd.count(~one, des)
+
+# by gender
+svyby(~one, ~PPGENDER, des, unwtd.count)
+
+# count the weighted number of individuals
+svytotal(~one, des)
+
+#
+svymean(~Q1, na.rm = T, design = des)
+
+# by sex
+svyby(
+	~Q1 ,
+	~PPGENDER ,
+	design = des ,
+	svymean, na.rm = T
+)
+
+```
+
+
+Q2. Have you had an illness with influenza-like symptoms since August 2015?
+Being sick compared to not being sick last year: who got sick? what did they do? how do they perceive influenza risk?
+
+```{r}
+# frequency table
+with(data2, table(Q2))
+
+# recode as dichotomous variable?
+#data2$sick<-ifelse(data2$Q2=="Afri",yes= "Africa",no= "Not Africa")
 
 
 ```

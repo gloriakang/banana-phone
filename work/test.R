@@ -15,6 +15,15 @@ names(data2) <- old_name
 
 
 # ------------ start here ------------- #
+
+
+
+data2 %>% 
+  count(Q2, PPETHM) %>% 
+  ggplot(aes(PPETHM, Q2, fill = n)) + 
+  geom_tile()
+
+
 # contingency tables
 
 # crosstab of gender by Q1; odds ratio, risk ratio
