@@ -1,5 +1,5 @@
 ---
-title: "analysis: subset"
+title: "Working analysis: subset"
 output: 
   html_document:
     fig_height: 3
@@ -27,7 +27,6 @@ library(ggplot2)
 ```{r load_data}
 # load data2, new_name, old_name; ggplot variables
 load("clean/cleaning2.RData")
-#load("clean/plotting1.RData")
 
 data <- data2
 names(data) <- old_name  # data = old names

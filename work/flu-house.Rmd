@@ -1,27 +1,28 @@
 ---
-title: "household members"
+title: "Household members"
 output:
   html_document:
     fig_caption: yes
-    fig_height: 4
+    fig_height: 3
+    fig_width: 6
     highlight: tango
+    keep_md: yes
     theme: cosmo
     toc: yes
     toc_depth: 4
-  pdf_document:
-    fig_caption: yes
-    fig_height: 3
-    toc: yes
+fontsize: 10pt
 ---
 
+This report contains analysis for household members only.
+
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
-rm(list = ls())
+knitr::opts_chunk$set(echo = T, warning = F, message = F, tidy = F, size = "small")
 setwd("~/git/banana-phone/work")
+rm(list = ls(all.names = TRUE))
+
 library(dplyr)
 library(tidyr)
 library(ggplot2)
-#library(psych)
 
 load("clean/cleaning_all.Rdata")
 

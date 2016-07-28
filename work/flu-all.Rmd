@@ -13,10 +13,10 @@ output:
 fontsize: 10pt
 ---
 
-This report contains a general summary of all survey questions.
+This report contains all survey questions.
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = F, warning = F, message = F)
+knitr::opts_chunk$set(echo = T, warning = F, message = F, tidy = F, size = "small")
 setwd("~/git/banana-phone/work")
 source("clean/data_cleaning2.R")
 source("clean/plotting1.R")

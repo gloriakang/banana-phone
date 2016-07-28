@@ -294,7 +294,6 @@ levels(data1$Q50)
 
 ############ ----- save r object ----- ############
 
-
 # data = original, data1 = cleaned factors, data2 = copy of data1
 data2 <- data1
 save(data2, new_name, old_name, file = "clean/cleaning2.RData")
