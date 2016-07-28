@@ -24,7 +24,7 @@ library(dplyr)
 library(tidyr)
 library(ggplot2)
 
-load("clean/cleaning_all.Rdata")
+load("~/git/banana-phone/work/clean/cleaning_all.Rdata")
 
 # set new names
 names(data2) <- new_name
