@@ -4,11 +4,16 @@ output:
   html_document:
     fig_height: 3
     fig_width: 5
+    highlight: tango
     keep_md: yes
+    theme: cosmo
+    toc: yes
+    toc_depth: 4
+fontsize: 10pt
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = F, warning = F, message = F, tidy = F, size = "small")
+knitr::opts_chunk$set(echo = T, warning = F, message = F, tidy = F, size = "small")
 setwd("~/git/banana-phone/work")
 rm(list = ls(all.names = TRUE))
 
@@ -16,7 +21,6 @@ library(dplyr)
 library(tidyr)
 library(ggplot2)
 #library(mosaic)
-
 #trellis.par.set(theme=theme.mosaic()) # change default color scheme for lattice
 ```
 
@@ -30,124 +34,165 @@ names(data) <- old_name  # data = old names
 names(data2) <- new_name  # data2 = new names
 ```
 
-Apply weights column to data and compare to unweighted counts
+Apply column weights and compare to original data.
 
 ```{r}
 library(survey)
 
 # survey design object
 options(survey.lonely.psu = "adjust")
-des <- svydesign(ids = ~1, weights = ~weight, data = data2[is.na(data2$weight)==F,])
+des <- svydesign(ids = ~1, weights = ~weight, data = data2[is.na(data2$weight) == F, ])
+
 ```
+
+Q1.
 
 ```{r}
 # Q1 tables
 with(data2, summary(Q1))  # unweighted
 svytable(~Q1, design = des, round = T)  # weighted
 
-# Q1 by gender, unweighted
+# Q1 by gender
 with(data2, table(Q1, PPGENDER))
 with(data2, prop.table(table(Q1, PPGENDER), margin = 2))
 
-# consider full sample design + weights
+# Q1 by gender, with design + weights
 svytable(~Q1 + PPGENDER, design = des, round = T)
 prop.table(svytable(~Q1 + PPGENDER, design = des), margin = 2)
 
-# prop table with standard errors
+# prop table above but with standard errors
 svyby(formula = ~Q1, by = ~PPGENDER, design = des, FUN = svymean, na.rm = T)
 
-# Q1 by gender + race with SE
+# prop table with gender + race
 svyby(formula = ~Q1, by = ~PPGENDER + PPETHM, design = des, FUN = svymean, na.rm = T)
+```
+
+Recode some variables.
+
+```{r}
+library(car)
+df <- data2
+
+# female
+df$female <- recode(data2$PPGENDER, recodes = "'Female' = 1; 'Male' = 0")
+
+# ethnicity
+df$white <- recode(data2$PPETHM, recodes = "'White, Non-Hispanic' = 1; NA = NA; else = 0")
+df$black <- recode(data2$PPETHM, recodes = "'Black, Non-Hispanic' = 1; NA = NA; else = 0")
+df$hispanic <- recode(data2$PPETHM, recodes = "'Hispanic' = 1; NA = NA; else = 0")
+df$otherrace <- recode(data2$PPETHM, recodes = "'Other, Non-Hispanic' = 1; NA = NA; else = 0")
+df$mixedrace <- recode(data2$PPETHM, recodes = "'2+ Races, Non-Hispanic' = 1; NA = NA; else = 0")
+
+# Q1
+df$Q1 <- recode(data2$Q1, recodes = "'Yes' = 1; 'No' = 0; NA = NA")
+
+# Q2
+df$sick <- recode(data2$Q2, recodes = "'Yes' = 1; 'No' = 0; NA = NA")
+```
+
+Apply survey design + weights for Q2.
+
+```{r}
+# glm + design weights
+options(survey.lonely.psu = "adjust")
+des2 <- svydesign(ids = ~1, weights = ~weight, data = df)
+
+# Q2: being sick, by female gender
+m1 = svyglm(sick ~ female, des2, family = binomial())
+summary(m1)
+# odds ratios
+exp(coefficients(m1))
+
+# Q2: being sick, by male gender
+m = svyglm(sick ~ PPGENDER, des2, family = binomial())
+summary(m)
+# odds ratios
+exp(coefficients(m))
+
+# Q2: being sick, by ethnicity
+m2 = svyglm(sick ~ PPETHM, des2, family = binomial())
+summary(m2)
+exp(coefficients(m2))  # odds ratios
+
+# same as above, but binomial
+m = svyglm(sick ~ white+black+hispanic+otherrace+mixedrace, des2, family = binomial())
+summary(m)
+exp(coefficients(m))  # oods ratios
 
 ```
 
+Q2. Have you had an illness with influenza-like symptoms since August 2015?
 
 ```{r}
 # Q2 by gender
-with(data2, table(Q2, PPGENDER))  # unweighted
-glm(Q2 ~ PPGENDER, data = data2, family = binomial())
-
-contrasts(data2$Q2)
-contrasts(data2$PPGENDER)
-summary(data2$Q2)
-```
-
-```{r}
-fit1 <- glm(Q2 ~ PPGENDER, data = data2, family = binomial()) # unweighted
+with(data2, table(Q2, PPGENDER))
+# without weights
+fit1 <- glm(sick ~ PPGENDER, data = df, family = binomial())
 summary(fit1)
+exp(coefficients(fit1))
 
-# doest work
-#fit2 <- glm(Q2 ~ PPGENDER, weights = weight, data = data2)
+contrasts(df$sick)
+contrasts(data2$PPGENDER)
+```
 
+Q13. getting the flu vaccine
 
+```{r}
+# use data = df, with recodes
+df$vax <- recode(data2$Q13, "'Yes, every year' = 1; 'Yes, some years' = 1; NA = NA; else = 0")
+summary(df$vax)
 
+## glm + design weights
+options(survey.lonely.psu = "adjust")
+des2 <- svydesign(ids = ~1, weights = ~weight, data = df)
+
+# getting sick ~ getting vaccine
+m3 = svyglm(sick ~ vax, des2, family = binomial)
+summary(m3)
+exp(coefficients(m3))
+exp(m3$coef[2])
+
+# tables with weights
+svytable(~vax + sick, design = des2, round = T)
+prop.table(svytable(~vax + sick, design = des2), margin = 2)
 
 
 ```
 
-
+Other questions with design + weights.
 
 ```{r}
-# first recode
 
-#brfss_11$employ<-recode(brfss_11$employ, recodes="1:2='Employed'; 2:6='nilf'; 7='retired'; 8='unable'; else=NA", as.factor.result=T)
-#brfss_11$employ<-relevel(brfss_11$employ, ref='Employed')
 
-#df$Q2 <- factor(data2$Q2, levels = c(0, 1), labels = c("Yes", "No"))
-#df$Q2 <- as.numeric(df$Q2)
 
-x = df$Q2
-str(df$Q2)
 
-#svyglm(Q2 ~ PPGENDER, des)
-
-# regression?
-# Next we apply this logic to a regression case. First we fit the OLS model for our BMI outcome using education and age as predictors:
-#Next we incorporate case weights
-#fit2<-lm(bmi~educ+agec, data=brfss_11, weights = cntywt)
-#summary(fit2)
 
 ```
 
 
 ```{r}
 # count total number of unweighted records
-nrow(data2)
-unwtd.count(~one, des)
+#nrow(data2)
+#unwtd.count(~one, des)
 
 # by gender
-svyby(~one, ~PPGENDER, des, unwtd.count)
+#svyby(~one, ~PPGENDER, des, unwtd.count)
 
 # count the weighted number of individuals
-svytotal(~one, des)
+#svytotal(~one, des)
 
 #
-svymean(~Q1, na.rm = T, design = des)
+#svymean(~Q1, na.rm = T, design = des)
 
 # by sex
-svyby(
-	~Q1 ,
-	~PPGENDER ,
-	design = des ,
-	svymean, na.rm = T
-)
+#svyby(
+#	~Q1 ,
+#	~PPGENDER ,
+#	design = des ,
+#	svymean, na.rm = T
+#)
 
 ```
-
-
-Q2. Have you had an illness with influenza-like symptoms since August 2015?
-Being sick compared to not being sick last year: who got sick? what did they do? how do they perceive influenza risk?
-
-```{r}
-# frequency table
-with(data2, table(Q2))
-
-# recode as dichotomous variable?
-#data2$sick<-ifelse(data2$Q2=="Afri",yes= "Africa",no= "Not Africa")
-
-
-```
-
 
 
 
