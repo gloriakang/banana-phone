@@ -14,7 +14,6 @@ fontsize: 10pt
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = T, warning = F, message = F, tidy = F, size = "small")
-#setwd("~/git/banana-phone/work")
 rm(list = ls(all.names = TRUE))
 
 library(dplyr)
