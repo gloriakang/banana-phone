@@ -17,7 +17,7 @@ This report contains summary of all survey questions.
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = T, warning = F, message = F, tidy = F, size = "small")
-setwd("~/git/banana-phone/work")
+#setwd("~/git/banana-phone/work")
 #source("clean/data_cleaning2.R")
 #source("clean/plotting1.R")
 rm(list = ls(all.names = TRUE))

@@ -71,7 +71,7 @@ data2$childhh <- data2$Q26 %>%
   recode(recodes = "'Yes' = 1; NA = NA; 'No' = 0")
 
 # if you get confused
-str(data2Q26)
+str(data2$Q26)
 str(data2$childhh)
 
 

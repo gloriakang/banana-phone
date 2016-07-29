@@ -9,7 +9,7 @@ rm(list = ls(all.names = TRUE))
 library(car)
 
 # load data_rename
-load('clean/cleaning1.Rdata')
+load("clean/cleaning1.RData")
 #load("~/git/banana-phone/work/clean/cleaning1.RData")
 
 data <- read.csv("clean/data_rename.csv", na = c("#NULL!", "", "Refused", "NA"), stringsAsFactors = F)

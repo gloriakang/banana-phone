@@ -6,7 +6,7 @@ library(ggplot2)
 
 # load data2
 load("clean/cleaning2.RData")
-#load("~/git/banana-phone/work/clean/cleaning2.RData")
+#load("~/git/banana-phone/work/clean/cleaning2.Rdata")
 
 # + theme(axis.text.x = element_text(angle = 45, hjust = 1))
 

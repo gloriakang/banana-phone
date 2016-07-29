@@ -17,14 +17,14 @@ This report contains survey data analysis for household members.
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = T, warning = F, message = F, tidy = F, size = "small")
-setwd("~/git/banana-phone/work")
+#setwd("~/git/banana-phone/work")
 rm(list = ls(all.names = TRUE))
 
 library(dplyr)
 library(tidyr)
 library(ggplot2)
 
-load("clean/cleaning2.Rdata")
+load("clean/cleaning2.RData")
 ```
 
 All household members.
