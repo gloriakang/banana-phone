@@ -13,44 +13,33 @@ output:
 fontsize: 10pt
 ---
 
-This report contains all survey questions.
+This report contains summary of all survey questions.
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = T, warning = F, message = F, tidy = F, size = "small")
 setwd("~/git/banana-phone/work")
-source("clean/data_cleaning2.R")
-source("clean/plotting1.R")
+#source("clean/data_cleaning2.R")
+#source("clean/plotting1.R")
 rm(list = ls(all.names = TRUE))
 
-library(dplyr)
-library(tidyr)
-library(ggplot2)
-library(knitr)
-library(gmodels)
-library(prettyR)
-library(epitools)
+library(dplyr); library(tidyr); library(ggplot2)
+library(knitr); library(gmodels); library(prettyR); library(epitools)
 
-# load data2, new_name, old_name
 load("clean/cleaning2.RData")
-# load ggplot variables
 load("clean/plotting1.RData")
 
-# data = old names; data2 = new names
-names(data2) <- new_name
 data <- data2
 names(data) <- old_name
+names(data2) <- new_name
 ```
 
 
 # Survey questions
+## Q1. Before receiving this survey, did you know influenza is different from the stomach flu?
 
-### Q1. Before receiving this survey, did you know influenza is different from the stomach flu?
 
-```{r, Q1}
-# glm1 = glm(y ~ x, family=binomial)
-# exp(glm1$coef[2])
-
-## GENDER
+```{r Q1}
+# GENDER
 kable(with(data2, addmargins(table(PPGENDER, Q1))))
 
 # odds ratio
@@ -88,7 +77,7 @@ g1 + geom_bar(mapping = aes(x = PPINCIMP, fill = Q1),
 ```
 
 
-### Q2. Have you had an illness with influenza-like symptoms since August 2015?
+## Q2. Have you had an illness with influenza-like symptoms since August 2015?
 
 
 ```{r Q2}
@@ -110,9 +99,11 @@ g2 + geom_bar(mapping = aes(x = Q2, fill = PPINCIMP), position = position_dodge(
 
 ```
 
-### Q3. Has any other person in your household had an illness with influenza like symptoms since August 2015?
 
-```{r}
+## Q3. Has any other person in your household had an illness with influenza like symptoms since August 2015?
+
+
+```{r Q3}
 with(data2, table(Q3))
 
 # plot
@@ -136,10 +127,10 @@ g3 + geom_bar(mapping = aes(x = Q3, fill = PPINCIMP), position = position_dodge(
 ```
 
 
-### Q4. Does your job require you to have a lot of contact with the public?
+## Q4. Does your job require you to have a lot of contact with the public?
 
 
-```{r}
+```{r Q4}
 # + theme(axis.text.x = element_text(angle = 45, hjust = 1))
 with(data2, table(Q4))
 
@@ -164,9 +155,11 @@ g4 + geom_bar(mapping = aes(x = Q4, fill = PPINCIMP), position = position_dodge(
 
 ```
 
-### Q5. Do you have a car that you can use to travel to work?
 
-```{r}
+## Q5. Do you have a car that you can use to travel to work?
+
+
+```{r Q5}
 with(data2, table(Q5))
 
 # plot
@@ -189,7 +182,9 @@ with(data2, table(PPINCIMP, Q5))
 g5 + geom_bar(mapping = aes(x = Q5, fill = PPINCIMP), position = position_dodge())
 ```
 
-### Q6. Do you regularly use public transportation?
+
+## Q6. Do you regularly use public transportation?
+
 
 ```{r}
 with(data2, table(Q6))
@@ -215,7 +210,7 @@ g6 + geom_bar(mapping = aes(x = Q6, fill = PPINCIMP), position = position_dodge(
 ```
 
 
-### Q7. What types of public transportation do you regularly use?
+## Q7. What types of public transportation do you regularly use?
 
 
 ```{r}
@@ -261,7 +256,9 @@ ggplot(q7[!is.na(q7$Q7_r), ], aes(x = Q7_r, y = n, fill = PPINCIMP)) +
 
 ```
 
-### Q8. For what types of activities do you regularly use public transportation?
+
+## Q8. For what types of activities do you regularly use public transportation?
+
 
 ```{r}
 q8_long <- data2 %>%
@@ -287,14 +284,18 @@ with(q8_long, table(PPINCIMP, Q8_q, Q8_r))
 
 ```
 
-### Q9. Do other members of your household regularly use public transportation?
+
+## Q9. Do other members of your household regularly use public transportation?
+
 
 ```{r}
 with(data2, table(Q9))
 
 ```
 
-### Q10. What types of public transportation do other members of your household regularly use?
+
+## Q10. What types of public transportation do other members of your household regularly use?
+
 
 ```{r}
 #Q10 <- data2 %>%
@@ -327,6 +328,7 @@ with(q10_long, table(PPINCIMP, Q10_q, Q10_r))
 
 
 ### Q11. How do you rate your risk of getting influenza if you visited each of the following locations?
+
 
 ```{r}
 q11_long <- data2 %>%

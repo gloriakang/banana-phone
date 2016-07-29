@@ -1,5 +1,5 @@
 ---
-title: "Working analysis: subset"
+title: "Working analysis: survey weights"
 output: 
   html_document:
     fig_height: 3
@@ -20,74 +20,70 @@ rm(list = ls(all.names = TRUE))
 library(dplyr)
 library(tidyr)
 library(ggplot2)
+library(survey)
 #library(mosaic)
 #trellis.par.set(theme=theme.mosaic()) # change default color scheme for lattice
 ```
 
 ```{r load_data}
-# load data2, new_name, old_name; ggplot variables
 load("clean/cleaning2.RData")
-
 data <- data2
-names(data) <- old_name  # data = old names
-names(data2) <- new_name  # data2 = new names
+names(data) <- old_name
+rm(data2)
+options(digits = 4)
 ```
 
-Apply column weights and compare to original data.
+Load some recoded variables.
+
+```{r recode}
+#source(recoding.R)
+load("clean/recoding1.RData")
+df <- datar
+
+#tail(df)
+```
+
+Create a survey object with weights.
 
 ```{r}
-library(survey)
-
-# survey design object
+# survey object
 options(survey.lonely.psu = "adjust")
-des <- svydesign(ids = ~1, weights = ~weight, data = data2[is.na(data2$weight) == F, ])
+des <- svydesign(ids = ~1, weights = ~weight, data = data[is.na(data$weight) == F, ])
 
 ```
 
-Q1.
+
+## Q1. Before receiving this survey, did you know influenza is different from the stomach flu?
 
 ```{r}
 # Q1 tables
-with(data2, summary(Q1))  # unweighted
+with(data, summary(Q1))  # unweighted
 svytable(~Q1, design = des, round = T)  # weighted
 
-# Q1 by gender
-with(data2, table(Q1, PPGENDER))
-with(data2, prop.table(table(Q1, PPGENDER), margin = 2))
+# Q1 breakdown by gender (unweighted)
+with(data, table(Q1, PPGENDER))
+with(data, prop.table(table(Q1, PPGENDER), margin = 1))
+```
 
-# Q1 by gender, with design + weights
+In the unweighted dataset, more females (53.37%) answered Yes to Q1 than males (46.63%); more males (57.99%) answered No compared to females (42.01%)
+
+```{r}
+# Q1 breakdown by gender (with design + weights)
 svytable(~Q1 + PPGENDER, design = des, round = T)
-prop.table(svytable(~Q1 + PPGENDER, design = des), margin = 2)
+prop.table(svytable(~Q1 + PPGENDER, design = des), margin = 1)
 
-# prop table above but with standard errors
+# with standard errors
 svyby(formula = ~Q1, by = ~PPGENDER, design = des, FUN = svymean, na.rm = T)
 
-# prop table with gender + race
+# prop table with SE, by gender + race
 svyby(formula = ~Q1, by = ~PPGENDER + PPETHM, design = des, FUN = svymean, na.rm = T)
 ```
 
-Recode some variables.
+In the weighted dataset, more females (55.02%) answered Yes to Q1 than males (44.98%); more males (56.88%) answered No compared to females (43.12%).
 
-```{r}
-library(car)
-df <- data2
+79.37% of females answered Yes to Q1; 0.2063 said No
+70.45% of males answered Yes to Q1; 0.2955 said No
 
-# female
-df$female <- recode(data2$PPGENDER, recodes = "'Female' = 1; 'Male' = 0")
-
-# ethnicity
-df$white <- recode(data2$PPETHM, recodes = "'White, Non-Hispanic' = 1; NA = NA; else = 0")
-df$black <- recode(data2$PPETHM, recodes = "'Black, Non-Hispanic' = 1; NA = NA; else = 0")
-df$hispanic <- recode(data2$PPETHM, recodes = "'Hispanic' = 1; NA = NA; else = 0")
-df$otherrace <- recode(data2$PPETHM, recodes = "'Other, Non-Hispanic' = 1; NA = NA; else = 0")
-df$mixedrace <- recode(data2$PPETHM, recodes = "'2+ Races, Non-Hispanic' = 1; NA = NA; else = 0")
-
-# Q1
-df$Q1 <- recode(data2$Q1, recodes = "'Yes' = 1; 'No' = 0; NA = NA")
-
-# Q2
-df$sick <- recode(data2$Q2, recodes = "'Yes' = 1; 'No' = 0; NA = NA")
-```
 
 Apply survey design + weights for Q2.
 
@@ -124,21 +120,21 @@ Q2. Have you had an illness with influenza-like symptoms since August 2015?
 
 ```{r}
 # Q2 by gender
-with(data2, table(Q2, PPGENDER))
+with(data, table(Q2, PPGENDER))
 # without weights
 fit1 <- glm(sick ~ PPGENDER, data = df, family = binomial())
 summary(fit1)
 exp(coefficients(fit1))
 
 contrasts(df$sick)
-contrasts(data2$PPGENDER)
+contrasts(data$PPGENDER)
 ```
 
 Q13. getting the flu vaccine
 
 ```{r}
 # use data = df, with recodes
-df$vax <- recode(data2$Q13, "'Yes, every year' = 1; 'Yes, some years' = 1; NA = NA; else = 0")
+df$vax <- recode(data$Q13, "'Yes, every year' = 1; 'Yes, some years' = 1; NA = NA; else = 0")
 summary(df$vax)
 
 ## glm + design weights
@@ -171,7 +167,7 @@ Other questions with design + weights.
 
 ```{r}
 # count total number of unweighted records
-#nrow(data2)
+#nrow(data)
 #unwtd.count(~one, des)
 
 # by gender

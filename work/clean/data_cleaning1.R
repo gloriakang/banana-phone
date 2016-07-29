@@ -2,18 +2,16 @@
 # Reads original data file, renames columns, and saves 'cleaning1.Rdata'
 # output = new_name, old_name
 
+rm(list = ls(all.names = TRUE))
 setwd("~/git/banana-phone/work")
 library(dplyr)
 library(tidyr)
 
 ## load surveydata.csv (change input files as needed)
-data_W <- read.csv("data/surveydata.csv", na = c("#NULL!", "", "Refused"), stringsAsFactors = FALSE)
-data_UNW <- read.csv("data/surveydata_unw.csv", na = c("#NULL!", "", "Refused"), stringsAsFactors = FALSE)
+data <- read.csv("data/surveydata.csv", na = c("#NULL!", "", "Refused", "NA"), stringsAsFactors = F)
 
-
-##### ----- rename sub-columns ----- #####
-
-data_new_name <- data_W %>%
+## rename sub-columns
+data_rename <- data %>%
   # Q7
   rename("Q7_1_Bus" = Q7_1,
          "Q7_2_Carpool" = Q7_2,
@@ -145,21 +143,19 @@ data_new_name <- data_W %>%
 
 
 # save lists of names
-old_name <- names(data_W)
-new_name <- names(data_new_name)
+old_name <- names(data)
+new_name <- names(data_rename)
 
-save(old_name, file = "clean/old_name")
-save(new_name, file = "clean/new_name")
+#save(old_name, file = "clean/old_name")
+#save(new_name, file = "clean/new_name")
 
 # save data_new_name as csv
-write.csv(data_new_name, file = "clean/data_new_name.csv", row.names = FALSE)
-
+write.csv(data_rename, file = "clean/data_rename.csv", row.names = FALSE)
 
 # save Rdata
-rm(data_new_name)
-rm(data_W)
-rm(data_UNW)
+rm(data_rename)
+rm(data)
 
-save(list = ls(all.names = TRUE), file ="clean/cleaning1.RData")
+save(list = ls(all.names = TRUE), file = "clean/cleaning1.RData")
 
 

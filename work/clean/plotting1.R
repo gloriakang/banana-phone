@@ -1,6 +1,6 @@
 # plotting1.R
 
-rm(list=ls(all.names=TRUE))
+rm(list = ls(all.names = TRUE))
 setwd("~/git/banana-phone/work")
 library(ggplot2)
 
