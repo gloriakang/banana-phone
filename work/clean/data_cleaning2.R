@@ -3,13 +3,15 @@
 # apply new names, save as data2
 # output = cleaning_all.Rdata
 
-setwd("~/git/banana-phone/work")
+#setwd("~/git/banana-phone/work")
 rm(list = ls(all.names = TRUE))
 
 library(car)
 
 # load data_rename
 load('clean/cleaning1.Rdata')
+#load("~/git/banana-phone/work/clean/cleaning1.RData")
+
 data <- read.csv("clean/data_rename.csv", na = c("#NULL!", "", "Refused", "NA"), stringsAsFactors = F)
 dataf <- read.csv("clean/data_rename.csv", na = c("#NULL!", "", "Refused", "NA"))  #  with factors
 

@@ -3,12 +3,12 @@
 # output = new_name, old_name
 
 rm(list = ls(all.names = TRUE))
-setwd("~/git/banana-phone/work")
+#setwd("~/git/banana-phone/work")
 library(dplyr)
 library(tidyr)
 
 ## load surveydata.csv (change input files as needed)
-data <- read.csv("data/surveydata.csv", na = c("#NULL!", "", "Refused", "NA"), stringsAsFactors = F)
+data <- read.csv("~/data/surveydata.csv", na = c("#NULL!", "", "Refused", "NA"), stringsAsFactors = F)
 
 ## rename sub-columns
 data_rename <- data %>%
