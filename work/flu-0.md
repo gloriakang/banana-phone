@@ -1,10 +1,10 @@
 # flu-0
 
-Bivariate and multivariate analyses of flu survey data with weights.
+## Bivariate and multivariate analyses of flu survey data with weights.
 
 
 
-Load data and recoded variables.
+### Load data and recoded variables.
 
 
 ```r
@@ -19,7 +19,7 @@ df <- datar  # df contains recoded variables
 #tail(df)
 ```
 
-Create a survey object with weights.
+### Create a survey object with weights.
 
 
 ```r
@@ -32,7 +32,7 @@ des <- svydesign(ids = ~1, weights = ~weight, data = data[is.na(data$weight) == 
 # Survey questions
 ## Q1. Before receiving this survey, did you know influenza is different from the stomach flu?
   
-Compare sex ratios in unweighted and weighted data frames for Q1.
+### Compare sex ratios in unweighted and weighted data frames for Q1.
   
 
 ```r
@@ -59,7 +59,7 @@ svytable(~Q1 + PPGENDER, design = des, round = T)  # weighted Q1
 ```
 
 ```r
-with(data, prop.table(table(Q1, PPGENDER), margin = 1))*100  # unweighted prop
+(u <- with(data, prop.table(table(Q1, PPGENDER), margin = 1))*100)  # unweighted prop
 ```
 
 ```
@@ -70,11 +70,18 @@ with(data, prop.table(table(Q1, PPGENDER), margin = 1))*100  # unweighted prop
 ```
 
 ```r
-w <- prop.table(svytable(~Q1 + PPGENDER, design = des), margin = 1)*100  # weighted prop
+(w <- prop.table(svytable(~Q1 + PPGENDER, design = des), margin = 1)*100)  # weighted prop
 ```
 
-In the unweighted data frame, more females (53.37%) answered Yes to Q1 than males (46.63%); more males (57.99%) answered No compared to females (42.01%).  
-In the weighted data frame, 55.0212% of females (55.02) answered Yes; males = 44.9788% (44.98); more males 56.8791% (56.88%) answered No compared to females 43.1209% (43.12%).  
+```
+##      PPGENDER
+## Q1    Female  Male
+##   Yes  55.02 44.98
+##   No   43.12 56.88
+```
+In the unweighted data frame, 53.3654% of females answered Yes to Q1; males = 46.6346%; 57.9918% of males answered No; females = 57.9918%  
+In the weighted data frame, 55.0212% of females answered Yes; males = 44.9788%; 56.8791% of males answered No; females = 43.1209%.  
+  
   
 
 ```r
@@ -120,29 +127,90 @@ svyby(formula = ~Q1, by = ~PPGENDER + PPETHM, design = des, FUN = svymean, na.rm
 
 ```r
 # out of all females and males
-prop.table(svytable(~Q1 + PPGENDER, design = des), margin = 2)
+(w <- prop.table(svytable(~Q1 + PPGENDER, design = des), margin = 2)*100)
 ```
 
 ```
 ##      PPGENDER
-## Q1    Female   Male
-##   Yes 0.7937 0.7045
-##   No  0.2063 0.2955
+## Q1    Female  Male
+##   Yes  79.37 70.45
+##   No   20.63 29.55
 ```
 Out of all females and males:  
-79.37% of females answered Yes to Q1; 0.2063 said No  
-70.45% of males answered Yes to Q1; 0.2955 said No  
+79.3709% of females answered Yes to Q1; 20.6291% said No.  
+70.4534% of males answered Yes to Q1; 29.5466% said No.  
+  
+  
+## Q2. Have you had an illness with influenza-like symptoms since August 2015?
 
-***
-
-Apply survey design + weights for Q2.  
-Note: df contains recoded variables  
+### Without weights.
 
 
 ```r
-# glm + design weights
+# Q2 by gender
+with(data, table(Q2, PPGENDER))
+```
+
+```
+##      PPGENDER
+## Q2    Female Male
+##   Yes    234  180
+##   No     858  877
+```
+
+```r
+fit1 <- glm(sick ~ PPGENDER, data = df, family = binomial())  # unweighted
+summary(fit1)
+```
+
+```
+## 
+## Call:
+## glm(formula = sick ~ PPGENDER, family = binomial(), data = df)
+## 
+## Deviance Residuals: 
+##    Min      1Q  Median      3Q     Max  
+## -0.695  -0.695  -0.611  -0.611   1.882  
+## 
+## Coefficients:
+##              Estimate Std. Error z value Pr(>|z|)    
+## (Intercept)   -1.2993     0.0737  -17.62   <2e-16 ***
+## PPGENDERMale  -0.2843     0.1102   -2.58   0.0099 ** 
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## (Dispersion parameter for binomial family taken to be 1)
+## 
+##     Null deviance: 2106.2  on 2148  degrees of freedom
+## Residual deviance: 2099.5  on 2147  degrees of freedom
+##   (19 observations deleted due to missingness)
+## AIC: 2103
+## 
+## Number of Fisher Scoring iterations: 4
+```
+
+```r
+(q2.u <- exp(coefficients(fit1)))
+```
+
+```
+##  (Intercept) PPGENDERMale 
+##       0.2727       0.7526
+```
+
+```r
+#contrasts(data$PPGENDER)
+```
+
+In the unweighted data frame, males had 0.7526 odds of being sick compared to females.  
+
+### Apply survey design + weights for Q2. Analyze sick vs. not sick by gender.
+
+
+```r
+# create survey object + weights
 options(survey.lonely.psu = "adjust")
-des2 <- svydesign(ids = ~1, weights = ~weight, data = df)
+des2 <- svydesign(ids = ~1, weights = ~weight, data = df)  # data = df
 
 # Q2: being sick, by female gender
 m1 <- svyglm(sick ~ female, des2, family = quasibinomial())
@@ -179,6 +247,9 @@ summary(m1)
 ##       0.211       1.347
 ```
 
+Females had 1.3474 odds of being sick compared to males.
+
+
 ```r
 # Q2: being sick, by male gender
 m2 <- svyglm(sick ~ PPGENDER, des2, family = quasibinomial())
@@ -214,6 +285,11 @@ summary(m2)
 ##  (Intercept) PPGENDERMale 
 ##       0.2843       0.7422
 ```
+
+Males had 0.7422 odds of being sick compared to females.  
+
+### What about by ethnicity?
+
 
 ```r
 # Q2: being sick, by ethnicity
@@ -288,21 +364,25 @@ summary(m4)
 ```
 
 ```r
-or4 <- exp(coefficients(m4))  # odds ratios
+(or4 <- exp(coefficients(m4)))  # odds ratios
 ```
 
-Odds ratios for being sick compared to:  
-  - males: 1.3474  
-  - females: 0.7422  
-  - white people: 0.2109, 1.184, 1.8071, 1.6028, 1.5035  
+```
+## (Intercept)      black1   hispanic1  otherrace1  mixedrace1 
+##      0.2109      1.1840      1.8071      1.6028      1.5035
+```
+
+Compared to white ethnicity, odds ratio for being sick are 1.184, 1.8071, 1.6028, 1.5035 for black, hispanic, other, and 2+ mixed race groups, respectively.  
   
+  
+### Create and compare models for sick vs. not sick.
 
 
 ```r
 # adding variables to model with weights
 a1 <- svyglm(sick ~ PPGENDER, des2, family = quasibinomial())
-a2 <- update(a1, ~ . + PPETHM)
-a3 <- update(a2, ~ . + income)
+a2 <- update(a1, ~ . + PPETHM)  # add race
+a3 <- update(a2, ~ . + income)  # add income
 
 # memisc
 mtable(a1, a2, a3)
@@ -350,82 +430,12 @@ mtable(a1, a2, a3)
 ## =======================================================================================
 ```
 
-
-
-## Q2. Have you had an illness with influenza-like symptoms since August 2015?
-
-Without weights:  
-
-
-```r
-# Q2 by gender
-with(data, table(Q2, PPGENDER))
-```
-
-```
-##      PPGENDER
-## Q2    Female Male
-##   Yes    234  180
-##   No     858  877
-```
-
-```r
-# without weights
-fit1 <- glm(sick ~ PPGENDER, data = df, family = binomial())
-summary(fit1)
-```
-
-```
-## 
-## Call:
-## glm(formula = sick ~ PPGENDER, family = binomial(), data = df)
-## 
-## Deviance Residuals: 
-##    Min      1Q  Median      3Q     Max  
-## -0.695  -0.695  -0.611  -0.611   1.882  
-## 
-## Coefficients:
-##              Estimate Std. Error z value Pr(>|z|)    
-## (Intercept)   -1.2993     0.0737  -17.62   <2e-16 ***
-## PPGENDERMale  -0.2843     0.1102   -2.58   0.0099 ** 
-## ---
-## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-## 
-## (Dispersion parameter for binomial family taken to be 1)
-## 
-##     Null deviance: 2106.2  on 2148  degrees of freedom
-## Residual deviance: 2099.5  on 2147  degrees of freedom
-##   (19 observations deleted due to missingness)
-## AIC: 2103
-## 
-## Number of Fisher Scoring iterations: 4
-```
-
-```r
-(q2.or <- exp(coefficients(fit1)))
-```
-
-```
-##  (Intercept) PPGENDERMale 
-##       0.2727       0.7526
-```
-
-```r
-#contrasts(df$sick)
-#contrasts(data$PPGENDER)
-```
-
-Unweighted OR for being sick last year = 0.7526 compared to females.  
-
-
-## Q13. getting the flu vaccine
+## Q13. Do you get an influenza vaccine?
 
 
 ```r
 # use data = df, with recodes
-#df$vax <- recode(data$Q13, recodes = "'Yes, every year' = 1; 'Yes, some years' = 1; NA = NA; else = 0")  # this is apparently already re-coded
-
-# check that the newly recoded column makes sense
+# recode Q13 as 1 = yes always; 1 = yes sometimes; 0 = no never
 str(df$vax)
 ```
 
@@ -442,31 +452,13 @@ str(data$Q13)
 ```
 
 ```r
-summary(data$Q13)
-```
-
-```
-## Yes, every year Yes, some years       No, never            NA's 
-##             908             423             819              18
-```
-
-```r
-summary(df$vax)
-```
-
-```
-##  Yes   No NA's 
-## 1331  819   18
-```
-
-```r
 # glm + design weights
 options(survey.lonely.psu = "adjust")
 des2 <- svydesign(ids = ~1, weights = ~weight, data = df)
 
 # getting sick ~ getting vaccine
-m3 <- svyglm(sick ~ vax, des2, family = quasibinomial)
-summary(m3)
+m5 <- svyglm(sick ~ vax, des2, family = quasibinomial)
+summary(m5)
 ```
 
 ```
@@ -490,20 +482,20 @@ summary(m3)
 ```
 
 ```r
-exp(coefficients(m3)[2])
+(or5 <- exp(coefficients(m5)))
 ```
 
 ```
-##  vaxNo 
-## 0.7558
+## (Intercept)       vaxNo 
+##      0.2767      0.7558
 ```
 
-OR for being sick last year for those receiving vaccine = 0.7558
+Those who did not receive vaccine had 0.7558 odds of getting sick compared to those who received the vaccine.
 
 
 ```r
-# tables with weights
-svytable(~vax + sick, design = des2, round = T)
+# Q2 + Q13 tables with weights
+svytable(~vax + sick, design = des2, round = T)  # sick = 1, not sick = 0
 ```
 
 ```
@@ -514,35 +506,32 @@ svytable(~vax + sick, design = des2, round = T)
 ```
 
 ```r
-prop.table(svytable(~vax + sick, design = des2), margin = 2)
+(t2 <- prop.table(svytable(~vax + sick, design = des2), margin = 2)* 100)
 ```
 
 ```
 ##      sick
-## vax        0      1
-##   Yes 0.5843 0.6503
-##   No  0.4157 0.3497
+## vax       0     1
+##   Yes 58.43 65.03
+##   No  41.57 34.97
 ```
 
 ```r
-prop.table(svytable(~vax + sick, design = des2), margin = 1)
+(t1 <- prop.table(svytable(~vax + sick, design = des2), margin = 1)* 100)
 ```
 
 ```
 ##      sick
-## vax        0      1
-##   Yes 0.7833 0.2167
-##   No  0.8270 0.1730
+## vax       0     1
+##   Yes 78.33 21.67
+##   No  82.70 17.30
 ```
 
-Out of those who reported being sick, 65.03% reported receiving vaccine.  
-Out of those who were healthy, 58.43% received vaccine (41.57% did not).  
-Vaccinated group: 78.32% report no illness.  
-Unvaccinated group: 82.7% report no illness.  
+Out of those who reported being sick, 65.0288% reported receiving vaccine.  
+Out of those who were healthy, 58.427% received vaccine (41.573% did not).  
+Vaccinated group: 78.3274% report no illness.  
+Unvaccinated group: 82.7045% report no illness.  
   
-
-
-Other questions with design + weights.
 
 
 

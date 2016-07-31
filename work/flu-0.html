@@ -148,16 +148,29 @@ $(document).ready(function () {
 
 <div id="TOC">
 <ul>
+<li><a href="#bivariate-and-multivariate-analyses-of-flu-survey-data-with-weights.">Bivariate and multivariate analyses of flu survey data with weights.</a><ul>
+<li><a href="#load-data-and-recoded-variables.">Load data and recoded variables.</a></li>
+<li><a href="#create-a-survey-object-with-weights.">Create a survey object with weights.</a></li>
+</ul></li>
 <li><a href="#survey-questions">Survey questions</a><ul>
-<li><a href="#q1.-before-receiving-this-survey-did-you-know-influenza-is-different-from-the-stomach-flu">Q1. Before receiving this survey, did you know influenza is different from the stomach flu?</a></li>
-<li><a href="#q2.-have-you-had-an-illness-with-influenza-like-symptoms-since-august-2015">Q2. Have you had an illness with influenza-like symptoms since August 2015?</a></li>
-<li><a href="#q13.-getting-the-flu-vaccine">Q13. getting the flu vaccine</a></li>
+<li><a href="#q1.-before-receiving-this-survey-did-you-know-influenza-is-different-from-the-stomach-flu">Q1. Before receiving this survey, did you know influenza is different from the stomach flu?</a><ul>
+<li><a href="#compare-sex-ratios-in-unweighted-and-weighted-data-frames-for-q1.">Compare sex ratios in unweighted and weighted data frames for Q1.</a></li>
+</ul></li>
+<li><a href="#q2.-have-you-had-an-illness-with-influenza-like-symptoms-since-august-2015">Q2. Have you had an illness with influenza-like symptoms since August 2015?</a><ul>
+<li><a href="#without-weights.">Without weights.</a></li>
+<li><a href="#apply-survey-design-weights-for-q2.-analyze-sick-vs.not-sick-by-gender.">Apply survey design + weights for Q2. Analyze sick vs. not sick by gender.</a></li>
+<li><a href="#what-about-by-ethnicity">What about by ethnicity?</a></li>
+<li><a href="#create-and-compare-models-for-sick-vs.not-sick.">Create and compare models for sick vs. not sick.</a></li>
+</ul></li>
+<li><a href="#q13.-do-you-get-an-influenza-vaccine">Q13. Do you get an influenza vaccine?</a></li>
 </ul></li>
 </ul>
 </div>
 
-<p>Bivariate and multivariate analyses of flu survey data with weights.</p>
-<p>Load data and recoded variables.</p>
+<div id="bivariate-and-multivariate-analyses-of-flu-survey-data-with-weights." class="section level2">
+<h2>Bivariate and multivariate analyses of flu survey data with weights.</h2>
+<div id="load-data-and-recoded-variables." class="section level3">
+<h3>Load data and recoded variables.</h3>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">load</span>(<span class="st">&quot;clean/cleaning2.RData&quot;</span>)
 data &lt;-<span class="st"> </span>data2
 <span class="kw">names</span>(data) &lt;-<span class="st"> </span>old_name  <span class="co"># give data old names</span>
@@ -167,16 +180,21 @@ data &lt;-<span class="st"> </span>data2
 <span class="kw">load</span>(<span class="st">&quot;clean/recoding1.RData&quot;</span>)
 df &lt;-<span class="st"> </span>datar  <span class="co"># df contains recoded variables</span>
 <span class="co">#tail(df)</span></code></pre></div>
-<p>Create a survey object with weights.</p>
+</div>
+<div id="create-a-survey-object-with-weights." class="section level3">
+<h3>Create a survey object with weights.</h3>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">options</span>(<span class="dt">digits =</span> <span class="dv">4</span>)
 <span class="kw">options</span>(<span class="dt">survey.lonely.psu =</span> <span class="st">&quot;adjust&quot;</span>)
 des &lt;-<span class="st"> </span><span class="kw">svydesign</span>(<span class="dt">ids =</span> ~<span class="dv">1</span>, <span class="dt">weights =</span> ~weight, <span class="dt">data =</span> data[<span class="kw">is.na</span>(data$weight) ==<span class="st"> </span>F, ])
 <span class="co">#summary(des)</span></code></pre></div>
+</div>
+</div>
 <div id="survey-questions" class="section level1">
 <h1>Survey questions</h1>
 <div id="q1.-before-receiving-this-survey-did-you-know-influenza-is-different-from-the-stomach-flu" class="section level2">
 <h2>Q1. Before receiving this survey, did you know influenza is different from the stomach flu?</h2>
-<p>Compare sex ratios in unweighted and weighted data frames for Q1.</p>
+<div id="compare-sex-ratios-in-unweighted-and-weighted-data-frames-for-q1." class="section level3">
+<h3>Compare sex ratios in unweighted and weighted data frames for Q1.</h3>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">with</span>(data, <span class="kw">addmargins</span>(<span class="kw">table</span>(Q1, PPGENDER)))  <span class="co"># unweighted Q1</span></code></pre></div>
 <pre><code>##      PPGENDER
 ## Q1    Female Male  Sum
@@ -188,14 +206,18 @@ des &lt;-<span class="st"> </span><span class="kw">svydesign</span>(<span class=
 ## Q1    Female Male
 ##   Yes    887  725
 ##   No     231  304</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">with</span>(data, <span class="kw">prop.table</span>(<span class="kw">table</span>(Q1, PPGENDER), <span class="dt">margin =</span> <span class="dv">1</span>))*<span class="dv">100</span>  <span class="co"># unweighted prop</span></code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">(u &lt;-<span class="st"> </span><span class="kw">with</span>(data, <span class="kw">prop.table</span>(<span class="kw">table</span>(Q1, PPGENDER), <span class="dt">margin =</span> <span class="dv">1</span>))*<span class="dv">100</span>)  <span class="co"># unweighted prop</span></code></pre></div>
 <pre><code>##      PPGENDER
 ## Q1    Female  Male
 ##   Yes  53.37 46.63
 ##   No   42.01 57.99</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">w &lt;-<span class="st"> </span><span class="kw">prop.table</span>(<span class="kw">svytable</span>(~Q1 +<span class="st"> </span>PPGENDER, <span class="dt">design =</span> des), <span class="dt">margin =</span> <span class="dv">1</span>)*<span class="dv">100</span>  <span class="co"># weighted prop</span></code></pre></div>
-<p>In the unweighted data frame, more females (53.37%) answered Yes to Q1 than males (46.63%); more males (57.99%) answered No compared to females (42.01%).<br />
-In the weighted data frame, 55.0212% of females (55.02) answered Yes; males = 44.9788% (44.98); more males 56.8791% (56.88%) answered No compared to females 43.1209% (43.12%).</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">(w &lt;-<span class="st"> </span><span class="kw">prop.table</span>(<span class="kw">svytable</span>(~Q1 +<span class="st"> </span>PPGENDER, <span class="dt">design =</span> des), <span class="dt">margin =</span> <span class="dv">1</span>)*<span class="dv">100</span>)  <span class="co"># weighted prop</span></code></pre></div>
+<pre><code>##      PPGENDER
+## Q1    Female  Male
+##   Yes  55.02 44.98
+##   No   43.12 56.88</code></pre>
+<p>In the unweighted data frame, 53.3654% of females answered Yes to Q1; males = 46.6346%; 57.9918% of males answered No; females = 57.9918%<br />
+In the weighted data frame, 55.0212% of females answered Yes; males = 44.9788%; 56.8791% of males answered No; females = 43.1209%.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># table above with standard errors</span>
 <span class="kw">svyby</span>(<span class="dt">formula =</span> ~Q1, <span class="dt">by =</span> ~PPGENDER, <span class="dt">design =</span> des, <span class="dt">FUN =</span> svymean, <span class="dt">na.rm =</span> T)</code></pre></div>
 <pre><code>##        PPGENDER  Q1Yes   Q1No se.Q1Yes se.Q1No
@@ -226,20 +248,62 @@ In the weighted data frame, 55.0212% of females (55.02) answered Yes; males = 44
 ## Female.2+ Races, Non-Hispanic 0.2281  0.06514 0.06514
 ## Male.2+ Races, Non-Hispanic   0.2686  0.08201 0.08201</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># out of all females and males</span>
-<span class="kw">prop.table</span>(<span class="kw">svytable</span>(~Q1 +<span class="st"> </span>PPGENDER, <span class="dt">design =</span> des), <span class="dt">margin =</span> <span class="dv">2</span>)</code></pre></div>
+(w &lt;-<span class="st"> </span><span class="kw">prop.table</span>(<span class="kw">svytable</span>(~Q1 +<span class="st"> </span>PPGENDER, <span class="dt">design =</span> des), <span class="dt">margin =</span> <span class="dv">2</span>)*<span class="dv">100</span>)</code></pre></div>
 <pre><code>##      PPGENDER
-## Q1    Female   Male
-##   Yes 0.7937 0.7045
-##   No  0.2063 0.2955</code></pre>
+## Q1    Female  Male
+##   Yes  79.37 70.45
+##   No   20.63 29.55</code></pre>
 <p>Out of all females and males:<br />
-79.37% of females answered Yes to Q1; 0.2063 said No<br />
-70.45% of males answered Yes to Q1; 0.2955 said No</p>
-<hr />
-<p>Apply survey design + weights for Q2.<br />
-Note: df contains recoded variables</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># glm + design weights</span>
+79.3709% of females answered Yes to Q1; 20.6291% said No.<br />
+70.4534% of males answered Yes to Q1; 29.5466% said No.</p>
+</div>
+</div>
+<div id="q2.-have-you-had-an-illness-with-influenza-like-symptoms-since-august-2015" class="section level2">
+<h2>Q2. Have you had an illness with influenza-like symptoms since August 2015?</h2>
+<div id="without-weights." class="section level3">
+<h3>Without weights.</h3>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Q2 by gender</span>
+<span class="kw">with</span>(data, <span class="kw">table</span>(Q2, PPGENDER))</code></pre></div>
+<pre><code>##      PPGENDER
+## Q2    Female Male
+##   Yes    234  180
+##   No     858  877</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">fit1 &lt;-<span class="st"> </span><span class="kw">glm</span>(sick ~<span class="st"> </span>PPGENDER, <span class="dt">data =</span> df, <span class="dt">family =</span> <span class="kw">binomial</span>())  <span class="co"># unweighted</span>
+<span class="kw">summary</span>(fit1)</code></pre></div>
+<pre><code>## 
+## Call:
+## glm(formula = sick ~ PPGENDER, family = binomial(), data = df)
+## 
+## Deviance Residuals: 
+##    Min      1Q  Median      3Q     Max  
+## -0.695  -0.695  -0.611  -0.611   1.882  
+## 
+## Coefficients:
+##              Estimate Std. Error z value Pr(&gt;|z|)    
+## (Intercept)   -1.2993     0.0737  -17.62   &lt;2e-16 ***
+## PPGENDERMale  -0.2843     0.1102   -2.58   0.0099 ** 
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## (Dispersion parameter for binomial family taken to be 1)
+## 
+##     Null deviance: 2106.2  on 2148  degrees of freedom
+## Residual deviance: 2099.5  on 2147  degrees of freedom
+##   (19 observations deleted due to missingness)
+## AIC: 2103
+## 
+## Number of Fisher Scoring iterations: 4</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">(q2.u &lt;-<span class="st"> </span><span class="kw">exp</span>(<span class="kw">coefficients</span>(fit1)))</code></pre></div>
+<pre><code>##  (Intercept) PPGENDERMale 
+##       0.2727       0.7526</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co">#contrasts(data$PPGENDER)</span></code></pre></div>
+<p>In the unweighted data frame, males had 0.7526 odds of being sick compared to females.</p>
+</div>
+<div id="apply-survey-design-weights-for-q2.-analyze-sick-vs.not-sick-by-gender." class="section level3">
+<h3>Apply survey design + weights for Q2. Analyze sick vs. not sick by gender.</h3>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># create survey object + weights</span>
 <span class="kw">options</span>(<span class="dt">survey.lonely.psu =</span> <span class="st">&quot;adjust&quot;</span>)
-des2 &lt;-<span class="st"> </span><span class="kw">svydesign</span>(<span class="dt">ids =</span> ~<span class="dv">1</span>, <span class="dt">weights =</span> ~weight, <span class="dt">data =</span> df)
+des2 &lt;-<span class="st"> </span><span class="kw">svydesign</span>(<span class="dt">ids =</span> ~<span class="dv">1</span>, <span class="dt">weights =</span> ~weight, <span class="dt">data =</span> df)  <span class="co"># data = df</span>
 
 <span class="co"># Q2: being sick, by female gender</span>
 m1 &lt;-<span class="st"> </span><span class="kw">svyglm</span>(sick ~<span class="st"> </span>female, des2, <span class="dt">family =</span> <span class="kw">quasibinomial</span>())
@@ -265,6 +329,7 @@ m1 &lt;-<span class="st"> </span><span class="kw">svyglm</span>(sick ~<span clas
 (or1 &lt;-<span class="st"> </span><span class="kw">exp</span>(<span class="kw">coefficients</span>(m1)))</code></pre></div>
 <pre><code>## (Intercept)     female1 
 ##       0.211       1.347</code></pre>
+<p>Females had 1.3474 odds of being sick compared to males.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Q2: being sick, by male gender</span>
 m2 &lt;-<span class="st"> </span><span class="kw">svyglm</span>(sick ~<span class="st"> </span>PPGENDER, des2, <span class="dt">family =</span> <span class="kw">quasibinomial</span>())
 <span class="kw">summary</span>(m2)</code></pre></div>
@@ -289,6 +354,10 @@ m2 &lt;-<span class="st"> </span><span class="kw">svyglm</span>(sick ~<span clas
 (or2 &lt;-<span class="st"> </span><span class="kw">exp</span>(<span class="kw">coefficients</span>(m2)))</code></pre></div>
 <pre><code>##  (Intercept) PPGENDERMale 
 ##       0.2843       0.7422</code></pre>
+<p>Males had 0.7422 odds of being sick compared to females.</p>
+</div>
+<div id="what-about-by-ethnicity" class="section level3">
+<h3>What about by ethnicity?</h3>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Q2: being sick, by ethnicity</span>
 m3 &lt;-<span class="st"> </span><span class="kw">svyglm</span>(sick ~<span class="st"> </span>PPETHM, des2, <span class="dt">family =</span> <span class="kw">quasibinomial</span>())
 <span class="kw">summary</span>(m3)</code></pre></div>
@@ -343,15 +412,17 @@ m4 &lt;-<span class="st"> </span><span class="kw">svyglm</span>(sick ~<span clas
 ## (Dispersion parameter for quasibinomial family taken to be 0.9992)
 ## 
 ## Number of Fisher Scoring iterations: 4</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">or4 &lt;-<span class="st"> </span><span class="kw">exp</span>(<span class="kw">coefficients</span>(m4))  <span class="co"># odds ratios</span></code></pre></div>
-<p>Odds ratios for being sick compared to:<br />
- - males: 1.3474<br />
- - females: 0.7422<br />
- - white people: 0.2109, 1.184, 1.8071, 1.6028, 1.5035</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">(or4 &lt;-<span class="st"> </span><span class="kw">exp</span>(<span class="kw">coefficients</span>(m4)))  <span class="co"># odds ratios</span></code></pre></div>
+<pre><code>## (Intercept)      black1   hispanic1  otherrace1  mixedrace1 
+##      0.2109      1.1840      1.8071      1.6028      1.5035</code></pre>
+<p>Compared to white ethnicity, odds ratio for being sick are 1.184, 1.8071, 1.6028, 1.5035 for black, hispanic, other, and 2+ mixed race groups, respectively.</p>
+</div>
+<div id="create-and-compare-models-for-sick-vs.not-sick." class="section level3">
+<h3>Create and compare models for sick vs. not sick.</h3>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># adding variables to model with weights</span>
 a1 &lt;-<span class="st"> </span><span class="kw">svyglm</span>(sick ~<span class="st"> </span>PPGENDER, des2, <span class="dt">family =</span> <span class="kw">quasibinomial</span>())
-a2 &lt;-<span class="st"> </span><span class="kw">update</span>(a1, ~<span class="st"> </span>. +<span class="st"> </span>PPETHM)
-a3 &lt;-<span class="st"> </span><span class="kw">update</span>(a2, ~<span class="st"> </span>. +<span class="st"> </span>income)
+a2 &lt;-<span class="st"> </span><span class="kw">update</span>(a1, ~<span class="st"> </span>. +<span class="st"> </span>PPETHM)  <span class="co"># add race</span>
+a3 &lt;-<span class="st"> </span><span class="kw">update</span>(a2, ~<span class="st"> </span>. +<span class="st"> </span>income)  <span class="co"># add income</span>
 
 <span class="co"># memisc</span>
 <span class="kw">mtable</span>(a1, a2, a3)</code></pre></div>
@@ -395,71 +466,22 @@ a3 &lt;-<span class="st"> </span><span class="kw">update</span>(a2, ~<span class
 ##   N                                                    2146       2146       2146      
 ## =======================================================================================</code></pre>
 </div>
-<div id="q2.-have-you-had-an-illness-with-influenza-like-symptoms-since-august-2015" class="section level2">
-<h2>Q2. Have you had an illness with influenza-like symptoms since August 2015?</h2>
-<p>Without weights:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Q2 by gender</span>
-<span class="kw">with</span>(data, <span class="kw">table</span>(Q2, PPGENDER))</code></pre></div>
-<pre><code>##      PPGENDER
-## Q2    Female Male
-##   Yes    234  180
-##   No     858  877</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># without weights</span>
-fit1 &lt;-<span class="st"> </span><span class="kw">glm</span>(sick ~<span class="st"> </span>PPGENDER, <span class="dt">data =</span> df, <span class="dt">family =</span> <span class="kw">binomial</span>())
-<span class="kw">summary</span>(fit1)</code></pre></div>
-<pre><code>## 
-## Call:
-## glm(formula = sick ~ PPGENDER, family = binomial(), data = df)
-## 
-## Deviance Residuals: 
-##    Min      1Q  Median      3Q     Max  
-## -0.695  -0.695  -0.611  -0.611   1.882  
-## 
-## Coefficients:
-##              Estimate Std. Error z value Pr(&gt;|z|)    
-## (Intercept)   -1.2993     0.0737  -17.62   &lt;2e-16 ***
-## PPGENDERMale  -0.2843     0.1102   -2.58   0.0099 ** 
-## ---
-## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-## 
-## (Dispersion parameter for binomial family taken to be 1)
-## 
-##     Null deviance: 2106.2  on 2148  degrees of freedom
-## Residual deviance: 2099.5  on 2147  degrees of freedom
-##   (19 observations deleted due to missingness)
-## AIC: 2103
-## 
-## Number of Fisher Scoring iterations: 4</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">(q2.or &lt;-<span class="st"> </span><span class="kw">exp</span>(<span class="kw">coefficients</span>(fit1)))</code></pre></div>
-<pre><code>##  (Intercept) PPGENDERMale 
-##       0.2727       0.7526</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co">#contrasts(df$sick)</span>
-<span class="co">#contrasts(data$PPGENDER)</span></code></pre></div>
-<p>Unweighted OR for being sick last year = 0.7526 compared to females.</p>
 </div>
-<div id="q13.-getting-the-flu-vaccine" class="section level2">
-<h2>Q13. getting the flu vaccine</h2>
+<div id="q13.-do-you-get-an-influenza-vaccine" class="section level2">
+<h2>Q13. Do you get an influenza vaccine?</h2>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># use data = df, with recodes</span>
-<span class="co">#df$vax &lt;- recode(data$Q13, recodes = &quot;'Yes, every year' = 1; 'Yes, some years' = 1; NA = NA; else = 0&quot;)  # this is apparently already re-coded</span>
-
-<span class="co"># check that the newly recoded column makes sense</span>
+<span class="co"># recode Q13 as 1 = yes always; 1 = yes sometimes; 0 = no never</span>
 <span class="kw">str</span>(df$vax)</code></pre></div>
 <pre><code>##  Factor w/ 2 levels &quot;Yes&quot;,&quot;No&quot;: 1 NA 1 1 1 1 2 1 1 2 ...</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">str</span>(data$Q13)</code></pre></div>
 <pre><code>##  Factor w/ 3 levels &quot;Yes, every year&quot;,..: 1 NA 1 2 1 2 3 1 2 3 ...</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">summary</span>(data$Q13)</code></pre></div>
-<pre><code>## Yes, every year Yes, some years       No, never            NA's 
-##             908             423             819              18</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">summary</span>(df$vax)</code></pre></div>
-<pre><code>##  Yes   No NA's 
-## 1331  819   18</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># glm + design weights</span>
 <span class="kw">options</span>(<span class="dt">survey.lonely.psu =</span> <span class="st">&quot;adjust&quot;</span>)
 des2 &lt;-<span class="st"> </span><span class="kw">svydesign</span>(<span class="dt">ids =</span> ~<span class="dv">1</span>, <span class="dt">weights =</span> ~weight, <span class="dt">data =</span> df)
 
 <span class="co"># getting sick ~ getting vaccine</span>
-m3 &lt;-<span class="st"> </span><span class="kw">svyglm</span>(sick ~<span class="st"> </span>vax, des2, <span class="dt">family =</span> quasibinomial)
-<span class="kw">summary</span>(m3)</code></pre></div>
+m5 &lt;-<span class="st"> </span><span class="kw">svyglm</span>(sick ~<span class="st"> </span>vax, des2, <span class="dt">family =</span> quasibinomial)
+<span class="kw">summary</span>(m5)</code></pre></div>
 <pre><code>## 
 ## Call:
 ## svyglm(formula = sick ~ vax, des2, family = quasibinomial)
@@ -477,31 +499,30 @@ m3 &lt;-<span class="st"> </span><span class="kw">svyglm</span>(sick ~<span clas
 ## (Dispersion parameter for quasibinomial family taken to be 0.9979)
 ## 
 ## Number of Fisher Scoring iterations: 4</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">exp</span>(<span class="kw">coefficients</span>(m3)[<span class="dv">2</span>])</code></pre></div>
-<pre><code>##  vaxNo 
-## 0.7558</code></pre>
-<p>OR for being sick last year for those receiving vaccine = 0.7558</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># tables with weights</span>
-<span class="kw">svytable</span>(~vax +<span class="st"> </span>sick, <span class="dt">design =</span> des2, <span class="dt">round =</span> T)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">(or5 &lt;-<span class="st"> </span><span class="kw">exp</span>(<span class="kw">coefficients</span>(m5)))</code></pre></div>
+<pre><code>## (Intercept)       vaxNo 
+##      0.2767      0.7558</code></pre>
+<p>Those who did not receive vaccine had 0.7558 odds of getting sick compared to those who received the vaccine.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Q2 + Q13 tables with weights</span>
+<span class="kw">svytable</span>(~vax +<span class="st"> </span>sick, <span class="dt">design =</span> des2, <span class="dt">round =</span> T)  <span class="co"># sick = 1, not sick = 0</span></code></pre></div>
 <pre><code>##      sick
 ## vax     0   1
 ##   Yes 999 276
 ##   No  711 149</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">prop.table</span>(<span class="kw">svytable</span>(~vax +<span class="st"> </span>sick, <span class="dt">design =</span> des2), <span class="dt">margin =</span> <span class="dv">2</span>)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">(t2 &lt;-<span class="st"> </span><span class="kw">prop.table</span>(<span class="kw">svytable</span>(~vax +<span class="st"> </span>sick, <span class="dt">design =</span> des2), <span class="dt">margin =</span> <span class="dv">2</span>)*<span class="st"> </span><span class="dv">100</span>)</code></pre></div>
 <pre><code>##      sick
-## vax        0      1
-##   Yes 0.5843 0.6503
-##   No  0.4157 0.3497</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">prop.table</span>(<span class="kw">svytable</span>(~vax +<span class="st"> </span>sick, <span class="dt">design =</span> des2), <span class="dt">margin =</span> <span class="dv">1</span>)</code></pre></div>
+## vax       0     1
+##   Yes 58.43 65.03
+##   No  41.57 34.97</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">(t1 &lt;-<span class="st"> </span><span class="kw">prop.table</span>(<span class="kw">svytable</span>(~vax +<span class="st"> </span>sick, <span class="dt">design =</span> des2), <span class="dt">margin =</span> <span class="dv">1</span>)*<span class="st"> </span><span class="dv">100</span>)</code></pre></div>
 <pre><code>##      sick
-## vax        0      1
-##   Yes 0.7833 0.2167
-##   No  0.8270 0.1730</code></pre>
-<p>Out of those who reported being sick, 65.03% reported receiving vaccine.<br />
-Out of those who were healthy, 58.43% received vaccine (41.57% did not).<br />
-Vaccinated group: 78.32% report no illness.<br />
-Unvaccinated group: 82.7% report no illness.</p>
-<p>Other questions with design + weights.</p>
+## vax       0     1
+##   Yes 78.33 21.67
+##   No  82.70 17.30</code></pre>
+<p>Out of those who reported being sick, 65.0288% reported receiving vaccine.<br />
+Out of those who were healthy, 58.427% received vaccine (41.573% did not).<br />
+Vaccinated group: 78.3274% report no illness.<br />
+Unvaccinated group: 82.7045% report no illness.</p>
 </div>
 </div>
 
