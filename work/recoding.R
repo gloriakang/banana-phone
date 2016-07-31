@@ -76,6 +76,11 @@ str(data2$childhh)
 
 
 
+
+
+
+
+
 ##### ----- save ----- #####
 datar <- data2
 save(datar, file = "clean/recoding1.RData")

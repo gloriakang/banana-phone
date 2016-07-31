@@ -1,40 +1,39 @@
-# Working analysis: survey weights
+# flu-0
+
+Bivariate and multivariate analyses of flu survey data with weights.
 
 
+
+Load data and recoded variables.
 
 
 ```r
 load("clean/cleaning2.RData")
 data <- data2
-names(data) <- old_name
+names(data) <- old_name  # give data old names
 rm(data2)
-```
 
-> Load some recoded variables.
-
-
-```r
 #source(recoding.R)
 load("clean/recoding1.RData")
-df <- datar
+df <- datar  # df contains recoded variables
 #tail(df)
 ```
 
-> Create a survey object with weights.
+Create a survey object with weights.
 
 
 ```r
-# survey object
 options(digits = 4)
 options(survey.lonely.psu = "adjust")
 des <- svydesign(ids = ~1, weights = ~weight, data = data[is.na(data$weight) == F, ])
 #summary(des)
 ```
 
+# Survey questions
 ## Q1. Before receiving this survey, did you know influenza is different from the stomach flu?
-
-> Comparing sex ratios in the unweighted and weighted data frames for Q1.
-
+  
+Compare sex ratios in unweighted and weighted data frames for Q1.
+  
 
 ```r
 with(data, addmargins(table(Q1, PPGENDER)))  # unweighted Q1
@@ -60,30 +59,23 @@ svytable(~Q1 + PPGENDER, design = des, round = T)  # weighted Q1
 ```
 
 ```r
-with(data, prop.table(table(Q1, PPGENDER), margin = 1))  # unweighted prop
+with(data, prop.table(table(Q1, PPGENDER), margin = 1))*100  # unweighted prop
 ```
 
 ```
 ##      PPGENDER
-## Q1    Female   Male
-##   Yes 0.5337 0.4663
-##   No  0.4201 0.5799
+## Q1    Female  Male
+##   Yes  53.37 46.63
+##   No   42.01 57.99
 ```
 
 ```r
-prop.table(svytable(~Q1 + PPGENDER, design = des), margin = 1)  # weighted prop
-```
-
-```
-##      PPGENDER
-## Q1    Female   Male
-##   Yes 0.5502 0.4498
-##   No  0.4312 0.5688
+w <- prop.table(svytable(~Q1 + PPGENDER, design = des), margin = 1)*100  # weighted prop
 ```
 
 In the unweighted data frame, more females (53.37%) answered Yes to Q1 than males (46.63%); more males (57.99%) answered No compared to females (42.01%).  
-In the weighted data frame, 55.02% of females answered Yes; males = 44.98%; more males (56.88%) answered No compared to females (43.12%).  
-
+In the weighted data frame, 55.0212% of females (55.02) answered Yes; males = 44.9788% (44.98); more males 56.8791% (56.88%) answered No compared to females 43.1209% (43.12%).  
+  
 
 ```r
 # table above with standard errors
@@ -143,9 +135,8 @@ Out of all females and males:
 
 ***
 
-> Apply survey design + weights for Q2.
-
-Note: df contains recoded variables
+Apply survey design + weights for Q2.  
+Note: df contains recoded variables  
 
 
 ```r
@@ -190,8 +181,8 @@ summary(m1)
 
 ```r
 # Q2: being sick, by male gender
-m <- svyglm(sick ~ PPGENDER, des2, family = quasibinomial())
-summary(m)
+m2 <- svyglm(sick ~ PPGENDER, des2, family = quasibinomial())
+summary(m2)
 ```
 
 ```
@@ -216,7 +207,7 @@ summary(m)
 
 ```r
 # odds ratios
-(or2 <- exp(coefficients(m)))
+(or2 <- exp(coefficients(m2)))
 ```
 
 ```
@@ -226,8 +217,8 @@ summary(m)
 
 ```r
 # Q2: being sick, by ethnicity
-m2 <- svyglm(sick ~ PPETHM, des2, family = quasibinomial())
-summary(m2)
+m3 <- svyglm(sick ~ PPETHM, des2, family = quasibinomial())
+summary(m3)
 ```
 
 ```
@@ -254,7 +245,7 @@ summary(m2)
 ```
 
 ```r
-(or3 <- exp(coefficients(m2)))  # odds ratios
+(or3 <- exp(coefficients(m3)))  # odds ratios
 ```
 
 ```
@@ -268,8 +259,8 @@ summary(m2)
 
 ```r
 # same as above, but binomial -- remove reference variable (white)
-m <- svyglm(sick ~ black+hispanic+otherrace+mixedrace, des2, family = quasibinomial())
-summary(m)
+m4 <- svyglm(sick ~ black+hispanic+otherrace+mixedrace, des2, family = quasibinomial())
+summary(m4)
 ```
 
 ```
@@ -297,18 +288,73 @@ summary(m)
 ```
 
 ```r
-or4 <- exp(coefficients(m))  # odds ratios
+or4 <- exp(coefficients(m4))  # odds ratios
 ```
 
 Odds ratios for being sick compared to:  
   - males: 1.3474  
   - females: 0.7422  
   - white people: 0.2109, 1.184, 1.8071, 1.6028, 1.5035  
+  
+
+
+```r
+# adding variables to model with weights
+a1 <- svyglm(sick ~ PPGENDER, des2, family = quasibinomial())
+a2 <- update(a1, ~ . + PPETHM)
+a3 <- update(a2, ~ . + income)
+
+# memisc
+mtable(a1, a2, a3)
+```
+
+```
+## 
+## Calls:
+## a1: svyglm(formula = sick ~ PPGENDER, des2, family = quasibinomial())
+## a2: svyglm(formula = sick ~ PPGENDER + PPETHM, des2, family = quasibinomial())
+## a3: svyglm(formula = sick ~ PPGENDER + PPETHM + income, des2, family = quasibinomial())
+## 
+## =======================================================================================
+##                                                          a1         a2         a3      
+## ---------------------------------------------------------------------------------------
+##   (Intercept)                                         -1.258***  -1.416***  -1.248***  
+##                                                       (0.079)    (0.088)    (0.175)    
+##   PPGENDER: Male/Female                               -0.298*    -0.314**   -0.310**   
+##                                                       (0.119)    (0.119)    (0.119)    
+##   PPETHM: Black, Non-Hispanic/White, Non-Hispanic                 0.162      0.153     
+##                                                                  (0.201)    (0.201)    
+##   PPETHM: Hispanic/White, Non-Hispanic                            0.603***   0.598***  
+##                                                                  (0.168)    (0.170)    
+##   PPETHM: Other, Non-Hispanic/White, Non-Hispanic                 0.487      0.491     
+##                                                                  (0.264)    (0.264)    
+##   PPETHM: 2+ Races, Non-Hispanic/White, Non-Hispanic              0.401      0.400     
+##                                                                  (0.284)    (0.286)    
+##   income: $20k to $40k/under $20k                                           -0.227     
+##                                                                             (0.215)    
+##   income: $40k to $75k/under $20k                                           -0.216     
+##                                                                             (0.198)    
+##   income: over $75k/under $20k                                              -0.174     
+##                                                                             (0.184)    
+## ---------------------------------------------------------------------------------------
+##   Aldrich-Nelson R-sq.                                    0.0        0.0        0.0    
+##   McFadden R-sq.                                          0.0        0.0        0.0    
+##   Cox-Snell R-sq.                                         0.0        0.0        0.0    
+##   Nagelkerke R-sq.                                        0.0        0.0        0.0    
+##   phi                                                     1.0        1.0        1.0    
+##   Likelihood-ratio                                        7.5       27.7       29.6    
+##   p                                                       0.0        0.0        0.0    
+##   Log-likelihood                                       2133.2     2113.0     2111.2    
+##   Deviance                                             2133.2     2113.0     2111.2    
+##   N                                                    2146       2146       2146      
+## =======================================================================================
+```
+
 
 
 ## Q2. Have you had an illness with influenza-like symptoms since August 2015?
 
-> Without weights:
+Without weights:  
 
 
 ```r
@@ -377,14 +423,14 @@ Unweighted OR for being sick last year = 0.7526 compared to females.
 
 ```r
 # use data = df, with recodes
-df$vax <- recode(data$Q13, "'Yes, every year' = 1; 'Yes, some years' = 1; NA = NA; else = 0")
+#df$vax <- recode(data$Q13, recodes = "'Yes, every year' = 1; 'Yes, some years' = 1; NA = NA; else = 0")  # this is apparently already re-coded
 
 # check that the newly recoded column makes sense
 str(df$vax)
 ```
 
 ```
-##  Factor w/ 2 levels "0","1": 2 NA 2 2 2 2 1 2 2 1 ...
+##  Factor w/ 2 levels "Yes","No": 1 NA 1 1 1 1 2 1 1 2 ...
 ```
 
 ```r
@@ -409,8 +455,8 @@ summary(df$vax)
 ```
 
 ```
-##    0    1 NA's 
-##  819 1331   18
+##  Yes   No NA's 
+## 1331  819   18
 ```
 
 ```r
@@ -433,8 +479,8 @@ summary(m3)
 ## 
 ## Coefficients:
 ##             Estimate Std. Error t value Pr(>|t|)    
-## (Intercept)  -1.5648     0.0988  -15.84   <2e-16 ***
-## vax1          0.2800     0.1231    2.27    0.023 *  
+## (Intercept)  -1.2849     0.0735  -17.49   <2e-16 ***
+## vaxNo        -0.2800     0.1231   -2.27    0.023 *  
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ## 
@@ -448,11 +494,11 @@ exp(coefficients(m3)[2])
 ```
 
 ```
-##  vax1 
-## 1.323
+##  vaxNo 
+## 0.7558
 ```
 
-OR for being sick last year for those receiving vaccine = 1.3231
+OR for being sick last year for those receiving vaccine = 0.7558
 
 
 ```r
@@ -461,10 +507,10 @@ svytable(~vax + sick, design = des2, round = T)
 ```
 
 ```
-##    sick
-## vax   0   1
-##   0 711 149
-##   1 999 276
+##      sick
+## vax     0   1
+##   Yes 999 276
+##   No  711 149
 ```
 
 ```r
@@ -472,10 +518,10 @@ prop.table(svytable(~vax + sick, design = des2), margin = 2)
 ```
 
 ```
-##    sick
-## vax      0      1
-##   0 0.4157 0.3497
-##   1 0.5843 0.6503
+##      sick
+## vax        0      1
+##   Yes 0.5843 0.6503
+##   No  0.4157 0.3497
 ```
 
 ```r
@@ -483,10 +529,10 @@ prop.table(svytable(~vax + sick, design = des2), margin = 1)
 ```
 
 ```
-##    sick
-## vax      0      1
-##   0 0.8270 0.1730
-##   1 0.7833 0.2167
+##      sick
+## vax        0      1
+##   Yes 0.7833 0.2167
+##   No  0.8270 0.1730
 ```
 
 Out of those who reported being sick, 65.03% reported receiving vaccine.  
