@@ -10,7 +10,6 @@ output:
     theme: cosmo
     toc: yes
     toc_depth: 4
-fontsize: 10pt
 ---
 
 # Bivariate and multivariate analyses of flu survey data with weights.
