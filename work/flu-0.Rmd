@@ -2,6 +2,7 @@
 title: "flu-0"
 output: 
   html_document:
+    css: reports/style.css
     fig_height: 3
     fig_width: 5
     highlight: tango
