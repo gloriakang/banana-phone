@@ -1,7 +1,13 @@
 # flu-0
 
-# Bivariate and multivariate analyses of flu survey data with weights.
-
+### Bivariate and multivariate analyses
+  
+An odds ratio is a measure of association between an exposure and an outcome. The OR represents the odds that an outcome will occur given a particular exposure, compared to the odds of the outcome occurring in the absence of that exposure.  
+  
+When a logistic regression is calculated, the regression coefficient (b1) is the estimated increase in the log odds of the outcome per unit increase in the value of the exposure. In other words, the exponential function of the regression coefficient (e^b1) is the odds ratio associated with a one-unit increase in the exposure.  
+  
+The 95% CI is used to estimate the precision of the OR. A large CI indicates a low level of precision of the OR, whereas a small CI indicates a higher precision of the OR. It is important to note however, that unlike the p value, the 95% CI does not report a measure’s statistical significance. In practice, the 95% CI is often used as a proxy for the presence of statistical significance if it does not overlap the null value (OR=1). Nevertheless, it would be inappropriate to interpret an OR with 95% CI that spans the null value as indicating evidence for lack of association between the exposure and outcome.  
+  
 
 
 ### Load data and recoded variables.
@@ -15,7 +21,7 @@ rm(data2)
 
 #source(recoding.R)
 load("clean/recoding1.RData")
-df <- datar  # df contains recoded variables
+df <- datar  # datar contains recoded variables
 #tail(df)
 ```
 
@@ -79,9 +85,11 @@ svytable(~Q1 + PPGENDER, design = des, round = T)  # weighted Q1
 ##   Yes  55.02 44.98
 ##   No   43.12 56.88
 ```
-In the unweighted data frame, 53.3654% of females answered Yes to Q1; males = 46.6346%; 57.9918% of males answered No; females = 57.9918%  
-In the weighted data frame, 55.0212% of females answered Yes; males = 44.9788%; 56.8791% of males answered No; females = 43.1209%.  
-  
+
+In the unweighted data frame, 53.3654% of females answered Yes to Q1; males = 46.6346%  
+57.9918% of males answered No; females = 57.9918%  
+In the weighted data frame, 55.0212% of females answered Yes; males = 44.9788%;  
+56.8791% of males answered No; females = 43.1209%  
   
 
 ```r
@@ -136,9 +144,9 @@ svyby(formula = ~Q1, by = ~PPGENDER + PPETHM, design = des, FUN = svymean, na.rm
 ##   Yes  79.37 70.45
 ##   No   20.63 29.55
 ```
-Out of all females and males:  
-79.3709% of females answered Yes to Q1; 20.6291% said No.  
-70.4534% of males answered Yes to Q1; 29.5466% said No.  
+
+79.3709% of females answered Yes to Q1; 20.6291% said No  
+70.4534% of males answered Yes to Q1; 29.5466% said No  
   
   
 ## Q2. Have you had an illness with influenza-like symptoms since August 2015?
@@ -147,8 +155,11 @@ Out of all females and males:
 
 
 ```r
+# recode Q2
+df$sick <- car::recode(datar$Q2, recodes = "'Yes' = 1; 'No' = 0; NA = NA")
+
 # Q2 by gender
-with(data, table(Q2, PPGENDER))
+with(df, table(Q2, PPGENDER))
 ```
 
 ```
@@ -198,16 +209,15 @@ summary(fit1)
 ##       0.2727       0.7526
 ```
 
-```r
-#contrasts(data$PPGENDER)
-```
+In the unweighted data frame, the odds ratio of being sick as a male is 0.7526 the odds of a female.
 
-In the unweighted data frame, males had 0.7526 odds of being sick compared to females.  
 
-### Apply survey design + weights for Q2. Analyze sick vs. not sick by gender.
+### Apply survey design + weights for Q2. Analyze sick vs. not sick, by gender.
 
 
 ```r
+# recode
+df$female <- car::recode(datar$PPGENDER, recodes = "'Female' = 1; 'Male' = 0")
 # create survey object + weights
 options(survey.lonely.psu = "adjust")
 des2 <- svydesign(ids = ~1, weights = ~weight, data = df)  # data = df
@@ -247,7 +257,7 @@ summary(m1)
 ##       0.211       1.347
 ```
 
-Females had 1.3474 odds of being sick compared to males.
+In the weighted data frame, females have 1.3474 the odds of being sick compared to males.
 
 
 ```r
@@ -286,9 +296,10 @@ summary(m2)
 ##       0.2843       0.7422
 ```
 
-Males had 0.7422 odds of being sick compared to females.  
+In the weighted data frame, males have 0.7422 the odds of being sick compared to females.  
 
-### What about by ethnicity?
+
+### by ethnicity
 
 
 ```r
@@ -374,18 +385,24 @@ summary(m4)
 
 Compared to white ethnicity, odds ratio for being sick are 1.184, 1.8071, 1.6028, 1.5035 for black, hispanic, other, and 2+ mixed race groups, respectively.  
   
-  
+***
+
 ### Create and compare models for sick vs. not sick.
 
 
 ```r
+# relevel gender and update survey object
+df$PPGENDER <- relevel(datar$PPGENDER, "Male")
+des2 <- svydesign(ids = ~1, weights = ~weight, data = df)
+
 # adding variables to model with weights
 a1 <- svyglm(sick ~ PPGENDER, des2, family = quasibinomial())
 a2 <- update(a1, ~ . + PPETHM)  # add race
-a3 <- update(a2, ~ . + income)  # add income
+a3 <- update(a2, ~ . + work)  # add work
+a4 <- update(a3, ~ . + marital)  # add marital status
 
-# memisc
-mtable(a1, a2, a3)
+# memisc: need to modify summary function
+mtable(a1, a2, a3, a4)
 ```
 
 ```
@@ -393,58 +410,69 @@ mtable(a1, a2, a3)
 ## Calls:
 ## a1: svyglm(formula = sick ~ PPGENDER, des2, family = quasibinomial())
 ## a2: svyglm(formula = sick ~ PPGENDER + PPETHM, des2, family = quasibinomial())
-## a3: svyglm(formula = sick ~ PPGENDER + PPETHM + income, des2, family = quasibinomial())
+## a3: svyglm(formula = sick ~ PPGENDER + PPETHM + work, des2, family = quasibinomial())
+## a4: svyglm(formula = sick ~ PPGENDER + PPETHM + work + marital, des2, 
+##     family = quasibinomial())
 ## 
-## =======================================================================================
-##                                                          a1         a2         a3      
-## ---------------------------------------------------------------------------------------
-##   (Intercept)                                         -1.258***  -1.416***  -1.248***  
-##                                                       (0.079)    (0.088)    (0.175)    
-##   PPGENDER: Male/Female                               -0.298*    -0.314**   -0.310**   
-##                                                       (0.119)    (0.119)    (0.119)    
-##   PPETHM: Black, Non-Hispanic/White, Non-Hispanic                 0.162      0.153     
-##                                                                  (0.201)    (0.201)    
-##   PPETHM: Hispanic/White, Non-Hispanic                            0.603***   0.598***  
-##                                                                  (0.168)    (0.170)    
-##   PPETHM: Other, Non-Hispanic/White, Non-Hispanic                 0.487      0.491     
-##                                                                  (0.264)    (0.264)    
-##   PPETHM: 2+ Races, Non-Hispanic/White, Non-Hispanic              0.401      0.400     
-##                                                                  (0.284)    (0.286)    
-##   income: $20k to $40k/under $20k                                           -0.227     
-##                                                                             (0.215)    
-##   income: $40k to $75k/under $20k                                           -0.216     
-##                                                                             (0.198)    
-##   income: over $75k/under $20k                                              -0.174     
-##                                                                             (0.184)    
-## ---------------------------------------------------------------------------------------
-##   Aldrich-Nelson R-sq.                                    0.0        0.0        0.0    
-##   McFadden R-sq.                                          0.0        0.0        0.0    
-##   Cox-Snell R-sq.                                         0.0        0.0        0.0    
-##   Nagelkerke R-sq.                                        0.0        0.0        0.0    
-##   phi                                                     1.0        1.0        1.0    
-##   Likelihood-ratio                                        7.5       27.7       29.6    
-##   p                                                       0.0        0.0        0.0    
-##   Log-likelihood                                       2133.2     2113.0     2111.2    
-##   Deviance                                             2133.2     2113.0     2111.2    
-##   N                                                    2146       2146       2146      
-## =======================================================================================
+## ==================================================================================================
+##                                                          a1         a2         a3         a4      
+## --------------------------------------------------------------------------------------------------
+##   (Intercept)                                         -1.556***  -1.729***  -1.886***  -1.883***  
+##                                                       (0.089)    (0.095)    (0.126)    (0.144)    
+##   PPGENDER: Female/Male                                0.298*     0.314**    0.337**    0.337**   
+##                                                       (0.119)    (0.119)    (0.120)    (0.120)    
+##   PPETHM: Black, Non-Hispanic/White, Non-Hispanic                 0.162      0.164      0.162     
+##                                                                  (0.201)    (0.202)    (0.205)    
+##   PPETHM: Hispanic/White, Non-Hispanic                            0.603***   0.616***   0.615***  
+##                                                                  (0.168)    (0.167)    (0.168)    
+##   PPETHM: Other, Non-Hispanic/White, Non-Hispanic                 0.487      0.458      0.458     
+##                                                                  (0.264)    (0.265)    (0.265)    
+##   PPETHM: 2+ Races, Non-Hispanic/White, Non-Hispanic              0.401      0.397      0.397     
+##                                                                  (0.284)    (0.284)    (0.284)    
+##   work: employed/unemployed                                                  0.237      0.238     
+##                                                                             (0.124)    (0.124)    
+##   marital: partnered/single                                                            -0.006     
+##                                                                                        (0.124)    
+## --------------------------------------------------------------------------------------------------
+##   Aldrich-Nelson R-sq.                                    0.0        0.0        0.0        0.0    
+##   McFadden R-sq.                                          0.0        0.0        0.0        0.0    
+##   Cox-Snell R-sq.                                         0.0        0.0        0.0        0.0    
+##   Nagelkerke R-sq.                                        0.0        0.0        0.0        0.0    
+##   phi                                                     1.0        1.0        1.0        1.0    
+##   Likelihood-ratio                                        7.5       27.7       32.2       32.2    
+##   p                                                       0.0        0.0        0.0        0.0    
+##   Log-likelihood                                       2133.2     2113.0     2108.6     2108.5    
+##   Deviance                                             2133.2     2113.0     2108.6     2108.5    
+##   N                                                    2146       2146       2146       2146      
+## ==================================================================================================
 ```
+
+```r
+# OR for a3
+(or <- exp(coefficients(a3)))
+```
+
+```
+##                  (Intercept)               PPGENDERFemale 
+##                       0.1516                       1.4010 
+##    PPETHMBlack, Non-Hispanic               PPETHMHispanic 
+##                       1.1778                       1.8508 
+##    PPETHMOther, Non-Hispanic PPETHM2+ Races, Non-Hispanic 
+##                       1.5801                       1.4880 
+##                 workemployed 
+##                       1.2678
+```
+
+When adjusting for gender, ethnicity, and work status, significant explanatory variables for being sick include being female 1.401 and being hispanic 1.8508
+
+***
 
 ## Q13. Do you get an influenza vaccine?
 
 
 ```r
-# use data = df, with recodes
-# recode Q13 as 1 = yes always; 1 = yes sometimes; 0 = no never
-str(df$vax)
-```
-
-```
-##  Factor w/ 2 levels "Yes","No": 1 NA 1 1 1 1 2 1 1 2 ...
-```
-
-```r
-str(data$Q13)
+# check to make sure Q13 has been re-grouped
+str(datar$Q13)  # original
 ```
 
 ```
@@ -452,27 +480,38 @@ str(data$Q13)
 ```
 
 ```r
-# glm + design weights
+str(df$q13)  # updated
+```
+
+```
+##  Factor w/ 2 levels "Yes","No": 1 NA 1 1 1 1 2 1 1 2 ...
+```
+
+```r
+# relevel q13
+df$q13 <- relevel(df$q13, "No")
+
+# update survey object
 options(survey.lonely.psu = "adjust")
 des2 <- svydesign(ids = ~1, weights = ~weight, data = df)
 
 # getting sick ~ getting vaccine
-m5 <- svyglm(sick ~ vax, des2, family = quasibinomial)
+m5 <- svyglm(sick ~ q13, des2, family = quasibinomial)
 summary(m5)
 ```
 
 ```
 ## 
 ## Call:
-## svyglm(formula = sick ~ vax, des2, family = quasibinomial)
+## svyglm(formula = sick ~ q13, des2, family = quasibinomial)
 ## 
 ## Survey design:
 ## svydesign(ids = ~1, weights = ~weight, data = df)
 ## 
 ## Coefficients:
 ##             Estimate Std. Error t value Pr(>|t|)    
-## (Intercept)  -1.2849     0.0735  -17.49   <2e-16 ***
-## vaxNo        -0.2800     0.1231   -2.27    0.023 *  
+## (Intercept)  -1.5648     0.0988  -15.84   <2e-16 ***
+## q13Yes        0.2800     0.1231    2.27    0.023 *  
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ## 
@@ -486,52 +525,203 @@ summary(m5)
 ```
 
 ```
-## (Intercept)       vaxNo 
-##      0.2767      0.7558
+## (Intercept)      q13Yes 
+##      0.2091      1.3231
 ```
 
-Those who did not receive vaccine had 0.7558 odds of getting sick compared to those who received the vaccine.
+Those who get the vaccine had 1.3231 the odds of getting sick compared to those who do not get the vaccine.
 
 
 ```r
 # Q2 + Q13 tables with weights
-svytable(~vax + sick, design = des2, round = T)  # sick = 1, not sick = 0
+svytable(~q13 + sick, design = des2, round = T)  # sick = 1, not sick = 0
 ```
 
 ```
 ##      sick
-## vax     0   1
-##   Yes 999 276
+## q13     0   1
 ##   No  711 149
+##   Yes 999 276
 ```
 
 ```r
-(t2 <- prop.table(svytable(~vax + sick, design = des2), margin = 2)* 100)
+(t2 <- prop.table(svytable(~q13 + sick, design = des2), margin = 2)* 100)
 ```
 
 ```
 ##      sick
-## vax       0     1
-##   Yes 58.43 65.03
+## q13       0     1
 ##   No  41.57 34.97
+##   Yes 58.43 65.03
 ```
 
 ```r
-(t1 <- prop.table(svytable(~vax + sick, design = des2), margin = 1)* 100)
+(t1 <- prop.table(svytable(~q13 + sick, design = des2), margin = 1)* 100)
 ```
 
 ```
 ##      sick
-## vax       0     1
-##   Yes 78.33 21.67
+## q13       0     1
 ##   No  82.70 17.30
+##   Yes 78.33 21.67
 ```
 
 Out of those who reported being sick, 65.0288% reported receiving vaccine.  
-Out of those who were healthy, 58.427% received vaccine (41.573% did not).  
-Vaccinated group: 78.3274% report no illness.  
+Out of those who were healthy, 34.9712% received vaccine (41.573% did not).  
+Vaccinated group: 17.2955% report no illness.  
 Unvaccinated group: 82.7045% report no illness.  
   
+
+### Regression analysis for Q2 and Q13
+Subset sick + vaccinated group. Run regression and adjust for demographic variables.
+
+
+```r
+# subset sick and vaccinated
+df2 <- df %>%
+  mutate(sickq13 = ifelse((sick == 1 & q13 == "Yes"), 1, 0))
+
+df2$sickq13 <- as.factor(df2$sickq13)
+str(df2$sickq13)
+```
+
+```
+##  Factor w/ 2 levels "0","1": 1 1 1 1 1 1 1 1 2 1 ...
+```
+
+```r
+# table of sick and vaccine status
+xtabs(~sick + q13, df2)
+```
+
+```
+##     q13
+## sick   No  Yes
+##    0  674 1053
+##    1  144  269
+```
+
+```r
+# 1 = sick and vaccinated, else = 0
+table(df2$sickq13)
+```
+
+```
+## 
+##    0    1 
+## 1880  269
+```
+
+```r
+# update survey object
+options(survey.lonely.psu = "adjust")
+des3 <- svydesign(ids = ~1, weights = ~weight, data = df2)
+
+m1 <- svyglm(sickq13 ~ PPGENDER, des3, family = quasibinomial())
+m2 <- update(m1, ~ . + PPETHM)  # add race
+m3 <- update(m2, ~ . + work)  # add work
+m4 <- update(m3, ~ . + ppagecat)  # add age
+
+# memisc, need to modify summary function
+mtable(m1, m2, m3, m4)
+```
+
+```
+## 
+## Calls:
+## m1: svyglm(formula = sickq13 ~ PPGENDER, des3, family = quasibinomial())
+## m2: svyglm(formula = sickq13 ~ PPGENDER + PPETHM, des3, family = quasibinomial())
+## m3: svyglm(formula = sickq13 ~ PPGENDER + PPETHM + work, des3, family = quasibinomial())
+## m4: svyglm(formula = sickq13 ~ PPGENDER + PPETHM + work + ppagecat, 
+##     des3, family = quasibinomial())
+## 
+## ==================================================================================================
+##                                                          m1         m2         m3         m4      
+## --------------------------------------------------------------------------------------------------
+##   (Intercept)                                         -2.028***  -2.215***  -2.352***  -2.334***  
+##                                                       (0.104)    (0.111)    (0.153)    (0.287)    
+##   PPGENDER: Female/Male                                0.215      0.233      0.254      0.274     
+##                                                       (0.141)    (0.141)    (0.144)    (0.144)    
+##   PPETHM: Black, Non-Hispanic/White, Non-Hispanic                 0.123      0.124      0.119     
+##                                                                  (0.243)    (0.243)    (0.246)    
+##   PPETHM: Hispanic/White, Non-Hispanic                            0.624**    0.634**    0.639**   
+##                                                                  (0.194)    (0.193)    (0.198)    
+##   PPETHM: Other, Non-Hispanic/White, Non-Hispanic                 0.670*     0.645*     0.595*    
+##                                                                  (0.290)    (0.293)    (0.291)    
+##   PPETHM: 2+ Races, Non-Hispanic/White, Non-Hispanic             -0.285     -0.289     -0.287     
+##                                                                  (0.411)    (0.411)    (0.419)    
+##   work: employed/unemployed                                                  0.207      0.224     
+##                                                                             (0.149)    (0.175)    
+##   ppagecat: 25-34/18-24                                                                -0.272     
+##                                                                                        (0.301)    
+##   ppagecat: 35-44/18-24                                                                 0.196     
+##                                                                                        (0.282)    
+##   ppagecat: 45-54/18-24                                                                -0.137     
+##                                                                                        (0.283)    
+##   ppagecat: 55-64/18-24                                                                -0.115     
+##                                                                                        (0.275)    
+##   ppagecat: 65-74/18-24                                                                 0.269     
+##                                                                                        (0.307)    
+##   ppagecat: 75+/18-24                                                                  -0.562     
+##                                                                                        (0.437)    
+## --------------------------------------------------------------------------------------------------
+##   Aldrich-Nelson R-sq.                                    0.0        0.0        0.0        0.0    
+##   McFadden R-sq.                                          0.0        0.0        0.0        0.0    
+##   Cox-Snell R-sq.                                         0.0        0.0        0.0        0.0    
+##   Nagelkerke R-sq.                                        0.0        0.0        0.0        0.0    
+##   phi                                                     1.0        1.0        1.0        1.0    
+##   Likelihood-ratio                                        2.7       21.8       24.1       34.7    
+##   p                                                       0.1        0.0        0.0        0.0    
+##   Log-likelihood                                       1645.5     1626.5     1624.2     1613.6    
+##   Deviance                                             1645.5     1626.5     1624.2     1613.6    
+##   N                                                    2145       2145       2145       2145      
+## ==================================================================================================
+```
+
+```r
+# who is getting sick after vaccinations?
+svyby(formula = ~ppagecat, by = ~sickq13, design = des3, FUN = svymean, na.rm = T)
+```
+
+```
+##   sickq13 ppagecat18-24 ppagecat25-34 ppagecat35-44 ppagecat45-54
+## 0       0        0.1170        0.1764        0.1645        0.1589
+## 1       1        0.1294        0.1465        0.2166        0.1488
+##   ppagecat55-64 ppagecat65-74 ppagecat75+ se.ppagecat18-24
+## 0        0.2007        0.1246     0.05795         0.009241
+## 1        0.1811        0.1496     0.02798         0.024790
+##   se.ppagecat25-34 se.ppagecat35-44 se.ppagecat45-54 se.ppagecat55-64
+## 0          0.01032         0.009539         0.008519          0.00935
+## 1          0.02443         0.027704         0.021386          0.02322
+##   se.ppagecat65-74 se.ppagecat75+
+## 0          0.00730       0.005136
+## 1          0.02319       0.009463
+```
+
+```r
+svyby(formula = ~PPGENDER, by = ~sick + q13, design = des3, FUN = svymean, na.rm = T)
+```
+
+```
+##       sick q13 PPGENDERMale PPGENDERFemale se.PPGENDERMale
+## 0.No     0  No       0.5169         0.4831         0.02082
+## 1.No     1  No       0.3904         0.6096         0.04385
+## 0.Yes    0 Yes       0.4752         0.5248         0.01651
+## 1.Yes    1 Yes       0.4328         0.5672         0.03236
+##       se.PPGENDERFemale
+## 0.No            0.02082
+## 1.No            0.04385
+## 0.Yes           0.01651
+## 1.Yes           0.03236
+```
+
+```r
+#with(df2, table(sickq13, 
+```
+
+
+
+
 
 
 

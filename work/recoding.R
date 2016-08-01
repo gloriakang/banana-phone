@@ -6,6 +6,14 @@ load('clean/cleaning2.RData')
 library(car)
 library(dplyr)
 
+datar <- data2
+
+# for reference:
+# yn.lab = c("Yes", "No")
+# dataf$Q1 <- factor(data$Q1, levels = yn.lab)
+# dataf$Q2 <- relevel(dataf$Q2, "Yes")
+
+# use code function for response variables
 # reset the "default" level on categorical variables
 code <- function(col, map, ref) {
   relevel(as.factor(map[col]), ref=ref)
@@ -13,77 +21,96 @@ code <- function(col, map, ref) {
 
 
 # ethnicity
+# probably don't need recoding
 summary(data2$PPETHM)
-data2$white <- recode(data2$PPETHM, recodes = "'White, Non-Hispanic' = 1; NA = NA; else = 0")
-data2$black <- recode(data2$PPETHM, recodes = "'Black, Non-Hispanic' = 1; NA = NA; else = 0")
-data2$hispanic <- recode(data2$PPETHM, recodes = "'Hispanic' = 1; NA = NA; else = 0")
-data2$otherrace <- recode(data2$PPETHM, recodes = "'Other, Non-Hispanic' = 1; NA = NA; else = 0")
-data2$mixedrace <- recode(data2$PPETHM, recodes = "'2+ Races, Non-Hispanic' = 1; NA = NA; else = 0")
+datar$white <- car::recode(data2$PPETHM, recodes = "'White, Non-Hispanic' = 1; NA = NA; else = 0")
+datar$black <- car::recode(data2$PPETHM, recodes = "'Black, Non-Hispanic' = 1; NA = NA; else = 0")
+datar$hispanic <- car::recode(data2$PPETHM, recodes = "'Hispanic' = 1; NA = NA; else = 0")
+datar$otherrace <- car::recode(data2$PPETHM, recodes = "'Other, Non-Hispanic' = 1; NA = NA; else = 0")
+datar$mixedrace <- car::recode(data2$PPETHM, recodes = "'2+ Races, Non-Hispanic' = 1; NA = NA; else = 0")
 
-# female
+
+# gender = female
+# probably can just relevel = relevel(data2$PPGENDER, "Female")
 summary(data2$PPGENDER)
-data2$female <- recode(data2$PPGENDER, recodes = "'Female' = 1; 'Male' = 0")
+datar$female <- car::recode(data2$PPGENDER, recodes = "'Female' = 1; 'Male' = 0")
 
-# income level
+
+# regroup income level
 summary(data2$PPINCIMP)
 income.map <- c(rep("under $20k", 6),
                 rep("$20k to $40k", 4),
                 rep("$40k to $75k", 3),
                 rep("over $75k", 6))
-data2$income <- code(data2$PPINCIMP, income.map, "under $20k")
+datar$income <- code(data2$PPINCIMP, income.map, "under $20k")
 
-# marital staus
+
+# regroup marital staus
 summary(data2$PPMARIT)
 marital.map <- c("single", "partnered", "partnered", "single", "single", "single")
-data2$marital <- code(data2$PPMARIT, marital.map, "single")
-table(data2$marital)
+datar$marital <- code(data2$PPMARIT, marital.map, "single")
+#summary(data2$PPMARIT)
+#summary(datar$marital)
 
-# work status
-summary(data2$PPWORK)
+
+# regroup work status
+str(datar$work)
+str(data2$PPWORK)
 work.map <- c(rep("unemployed", 5),
               rep("employed", 2))
-data2$work <- code(data2$PPWORK, work.map, "employed")
+datar$work <- code(data2$PPWORK, work.map, "unemployed")
 
 
 ##### -- survey questions --- #####
 
+
 # Q1. flu knowledge
-data2$know <- recode(data2$Q1, recodes = "'Yes' = 1; 'No' = 0; NA = NA")
+#datar$q1 <- car::recode(data2$Q1, recodes = "'Yes' = 1; 'No' = 0; NA = NA")
+#summary(datar$q1)
+#summary(data2$Q1)
+
 
 # Q2. sick with flu last year
-data2$sick <- recode(data2$Q2, recodes = "'Yes' = 1; 'No' = 0; NA = NA")
+#datar$sick <- car::recode(data2$Q2, recodes = "'Yes' = 1; 'No' = 0; NA = NA")
+#datar$sick <- datar$q2
+#summary(datar$q2)
+#summary(datar$sick)
+
 
 # Q3. household sick last year
-data2$sickhh <- recode(data2$Q3, recodes = "'Yes' = 1; c('No', 'Don_t know') = 0; NA = NA")
+#datar$q3 <- car::recode(data2$Q3, recodes = "'Yes' = 1; c('No', 'Don_t know') = 0; NA = NA")
+#datar$sickhh <- datar$q3
 
-# Q4. job requires contact with public
+# regroup Q4. job requires contact with public
+#levels(data2$Q4)
 q4.map <- c("Yes", rep("No", 2))
-data2$pubjob <- code(data2$Q4, q4.map, "Yes")
+datar$q4 <- code(data2$Q4, q4.map, "Yes")
+#summary(datar$Q4)
+#summary(data2$Q4)
 
 
-# Q13. flu vaccine
+# regroup Q13. flu vaccine
 q13.map <- c("Yes", "Yes", "No")
-data2$vax <- code(data2$Q13, q13.map, "Yes")
+datar$q13 <- code(data2$Q13, q13.map, "Yes")
 
 
 # Q26. children in household
-data2$childhh <- data2$Q26 %>%
-  recode(recodes = "'Yes' = 1; NA = NA; 'No' = 0")
+#datar$q26 <- data2$Q26 %>%
+#  car::recode(recodes = "'Yes' = 1; NA = NA; 'No' = 0")
+
+#summary(data2$Q26)
+#summary(datar$q26)
+
+
+
+
 
 # if you get confused
-str(data2$Q26)
-str(data2$childhh)
-
-
-
-
-
-
+#str(datar$Q26)
+#str(datar$q26)
 
 
 ##### ----- save ----- #####
-datar <- data2
-save(datar, file = "clean/recoding1.RData")
-
+save(datar, code, file = "clean/recoding1.RData")
 rm(list = ls(all.names = TRUE))
 

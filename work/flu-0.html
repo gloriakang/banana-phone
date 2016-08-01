@@ -149,27 +149,20 @@ $(document).ready(function () {
 
 <div id="TOC">
 <ul>
-<li><a href="#bivariate-and-multivariate-analyses-of-flu-survey-data-with-weights.">Bivariate and multivariate analyses of flu survey data with weights.</a><ul>
-<li><a href="#load-data-and-recoded-variables.">Load data and recoded variables.</a></li>
-<li><a href="#create-a-survey-object-with-weights.">Create a survey object with weights.</a></li>
-</ul></li>
 <li><a href="#survey-questions">Survey questions</a><ul>
-<li><a href="#q1.-before-receiving-this-survey-did-you-know-influenza-is-different-from-the-stomach-flu">Q1. Before receiving this survey, did you know influenza is different from the stomach flu?</a><ul>
-<li><a href="#compare-sex-ratios-in-unweighted-and-weighted-data-frames-for-q1.">Compare sex ratios in unweighted and weighted data frames for Q1.</a></li>
-</ul></li>
-<li><a href="#q2.-have-you-had-an-illness-with-influenza-like-symptoms-since-august-2015">Q2. Have you had an illness with influenza-like symptoms since August 2015?</a><ul>
-<li><a href="#without-weights.">Without weights.</a></li>
-<li><a href="#apply-survey-design-weights-for-q2.-analyze-sick-vs.not-sick-by-gender.">Apply survey design + weights for Q2. Analyze sick vs. not sick by gender.</a></li>
-<li><a href="#what-about-by-ethnicity">What about by ethnicity?</a></li>
-<li><a href="#create-and-compare-models-for-sick-vs.not-sick.">Create and compare models for sick vs. not sick.</a></li>
-</ul></li>
+<li><a href="#q1.-before-receiving-this-survey-did-you-know-influenza-is-different-from-the-stomach-flu">Q1. Before receiving this survey, did you know influenza is different from the stomach flu?</a></li>
+<li><a href="#q2.-have-you-had-an-illness-with-influenza-like-symptoms-since-august-2015">Q2. Have you had an illness with influenza-like symptoms since August 2015?</a></li>
 <li><a href="#q13.-do-you-get-an-influenza-vaccine">Q13. Do you get an influenza vaccine?</a></li>
 </ul></li>
 </ul>
 </div>
 
-<div id="bivariate-and-multivariate-analyses-of-flu-survey-data-with-weights." class="section level1">
-<h1>Bivariate and multivariate analyses of flu survey data with weights.</h1>
+<div id="bivariate-and-multivariate-analyses" class="section level3">
+<h3>Bivariate and multivariate analyses</h3>
+<p>An odds ratio is a measure of association between an exposure and an outcome. The OR represents the odds that an outcome will occur given a particular exposure, compared to the odds of the outcome occurring in the absence of that exposure.</p>
+<p>When a logistic regression is calculated, the regression coefficient (b1) is the estimated increase in the log odds of the outcome per unit increase in the value of the exposure. In other words, the exponential function of the regression coefficient (e^b1) is the odds ratio associated with a one-unit increase in the exposure.</p>
+<p>The 95% CI is used to estimate the precision of the OR. A large CI indicates a low level of precision of the OR, whereas a small CI indicates a higher precision of the OR. It is important to note however, that unlike the p value, the 95% CI does not report a measure’s statistical significance. In practice, the 95% CI is often used as a proxy for the presence of statistical significance if it does not overlap the null value (OR=1). Nevertheless, it would be inappropriate to interpret an OR with 95% CI that spans the null value as indicating evidence for lack of association between the exposure and outcome.</p>
+</div>
 <div id="load-data-and-recoded-variables." class="section level3">
 <h3>Load data and recoded variables.</h3>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">load</span>(<span class="st">&quot;clean/cleaning2.RData&quot;</span>)
@@ -179,7 +172,7 @@ data &lt;-<span class="st"> </span>data2
 
 <span class="co">#source(recoding.R)</span>
 <span class="kw">load</span>(<span class="st">&quot;clean/recoding1.RData&quot;</span>)
-df &lt;-<span class="st"> </span>datar  <span class="co"># df contains recoded variables</span>
+df &lt;-<span class="st"> </span>datar  <span class="co"># datar contains recoded variables</span>
 <span class="co">#tail(df)</span></code></pre></div>
 </div>
 <div id="create-a-survey-object-with-weights." class="section level3">
@@ -188,7 +181,6 @@ df &lt;-<span class="st"> </span>datar  <span class="co"># df contains recoded v
 <span class="kw">options</span>(<span class="dt">survey.lonely.psu =</span> <span class="st">&quot;adjust&quot;</span>)
 des &lt;-<span class="st"> </span><span class="kw">svydesign</span>(<span class="dt">ids =</span> ~<span class="dv">1</span>, <span class="dt">weights =</span> ~weight, <span class="dt">data =</span> data[<span class="kw">is.na</span>(data$weight) ==<span class="st"> </span>F, ])
 <span class="co">#summary(des)</span></code></pre></div>
-</div>
 </div>
 <div id="survey-questions" class="section level1">
 <h1>Survey questions</h1>
@@ -217,8 +209,10 @@ des &lt;-<span class="st"> </span><span class="kw">svydesign</span>(<span class=
 ## Q1    Female  Male
 ##   Yes  55.02 44.98
 ##   No   43.12 56.88</code></pre>
-<p>In the unweighted data frame, 53.3654% of females answered Yes to Q1; males = 46.6346%; 57.9918% of males answered No; females = 57.9918%<br />
-In the weighted data frame, 55.0212% of females answered Yes; males = 44.9788%; 56.8791% of males answered No; females = 43.1209%.</p>
+<p>In the unweighted data frame, 53.3654% of females answered Yes to Q1; males = 46.6346%<br />
+57.9918% of males answered No; females = 57.9918%<br />
+In the weighted data frame, 55.0212% of females answered Yes; males = 44.9788%;<br />
+56.8791% of males answered No; females = 43.1209%</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># table above with standard errors</span>
 <span class="kw">svyby</span>(<span class="dt">formula =</span> ~Q1, <span class="dt">by =</span> ~PPGENDER, <span class="dt">design =</span> des, <span class="dt">FUN =</span> svymean, <span class="dt">na.rm =</span> T)</code></pre></div>
 <pre><code>##        PPGENDER  Q1Yes   Q1No se.Q1Yes se.Q1No
@@ -254,17 +248,19 @@ In the weighted data frame, 55.0212% of females answered Yes; males = 44.9788%; 
 ## Q1    Female  Male
 ##   Yes  79.37 70.45
 ##   No   20.63 29.55</code></pre>
-<p>Out of all females and males:<br />
-79.3709% of females answered Yes to Q1; 20.6291% said No.<br />
-70.4534% of males answered Yes to Q1; 29.5466% said No.</p>
+<p>79.3709% of females answered Yes to Q1; 20.6291% said No<br />
+70.4534% of males answered Yes to Q1; 29.5466% said No</p>
 </div>
 </div>
 <div id="q2.-have-you-had-an-illness-with-influenza-like-symptoms-since-august-2015" class="section level2">
 <h2>Q2. Have you had an illness with influenza-like symptoms since August 2015?</h2>
 <div id="without-weights." class="section level3">
 <h3>Without weights.</h3>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Q2 by gender</span>
-<span class="kw">with</span>(data, <span class="kw">table</span>(Q2, PPGENDER))</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># recode Q2</span>
+df$sick &lt;-<span class="st"> </span>car::<span class="kw">recode</span>(datar$Q2, <span class="dt">recodes =</span> <span class="st">&quot;'Yes' = 1; 'No' = 0; NA = NA&quot;</span>)
+
+<span class="co"># Q2 by gender</span>
+<span class="kw">with</span>(df, <span class="kw">table</span>(Q2, PPGENDER))</code></pre></div>
 <pre><code>##      PPGENDER
 ## Q2    Female Male
 ##   Yes    234  180
@@ -297,12 +293,13 @@ In the weighted data frame, 55.0212% of females answered Yes; males = 44.9788%; 
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">(q2.u &lt;-<span class="st"> </span><span class="kw">exp</span>(<span class="kw">coefficients</span>(fit1)))</code></pre></div>
 <pre><code>##  (Intercept) PPGENDERMale 
 ##       0.2727       0.7526</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co">#contrasts(data$PPGENDER)</span></code></pre></div>
-<p>In the unweighted data frame, males had 0.7526 odds of being sick compared to females.</p>
+<p>In the unweighted data frame, the odds ratio of being sick as a male is 0.7526 the odds of a female.</p>
 </div>
 <div id="apply-survey-design-weights-for-q2.-analyze-sick-vs.not-sick-by-gender." class="section level3">
-<h3>Apply survey design + weights for Q2. Analyze sick vs. not sick by gender.</h3>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># create survey object + weights</span>
+<h3>Apply survey design + weights for Q2. Analyze sick vs. not sick, by gender.</h3>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># recode</span>
+df$female &lt;-<span class="st"> </span>car::<span class="kw">recode</span>(datar$PPGENDER, <span class="dt">recodes =</span> <span class="st">&quot;'Female' = 1; 'Male' = 0&quot;</span>)
+<span class="co"># create survey object + weights</span>
 <span class="kw">options</span>(<span class="dt">survey.lonely.psu =</span> <span class="st">&quot;adjust&quot;</span>)
 des2 &lt;-<span class="st"> </span><span class="kw">svydesign</span>(<span class="dt">ids =</span> ~<span class="dv">1</span>, <span class="dt">weights =</span> ~weight, <span class="dt">data =</span> df)  <span class="co"># data = df</span>
 
@@ -330,7 +327,7 @@ m1 &lt;-<span class="st"> </span><span class="kw">svyglm</span>(sick ~<span clas
 (or1 &lt;-<span class="st"> </span><span class="kw">exp</span>(<span class="kw">coefficients</span>(m1)))</code></pre></div>
 <pre><code>## (Intercept)     female1 
 ##       0.211       1.347</code></pre>
-<p>Females had 1.3474 odds of being sick compared to males.</p>
+<p>In the weighted data frame, females have 1.3474 the odds of being sick compared to males.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Q2: being sick, by male gender</span>
 m2 &lt;-<span class="st"> </span><span class="kw">svyglm</span>(sick ~<span class="st"> </span>PPGENDER, des2, <span class="dt">family =</span> <span class="kw">quasibinomial</span>())
 <span class="kw">summary</span>(m2)</code></pre></div>
@@ -355,10 +352,10 @@ m2 &lt;-<span class="st"> </span><span class="kw">svyglm</span>(sick ~<span clas
 (or2 &lt;-<span class="st"> </span><span class="kw">exp</span>(<span class="kw">coefficients</span>(m2)))</code></pre></div>
 <pre><code>##  (Intercept) PPGENDERMale 
 ##       0.2843       0.7422</code></pre>
-<p>Males had 0.7422 odds of being sick compared to females.</p>
+<p>In the weighted data frame, males have 0.7422 the odds of being sick compared to females.</p>
 </div>
-<div id="what-about-by-ethnicity" class="section level3">
-<h3>What about by ethnicity?</h3>
+<div id="by-ethnicity" class="section level3">
+<h3>by ethnicity</h3>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Q2: being sick, by ethnicity</span>
 m3 &lt;-<span class="st"> </span><span class="kw">svyglm</span>(sick ~<span class="st"> </span>PPETHM, des2, <span class="dt">family =</span> <span class="kw">quasibinomial</span>())
 <span class="kw">summary</span>(m3)</code></pre></div>
@@ -417,83 +414,103 @@ m4 &lt;-<span class="st"> </span><span class="kw">svyglm</span>(sick ~<span clas
 <pre><code>## (Intercept)      black1   hispanic1  otherrace1  mixedrace1 
 ##      0.2109      1.1840      1.8071      1.6028      1.5035</code></pre>
 <p>Compared to white ethnicity, odds ratio for being sick are 1.184, 1.8071, 1.6028, 1.5035 for black, hispanic, other, and 2+ mixed race groups, respectively.</p>
+<hr />
 </div>
 <div id="create-and-compare-models-for-sick-vs.not-sick." class="section level3">
 <h3>Create and compare models for sick vs. not sick.</h3>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># adding variables to model with weights</span>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># relevel gender and update survey object</span>
+df$PPGENDER &lt;-<span class="st"> </span><span class="kw">relevel</span>(datar$PPGENDER, <span class="st">&quot;Male&quot;</span>)
+des2 &lt;-<span class="st"> </span><span class="kw">svydesign</span>(<span class="dt">ids =</span> ~<span class="dv">1</span>, <span class="dt">weights =</span> ~weight, <span class="dt">data =</span> df)
+
+<span class="co"># adding variables to model with weights</span>
 a1 &lt;-<span class="st"> </span><span class="kw">svyglm</span>(sick ~<span class="st"> </span>PPGENDER, des2, <span class="dt">family =</span> <span class="kw">quasibinomial</span>())
 a2 &lt;-<span class="st"> </span><span class="kw">update</span>(a1, ~<span class="st"> </span>. +<span class="st"> </span>PPETHM)  <span class="co"># add race</span>
-a3 &lt;-<span class="st"> </span><span class="kw">update</span>(a2, ~<span class="st"> </span>. +<span class="st"> </span>income)  <span class="co"># add income</span>
+a3 &lt;-<span class="st"> </span><span class="kw">update</span>(a2, ~<span class="st"> </span>. +<span class="st"> </span>work)  <span class="co"># add work</span>
+a4 &lt;-<span class="st"> </span><span class="kw">update</span>(a3, ~<span class="st"> </span>. +<span class="st"> </span>marital)  <span class="co"># add marital status</span>
 
-<span class="co"># memisc</span>
-<span class="kw">mtable</span>(a1, a2, a3)</code></pre></div>
+<span class="co"># memisc: need to modify summary function</span>
+<span class="kw">mtable</span>(a1, a2, a3, a4)</code></pre></div>
 <pre><code>## 
 ## Calls:
 ## a1: svyglm(formula = sick ~ PPGENDER, des2, family = quasibinomial())
 ## a2: svyglm(formula = sick ~ PPGENDER + PPETHM, des2, family = quasibinomial())
-## a3: svyglm(formula = sick ~ PPGENDER + PPETHM + income, des2, family = quasibinomial())
+## a3: svyglm(formula = sick ~ PPGENDER + PPETHM + work, des2, family = quasibinomial())
+## a4: svyglm(formula = sick ~ PPGENDER + PPETHM + work + marital, des2, 
+##     family = quasibinomial())
 ## 
-## =======================================================================================
-##                                                          a1         a2         a3      
-## ---------------------------------------------------------------------------------------
-##   (Intercept)                                         -1.258***  -1.416***  -1.248***  
-##                                                       (0.079)    (0.088)    (0.175)    
-##   PPGENDER: Male/Female                               -0.298*    -0.314**   -0.310**   
-##                                                       (0.119)    (0.119)    (0.119)    
-##   PPETHM: Black, Non-Hispanic/White, Non-Hispanic                 0.162      0.153     
-##                                                                  (0.201)    (0.201)    
-##   PPETHM: Hispanic/White, Non-Hispanic                            0.603***   0.598***  
-##                                                                  (0.168)    (0.170)    
-##   PPETHM: Other, Non-Hispanic/White, Non-Hispanic                 0.487      0.491     
-##                                                                  (0.264)    (0.264)    
-##   PPETHM: 2+ Races, Non-Hispanic/White, Non-Hispanic              0.401      0.400     
-##                                                                  (0.284)    (0.286)    
-##   income: $20k to $40k/under $20k                                           -0.227     
-##                                                                             (0.215)    
-##   income: $40k to $75k/under $20k                                           -0.216     
-##                                                                             (0.198)    
-##   income: over $75k/under $20k                                              -0.174     
-##                                                                             (0.184)    
-## ---------------------------------------------------------------------------------------
-##   Aldrich-Nelson R-sq.                                    0.0        0.0        0.0    
-##   McFadden R-sq.                                          0.0        0.0        0.0    
-##   Cox-Snell R-sq.                                         0.0        0.0        0.0    
-##   Nagelkerke R-sq.                                        0.0        0.0        0.0    
-##   phi                                                     1.0        1.0        1.0    
-##   Likelihood-ratio                                        7.5       27.7       29.6    
-##   p                                                       0.0        0.0        0.0    
-##   Log-likelihood                                       2133.2     2113.0     2111.2    
-##   Deviance                                             2133.2     2113.0     2111.2    
-##   N                                                    2146       2146       2146      
-## =======================================================================================</code></pre>
+## ==================================================================================================
+##                                                          a1         a2         a3         a4      
+## --------------------------------------------------------------------------------------------------
+##   (Intercept)                                         -1.556***  -1.729***  -1.886***  -1.883***  
+##                                                       (0.089)    (0.095)    (0.126)    (0.144)    
+##   PPGENDER: Female/Male                                0.298*     0.314**    0.337**    0.337**   
+##                                                       (0.119)    (0.119)    (0.120)    (0.120)    
+##   PPETHM: Black, Non-Hispanic/White, Non-Hispanic                 0.162      0.164      0.162     
+##                                                                  (0.201)    (0.202)    (0.205)    
+##   PPETHM: Hispanic/White, Non-Hispanic                            0.603***   0.616***   0.615***  
+##                                                                  (0.168)    (0.167)    (0.168)    
+##   PPETHM: Other, Non-Hispanic/White, Non-Hispanic                 0.487      0.458      0.458     
+##                                                                  (0.264)    (0.265)    (0.265)    
+##   PPETHM: 2+ Races, Non-Hispanic/White, Non-Hispanic              0.401      0.397      0.397     
+##                                                                  (0.284)    (0.284)    (0.284)    
+##   work: employed/unemployed                                                  0.237      0.238     
+##                                                                             (0.124)    (0.124)    
+##   marital: partnered/single                                                            -0.006     
+##                                                                                        (0.124)    
+## --------------------------------------------------------------------------------------------------
+##   Aldrich-Nelson R-sq.                                    0.0        0.0        0.0        0.0    
+##   McFadden R-sq.                                          0.0        0.0        0.0        0.0    
+##   Cox-Snell R-sq.                                         0.0        0.0        0.0        0.0    
+##   Nagelkerke R-sq.                                        0.0        0.0        0.0        0.0    
+##   phi                                                     1.0        1.0        1.0        1.0    
+##   Likelihood-ratio                                        7.5       27.7       32.2       32.2    
+##   p                                                       0.0        0.0        0.0        0.0    
+##   Log-likelihood                                       2133.2     2113.0     2108.6     2108.5    
+##   Deviance                                             2133.2     2113.0     2108.6     2108.5    
+##   N                                                    2146       2146       2146       2146      
+## ==================================================================================================</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># OR for a3</span>
+(or &lt;-<span class="st"> </span><span class="kw">exp</span>(<span class="kw">coefficients</span>(a3)))</code></pre></div>
+<pre><code>##                  (Intercept)               PPGENDERFemale 
+##                       0.1516                       1.4010 
+##    PPETHMBlack, Non-Hispanic               PPETHMHispanic 
+##                       1.1778                       1.8508 
+##    PPETHMOther, Non-Hispanic PPETHM2+ Races, Non-Hispanic 
+##                       1.5801                       1.4880 
+##                 workemployed 
+##                       1.2678</code></pre>
+<p>When adjusting for gender, ethnicity, and work status, significant explanatory variables for being sick include being female 1.401 and being hispanic 1.8508</p>
+<hr />
 </div>
 </div>
 <div id="q13.-do-you-get-an-influenza-vaccine" class="section level2">
 <h2>Q13. Do you get an influenza vaccine?</h2>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># use data = df, with recodes</span>
-<span class="co"># recode Q13 as 1 = yes always; 1 = yes sometimes; 0 = no never</span>
-<span class="kw">str</span>(df$vax)</code></pre></div>
-<pre><code>##  Factor w/ 2 levels &quot;Yes&quot;,&quot;No&quot;: 1 NA 1 1 1 1 2 1 1 2 ...</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">str</span>(data$Q13)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># check to make sure Q13 has been re-grouped</span>
+<span class="kw">str</span>(datar$Q13)  <span class="co"># original</span></code></pre></div>
 <pre><code>##  Factor w/ 3 levels &quot;Yes, every year&quot;,..: 1 NA 1 2 1 2 3 1 2 3 ...</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># glm + design weights</span>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">str</span>(df$q13)  <span class="co"># updated</span></code></pre></div>
+<pre><code>##  Factor w/ 2 levels &quot;Yes&quot;,&quot;No&quot;: 1 NA 1 1 1 1 2 1 1 2 ...</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># relevel q13</span>
+df$q13 &lt;-<span class="st"> </span><span class="kw">relevel</span>(df$q13, <span class="st">&quot;No&quot;</span>)
+
+<span class="co"># update survey object</span>
 <span class="kw">options</span>(<span class="dt">survey.lonely.psu =</span> <span class="st">&quot;adjust&quot;</span>)
 des2 &lt;-<span class="st"> </span><span class="kw">svydesign</span>(<span class="dt">ids =</span> ~<span class="dv">1</span>, <span class="dt">weights =</span> ~weight, <span class="dt">data =</span> df)
 
 <span class="co"># getting sick ~ getting vaccine</span>
-m5 &lt;-<span class="st"> </span><span class="kw">svyglm</span>(sick ~<span class="st"> </span>vax, des2, <span class="dt">family =</span> quasibinomial)
+m5 &lt;-<span class="st"> </span><span class="kw">svyglm</span>(sick ~<span class="st"> </span>q13, des2, <span class="dt">family =</span> quasibinomial)
 <span class="kw">summary</span>(m5)</code></pre></div>
 <pre><code>## 
 ## Call:
-## svyglm(formula = sick ~ vax, des2, family = quasibinomial)
+## svyglm(formula = sick ~ q13, des2, family = quasibinomial)
 ## 
 ## Survey design:
 ## svydesign(ids = ~1, weights = ~weight, data = df)
 ## 
 ## Coefficients:
 ##             Estimate Std. Error t value Pr(&gt;|t|)    
-## (Intercept)  -1.2849     0.0735  -17.49   &lt;2e-16 ***
-## vaxNo        -0.2800     0.1231   -2.27    0.023 *  
+## (Intercept)  -1.5648     0.0988  -15.84   &lt;2e-16 ***
+## q13Yes        0.2800     0.1231    2.27    0.023 *  
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ## 
@@ -501,29 +518,137 @@ m5 &lt;-<span class="st"> </span><span class="kw">svyglm</span>(sick ~<span clas
 ## 
 ## Number of Fisher Scoring iterations: 4</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">(or5 &lt;-<span class="st"> </span><span class="kw">exp</span>(<span class="kw">coefficients</span>(m5)))</code></pre></div>
-<pre><code>## (Intercept)       vaxNo 
-##      0.2767      0.7558</code></pre>
-<p>Those who did not receive vaccine had 0.7558 odds of getting sick compared to those who received the vaccine.</p>
+<pre><code>## (Intercept)      q13Yes 
+##      0.2091      1.3231</code></pre>
+<p>Those who get the vaccine had 1.3231 the odds of getting sick compared to those who do not get the vaccine.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Q2 + Q13 tables with weights</span>
-<span class="kw">svytable</span>(~vax +<span class="st"> </span>sick, <span class="dt">design =</span> des2, <span class="dt">round =</span> T)  <span class="co"># sick = 1, not sick = 0</span></code></pre></div>
+<span class="kw">svytable</span>(~q13 +<span class="st"> </span>sick, <span class="dt">design =</span> des2, <span class="dt">round =</span> T)  <span class="co"># sick = 1, not sick = 0</span></code></pre></div>
 <pre><code>##      sick
-## vax     0   1
-##   Yes 999 276
-##   No  711 149</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">(t2 &lt;-<span class="st"> </span><span class="kw">prop.table</span>(<span class="kw">svytable</span>(~vax +<span class="st"> </span>sick, <span class="dt">design =</span> des2), <span class="dt">margin =</span> <span class="dv">2</span>)*<span class="st"> </span><span class="dv">100</span>)</code></pre></div>
+## q13     0   1
+##   No  711 149
+##   Yes 999 276</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">(t2 &lt;-<span class="st"> </span><span class="kw">prop.table</span>(<span class="kw">svytable</span>(~q13 +<span class="st"> </span>sick, <span class="dt">design =</span> des2), <span class="dt">margin =</span> <span class="dv">2</span>)*<span class="st"> </span><span class="dv">100</span>)</code></pre></div>
 <pre><code>##      sick
-## vax       0     1
-##   Yes 58.43 65.03
-##   No  41.57 34.97</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">(t1 &lt;-<span class="st"> </span><span class="kw">prop.table</span>(<span class="kw">svytable</span>(~vax +<span class="st"> </span>sick, <span class="dt">design =</span> des2), <span class="dt">margin =</span> <span class="dv">1</span>)*<span class="st"> </span><span class="dv">100</span>)</code></pre></div>
+## q13       0     1
+##   No  41.57 34.97
+##   Yes 58.43 65.03</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">(t1 &lt;-<span class="st"> </span><span class="kw">prop.table</span>(<span class="kw">svytable</span>(~q13 +<span class="st"> </span>sick, <span class="dt">design =</span> des2), <span class="dt">margin =</span> <span class="dv">1</span>)*<span class="st"> </span><span class="dv">100</span>)</code></pre></div>
 <pre><code>##      sick
-## vax       0     1
-##   Yes 78.33 21.67
-##   No  82.70 17.30</code></pre>
+## q13       0     1
+##   No  82.70 17.30
+##   Yes 78.33 21.67</code></pre>
 <p>Out of those who reported being sick, 65.0288% reported receiving vaccine.<br />
-Out of those who were healthy, 58.427% received vaccine (41.573% did not).<br />
-Vaccinated group: 78.3274% report no illness.<br />
+Out of those who were healthy, 34.9712% received vaccine (41.573% did not).<br />
+Vaccinated group: 17.2955% report no illness.<br />
 Unvaccinated group: 82.7045% report no illness.</p>
+<div id="regression-analysis-for-q2-and-q13" class="section level3">
+<h3>Regression analysis for Q2 and Q13</h3>
+<p>Subset sick + vaccinated group. Run regression and adjust for demographic variables.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># subset sick and vaccinated</span>
+df2 &lt;-<span class="st"> </span>df %&gt;%
+<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">sickq13 =</span> <span class="kw">ifelse</span>((sick ==<span class="st"> </span><span class="dv">1</span> &amp;<span class="st"> </span>q13 ==<span class="st"> &quot;Yes&quot;</span>), <span class="dv">1</span>, <span class="dv">0</span>))
+
+df2$sickq13 &lt;-<span class="st"> </span><span class="kw">as.factor</span>(df2$sickq13)
+<span class="kw">str</span>(df2$sickq13)</code></pre></div>
+<pre><code>##  Factor w/ 2 levels &quot;0&quot;,&quot;1&quot;: 1 1 1 1 1 1 1 1 2 1 ...</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># table of sick and vaccine status</span>
+<span class="kw">xtabs</span>(~sick +<span class="st"> </span>q13, df2)</code></pre></div>
+<pre><code>##     q13
+## sick   No  Yes
+##    0  674 1053
+##    1  144  269</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># 1 = sick and vaccinated, else = 0</span>
+<span class="kw">table</span>(df2$sickq13)</code></pre></div>
+<pre><code>## 
+##    0    1 
+## 1880  269</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># update survey object</span>
+<span class="kw">options</span>(<span class="dt">survey.lonely.psu =</span> <span class="st">&quot;adjust&quot;</span>)
+des3 &lt;-<span class="st"> </span><span class="kw">svydesign</span>(<span class="dt">ids =</span> ~<span class="dv">1</span>, <span class="dt">weights =</span> ~weight, <span class="dt">data =</span> df2)
+
+m1 &lt;-<span class="st"> </span><span class="kw">svyglm</span>(sickq13 ~<span class="st"> </span>PPGENDER, des3, <span class="dt">family =</span> <span class="kw">quasibinomial</span>())
+m2 &lt;-<span class="st"> </span><span class="kw">update</span>(m1, ~<span class="st"> </span>. +<span class="st"> </span>PPETHM)  <span class="co"># add race</span>
+m3 &lt;-<span class="st"> </span><span class="kw">update</span>(m2, ~<span class="st"> </span>. +<span class="st"> </span>work)  <span class="co"># add work</span>
+m4 &lt;-<span class="st"> </span><span class="kw">update</span>(m3, ~<span class="st"> </span>. +<span class="st"> </span>ppagecat)  <span class="co"># add age</span>
+
+<span class="co"># memisc, need to modify summary function</span>
+<span class="kw">mtable</span>(m1, m2, m3, m4)</code></pre></div>
+<pre><code>## 
+## Calls:
+## m1: svyglm(formula = sickq13 ~ PPGENDER, des3, family = quasibinomial())
+## m2: svyglm(formula = sickq13 ~ PPGENDER + PPETHM, des3, family = quasibinomial())
+## m3: svyglm(formula = sickq13 ~ PPGENDER + PPETHM + work, des3, family = quasibinomial())
+## m4: svyglm(formula = sickq13 ~ PPGENDER + PPETHM + work + ppagecat, 
+##     des3, family = quasibinomial())
+## 
+## ==================================================================================================
+##                                                          m1         m2         m3         m4      
+## --------------------------------------------------------------------------------------------------
+##   (Intercept)                                         -2.028***  -2.215***  -2.352***  -2.334***  
+##                                                       (0.104)    (0.111)    (0.153)    (0.287)    
+##   PPGENDER: Female/Male                                0.215      0.233      0.254      0.274     
+##                                                       (0.141)    (0.141)    (0.144)    (0.144)    
+##   PPETHM: Black, Non-Hispanic/White, Non-Hispanic                 0.123      0.124      0.119     
+##                                                                  (0.243)    (0.243)    (0.246)    
+##   PPETHM: Hispanic/White, Non-Hispanic                            0.624**    0.634**    0.639**   
+##                                                                  (0.194)    (0.193)    (0.198)    
+##   PPETHM: Other, Non-Hispanic/White, Non-Hispanic                 0.670*     0.645*     0.595*    
+##                                                                  (0.290)    (0.293)    (0.291)    
+##   PPETHM: 2+ Races, Non-Hispanic/White, Non-Hispanic             -0.285     -0.289     -0.287     
+##                                                                  (0.411)    (0.411)    (0.419)    
+##   work: employed/unemployed                                                  0.207      0.224     
+##                                                                             (0.149)    (0.175)    
+##   ppagecat: 25-34/18-24                                                                -0.272     
+##                                                                                        (0.301)    
+##   ppagecat: 35-44/18-24                                                                 0.196     
+##                                                                                        (0.282)    
+##   ppagecat: 45-54/18-24                                                                -0.137     
+##                                                                                        (0.283)    
+##   ppagecat: 55-64/18-24                                                                -0.115     
+##                                                                                        (0.275)    
+##   ppagecat: 65-74/18-24                                                                 0.269     
+##                                                                                        (0.307)    
+##   ppagecat: 75+/18-24                                                                  -0.562     
+##                                                                                        (0.437)    
+## --------------------------------------------------------------------------------------------------
+##   Aldrich-Nelson R-sq.                                    0.0        0.0        0.0        0.0    
+##   McFadden R-sq.                                          0.0        0.0        0.0        0.0    
+##   Cox-Snell R-sq.                                         0.0        0.0        0.0        0.0    
+##   Nagelkerke R-sq.                                        0.0        0.0        0.0        0.0    
+##   phi                                                     1.0        1.0        1.0        1.0    
+##   Likelihood-ratio                                        2.7       21.8       24.1       34.7    
+##   p                                                       0.1        0.0        0.0        0.0    
+##   Log-likelihood                                       1645.5     1626.5     1624.2     1613.6    
+##   Deviance                                             1645.5     1626.5     1624.2     1613.6    
+##   N                                                    2145       2145       2145       2145      
+## ==================================================================================================</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># who is getting sick after vaccinations?</span>
+<span class="kw">svyby</span>(<span class="dt">formula =</span> ~ppagecat, <span class="dt">by =</span> ~sickq13, <span class="dt">design =</span> des3, <span class="dt">FUN =</span> svymean, <span class="dt">na.rm =</span> T)</code></pre></div>
+<pre><code>##   sickq13 ppagecat18-24 ppagecat25-34 ppagecat35-44 ppagecat45-54
+## 0       0        0.1170        0.1764        0.1645        0.1589
+## 1       1        0.1294        0.1465        0.2166        0.1488
+##   ppagecat55-64 ppagecat65-74 ppagecat75+ se.ppagecat18-24
+## 0        0.2007        0.1246     0.05795         0.009241
+## 1        0.1811        0.1496     0.02798         0.024790
+##   se.ppagecat25-34 se.ppagecat35-44 se.ppagecat45-54 se.ppagecat55-64
+## 0          0.01032         0.009539         0.008519          0.00935
+## 1          0.02443         0.027704         0.021386          0.02322
+##   se.ppagecat65-74 se.ppagecat75+
+## 0          0.00730       0.005136
+## 1          0.02319       0.009463</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">svyby</span>(<span class="dt">formula =</span> ~PPGENDER, <span class="dt">by =</span> ~sick +<span class="st"> </span>q13, <span class="dt">design =</span> des3, <span class="dt">FUN =</span> svymean, <span class="dt">na.rm =</span> T)</code></pre></div>
+<pre><code>##       sick q13 PPGENDERMale PPGENDERFemale se.PPGENDERMale
+## 0.No     0  No       0.5169         0.4831         0.02082
+## 1.No     1  No       0.3904         0.6096         0.04385
+## 0.Yes    0 Yes       0.4752         0.5248         0.01651
+## 1.Yes    1 Yes       0.4328         0.5672         0.03236
+##       se.PPGENDERFemale
+## 0.No            0.02082
+## 1.No            0.04385
+## 0.Yes           0.01651
+## 1.Yes           0.03236</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co">#with(df2, table(sickq13, </span></code></pre></div>
+</div>
 </div>
 </div>
 

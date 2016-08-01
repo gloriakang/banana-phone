@@ -9,10 +9,11 @@ output:
     keep_md: yes
     theme: cosmo
     toc: yes
-    toc_depth: 4
+    toc_depth: 2
 ---
 
-*Notes: Bivariate and multivariate analyses of flu survey data with weights*  
+### Bivariate and multivariate analyses
+  
 An odds ratio is a measure of association between an exposure and an outcome. The OR represents the odds that an outcome will occur given a particular exposure, compared to the odds of the outcome occurring in the absence of that exposure.  
   
 When a logistic regression is calculated, the regression coefficient (b1) is the estimated increase in the log odds of the outcome per unit increase in the value of the exposure. In other words, the exponential function of the regression coefficient (e^b1) is the odds ratio associated with a one-unit increase in the exposure.  
@@ -39,7 +40,7 @@ rm(data2)
 
 #source(recoding.R)
 load("clean/recoding1.RData")
-df <- datar  # df contains recoded variables
+df <- datar  # datar contains recoded variables
 #tail(df)
 ```
 
@@ -70,7 +71,6 @@ In the unweighted data frame, `r u[1]`% of females answered Yes to Q1; males = `
 In the weighted data frame, `r w[1]`% of females answered Yes; males = `r w[3]`%;  
 `r w[4]`% of males answered No; females = `r w[2]`%  
   
-
 ```{r}
 # table above with standard errors
 svyby(formula = ~Q1, by = ~PPGENDER, design = des, FUN = svymean, na.rm = T)
@@ -91,18 +91,25 @@ svyby(formula = ~Q1, by = ~PPGENDER + PPETHM, design = des, FUN = svymean, na.rm
 ### Without weights.
 
 ```{r}
+# recode Q2
+df$sick <- car::recode(datar$Q2, recodes = "'Yes' = 1; 'No' = 0; NA = NA")
+
 # Q2 by gender
-with(data, table(Q2, PPGENDER))
+with(df, table(Q2, PPGENDER))
+
 fit1 <- glm(sick ~ PPGENDER, data = df, family = binomial())  # unweighted
 summary(fit1)
 (q2.u <- exp(coefficients(fit1)))
 ```
 
-In the unweighted data frame, the odds ratio of being sick as a male is `r q2.u[2]` times the odds of a female.
+In the unweighted data frame, the odds ratio of being sick as a male is `r q2.u[2]` the odds of a female.
 
-### Apply survey design + weights for Q2. Analyze sick vs. not sick by gender.
+
+### Apply survey design + weights for Q2. Analyze sick vs. not sick, by gender.
 
 ```{r}
+# recode
+df$female <- car::recode(datar$PPGENDER, recodes = "'Female' = 1; 'Male' = 0")
 # create survey object + weights
 options(survey.lonely.psu = "adjust")
 des2 <- svydesign(ids = ~1, weights = ~weight, data = df)  # data = df
@@ -114,7 +121,7 @@ summary(m1)
 (or1 <- exp(coefficients(m1)))
 ```
 
-Females had `r or1[2]` odds of being sick compared to males.
+In the weighted data frame, females have `r or1[2]` the odds of being sick compared to males.
 
 ```{r}
 # Q2: being sick, by male gender
@@ -124,9 +131,10 @@ summary(m2)
 (or2 <- exp(coefficients(m2)))
 ```
 
-Males had `r or2[2]` odds of being sick compared to females.  
+In the weighted data frame, males have `r or2[2]` the odds of being sick compared to females.  
 
-### What about by ethnicity?
+
+### by ethnicity
 
 ```{r}
 # Q2: being sick, by ethnicity
@@ -142,54 +150,138 @@ summary(m4)
 
 Compared to white ethnicity, odds ratio for being sick are `r or4[2:5]` for black, hispanic, other, and 2+ mixed race groups, respectively.  
   
-  
+***
+
 ### Create and compare models for sick vs. not sick.
 
 ```{r}
+# relevel gender and update survey object
+df$PPGENDER <- relevel(datar$PPGENDER, "Male")
+des2 <- svydesign(ids = ~1, weights = ~weight, data = df)
+
 # adding variables to model with weights
 a1 <- svyglm(sick ~ PPGENDER, des2, family = quasibinomial())
 a2 <- update(a1, ~ . + PPETHM)  # add race
-a3 <- update(a2, ~ . + income)  # add income
+a3 <- update(a2, ~ . + work)  # add work
+a4 <- update(a3, ~ . + marital)  # add marital status
 
-# memisc
-mtable(a1, a2, a3)
+# memisc: need to modify summary function
+mtable(a1, a2, a3, a4)
+
+# OR for a3
+(or <- exp(coefficients(a3)))
+
 ```
+
+When adjusting for gender, ethnicity, and work status, significant explanatory variables for being sick include being female `r or[2]` and being hispanic `r or[4]`
+
+***
 
 ## Q13. Do you get an influenza vaccine?
 
 ```{r}
-# use data = df, with recodes
-# recode Q13 as 1 = yes always; 1 = yes sometimes; 0 = no never
-str(df$vax)
-str(data$Q13)
+# check to make sure Q13 has been re-grouped
+str(datar$Q13)  # original
+str(df$q13)  # updated
 
-# glm + design weights
+# relevel q13
+df$q13 <- relevel(df$q13, "No")
+
+# update survey object
 options(survey.lonely.psu = "adjust")
 des2 <- svydesign(ids = ~1, weights = ~weight, data = df)
 
 # getting sick ~ getting vaccine
-m5 <- svyglm(sick ~ vax, des2, family = quasibinomial)
+m5 <- svyglm(sick ~ q13, des2, family = quasibinomial)
 summary(m5)
 (or5 <- exp(coefficients(m5)))
 ```
 
-Those who did not receive vaccine had `r or5[2]` odds of getting sick compared to those who received the vaccine.
+Those who get the vaccine had `r or5[2]` the odds of getting sick compared to those who do not get the vaccine.
 
 ```{r}
 # Q2 + Q13 tables with weights
-svytable(~vax + sick, design = des2, round = T)  # sick = 1, not sick = 0
-(t2 <- prop.table(svytable(~vax + sick, design = des2), margin = 2)* 100)
-(t1 <- prop.table(svytable(~vax + sick, design = des2), margin = 1)* 100)
+svytable(~q13 + sick, design = des2, round = T)  # sick = 1, not sick = 0
+(t2 <- prop.table(svytable(~q13 + sick, design = des2), margin = 2)* 100)
+(t1 <- prop.table(svytable(~q13 + sick, design = des2), margin = 1)* 100)
 ```
 
-Out of those who reported being sick, `r t2[3]`% reported receiving vaccine.  
-Out of those who were healthy, `r t2[1]`% received vaccine (`r t2[2]`% did not).  
-Vaccinated group: `r t1[1]`% report no illness.  
-Unvaccinated group: `r t1[2]`% report no illness.  
+Out of those who reported being sick, `r t2[4]`% reported receiving vaccine.  
+Out of those who were healthy, `r t2[3]`% received vaccine (`r t2[1]`% did not).  
+Vaccinated group: `r t1[3]`% report no illness.  
+Unvaccinated group: `r t1[1]`% report no illness.  
   
 
+### Regression analysis for Q2 and Q13
+Subset sick + vaccinated group. Run regression and adjust for demographic variables.
 
 ```{r}
+# subset sick and vaccinated
+df2 <- df %>%
+  mutate(sickq13 = ifelse((sick == 1 & q13 == "Yes"), 1, 0))
+
+df2$sickq13 <- as.factor(df2$sickq13)
+str(df2$sickq13)
+
+# table of sick and vaccine status
+xtabs(~sick + q13, df2)
+# 1 = sick and vaccinated, else = 0
+table(df2$sickq13)
+
+# update survey object
+options(survey.lonely.psu = "adjust")
+des3 <- svydesign(ids = ~1, weights = ~weight, data = df2)
+
+m1 <- svyglm(sickq13 ~ PPGENDER, des3, family = quasibinomial())
+m2 <- update(m1, ~ . + PPETHM)  # add race
+m3 <- update(m2, ~ . + work)  # add work
+m4 <- update(m3, ~ . + ppagecat)  # add age
+
+# memisc, need to modify summary function
+mtable(m1, m2, m3, m4)
+
+
+# who is getting sick after vaccinations?
+svyby(formula = ~ppagecat, by = ~sickq13, design = des3, FUN = svymean, na.rm = T)
+svyby(formula = ~PPGENDER, by = ~sick + q13, design = des3, FUN = svymean, na.rm = T)
+
+#with(df2, table(sickq13, 
 
 ```
+
+
+```{r, eval=FALSE, include=FALSE}
+# update survey object
+options(survey.lonely.psu = "adjust")
+des4 <- svydesign(ids = ~1, weights = ~weight, data = df2)
+
+n0 <- svyglm(sick ~ Q11_1 + Q11_2 + Q11_3 + Q11_4 + Q11_5 + Q11_6 + Q11_7
+             + Q11_8 + Q11_9 + Q11_10 + Q11_11, des4, family = quasibinomial())
+
+summary(n0)
+exp(coefficients(n0))
+
+
+
+
+n1 <- svyglm(sick ~ q13, des4, family = quasibinomial())
+n2 <- update(n1, ~ . + PPGENDER + PPETHM)
+n3 <- update(n2, ~ . + ppagecat)
+mtable(n1, n2, n3)
+
+
+```
+
+
+```{r, eval=FALSE, include=FALSE}
+svyglm(sick ~ q13, des4, family = quasibinomial())
+
+o1 <- svyglm(sick ~ q13, des4, family = quasibinomial())
+o2 <- update(o1, ~ . + PPGENDER + PPETHM)
+o3 <- update(o2, ~ . + ppagecat)
+o4 <- update(o3, ~ . + ppagecat)
+mtable(o1, o2, o3)
+
+```
+
 

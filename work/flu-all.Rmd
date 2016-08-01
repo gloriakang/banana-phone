@@ -9,7 +9,7 @@ output:
     keep_md: yes
     theme: cosmo
     toc: yes
-    toc_depth: 4
+    toc_depth: 3
 ---
 
 ```{r setup, include=FALSE}
