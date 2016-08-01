@@ -4,7 +4,7 @@ output:
   html_document:
     css: reports/style.css
     fig_height: 3
-    fig_width: 5
+    fig_width: 6
     highlight: tango
     keep_md: yes
     theme: cosmo
@@ -12,8 +12,13 @@ output:
     toc_depth: 4
 ---
 
-# Bivariate and multivariate analyses of flu survey data with weights.
-
+*Notes: Bivariate and multivariate analyses of flu survey data with weights*  
+An odds ratio is a measure of association between an exposure and an outcome. The OR represents the odds that an outcome will occur given a particular exposure, compared to the odds of the outcome occurring in the absence of that exposure.  
+  
+When a logistic regression is calculated, the regression coefficient (b1) is the estimated increase in the log odds of the outcome per unit increase in the value of the exposure. In other words, the exponential function of the regression coefficient (e^b1) is the odds ratio associated with a one-unit increase in the exposure.  
+  
+The 95% CI is used to estimate the precision of the OR. A large CI indicates a low level of precision of the OR, whereas a small CI indicates a higher precision of the OR. It is important to note however, that unlike the p value, the 95% CI does not report a measure’s statistical significance. In practice, the 95% CI is often used as a proxy for the presence of statistical significance if it does not overlap the null value (OR=1). Nevertheless, it would be inappropriate to interpret an OR with 95% CI that spans the null value as indicating evidence for lack of association between the exposure and outcome.  
+  
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = T, warning = F, message = F, tidy = F, size = "small")
 rm(list = ls(all.names = TRUE))
@@ -59,10 +64,13 @@ svytable(~Q1 + PPGENDER, design = des, round = T)  # weighted Q1
 (u <- with(data, prop.table(table(Q1, PPGENDER), margin = 1))*100)  # unweighted prop
 (w <- prop.table(svytable(~Q1 + PPGENDER, design = des), margin = 1)*100)  # weighted prop
 ```
-In the unweighted data frame, `r u[1]`% of females answered Yes to Q1; males = `r u[3]`%; `r u[4]`% of males answered No; females = `r u[4]`%  
-In the weighted data frame, `r w[1]`% of females answered Yes; males = `r w[3]`%; `r w[4]`% of males answered No; females = `r w[2]`%.  
+
+In the unweighted data frame, `r u[1]`% of females answered Yes to Q1; males = `r u[3]`%  
+`r u[4]`% of males answered No; females = `r u[4]`%  
+In the weighted data frame, `r w[1]`% of females answered Yes; males = `r w[3]`%;  
+`r w[4]`% of males answered No; females = `r w[2]`%  
   
-  
+
 ```{r}
 # table above with standard errors
 svyby(formula = ~Q1, by = ~PPGENDER, design = des, FUN = svymean, na.rm = T)
@@ -73,9 +81,9 @@ svyby(formula = ~Q1, by = ~PPGENDER + PPETHM, design = des, FUN = svymean, na.rm
 # out of all females and males
 (w <- prop.table(svytable(~Q1 + PPGENDER, design = des), margin = 2)*100)
 ```
-Out of all females and males:  
-`r w[1]`% of females answered Yes to Q1; `r w[2]`% said No.  
-`r w[3]`% of males answered Yes to Q1; `r w[4]`% said No.  
+
+`r w[1]`% of females answered Yes to Q1; `r w[2]`% said No  
+`r w[3]`% of males answered Yes to Q1; `r w[4]`% said No  
   
   
 ## Q2. Have you had an illness with influenza-like symptoms since August 2015?
@@ -88,10 +96,9 @@ with(data, table(Q2, PPGENDER))
 fit1 <- glm(sick ~ PPGENDER, data = df, family = binomial())  # unweighted
 summary(fit1)
 (q2.u <- exp(coefficients(fit1)))
-#contrasts(data$PPGENDER)
 ```
 
-In the unweighted data frame, males had `r q2.u[2]` odds of being sick compared to females.  
+In the unweighted data frame, the odds ratio of being sick as a male is `r q2.u[2]` times the odds of a female.
 
 ### Apply survey design + weights for Q2. Analyze sick vs. not sick by gender.
 

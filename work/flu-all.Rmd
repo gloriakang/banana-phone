@@ -1,8 +1,8 @@
 ---
-title: "Working analysis"
+title: "flu-all"
 output:
   html_document:
-    fig_caption: yes
+    css: reports/style.css
     fig_height: 3
     fig_width: 6
     highlight: tango
@@ -10,21 +10,14 @@ output:
     theme: cosmo
     toc: yes
     toc_depth: 4
-fontsize: 10pt
 ---
-
-This report contains summary of all survey questions.
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = T, warning = F, message = F, tidy = F, size = "small")
-#setwd("~/git/banana-phone/work")
-#source("clean/data_cleaning2.R")
-#source("clean/plotting1.R")
 rm(list = ls(all.names = TRUE))
 
 library(dplyr); library(tidyr); library(ggplot2)
 library(knitr); library(gmodels); library(prettyR); library(epitools)
-
 load("clean/cleaning2.RData")
 load("clean/plotting1.RData")
 
@@ -33,44 +26,53 @@ names(data) <- old_name
 names(data2) <- new_name
 ```
 
+# Unweighted survey data
 
-# Survey questions
 ## Q1. Before receiving this survey, did you know influenza is different from the stomach flu?
 
+### Ways to make tables
+
+#### by gender
 
 ```{r Q1}
-# GENDER
-kable(with(data2, addmargins(table(PPGENDER, Q1))))
+# q1 table by gender
+kable(with(data2, addmargins(table(PPGENDER, Q1))))  # formatted table
 
-# odds ratio
-oddsratio(with(data2, table(PPGENDER, Q1)), rev = "neither")
+# using epitools::odds ratio with males as ref
+(or <- oddsratio(with(data2, table(PPGENDER, Q2)), rev = "columns"))  # not sick, sick
 
-# xtab table
+# xtab gives OR (need to flip columns) and proportions
 xtab(PPGENDER ~ Q1, data2)
 
-# SPSS table: joint freq, conditional %, marginal prop
+# CrossTable gives pretty joint freqs, conditional %, marginal prop
 with(data2, CrossTable(PPGENDER, Q1, prop.chisq = F))
 
+# plot
 g1 + geom_bar(mapping = aes(x = Q1, fill = Q1),
               position = position_dodge()) + facet_wrap(~PPGENDER)
+```
 
-## AGE
-oddsratio(with(data2, table(ppagecat, Q1)))
+#### by demographic variables
 
-## EDUCATION
-xtab(PPEDUCAT ~ Q1, data2)
+```{r}
+#### by age group
+(or <- oddsratio(with(data2, table(ppagecat, Q1)), rev = "columns"))
+
+#### by education
+(or1 <- oddsratio(with(data2, table(PPEDUCAT, Q1)), rev = "columns"))
+
 g1 + geom_bar(mapping = aes(x = PPEDUCAT, fill = Q1),
               position = position_stack())
 g1 + geom_bar(mapping = aes(x = PPEDUCAT, fill = Q1),
-              position = position_fill())
+              position = position_fill()) 
 
-## ETHNICITY
-xtab(PPETHM ~ Q1, data2)
+#### ETHNICITY
+(or2 <- oddsratio(with(data2, table(PPETHM, Q1)), rev = "columns"))
 g1 + geom_bar(mapping = aes(x = PPETHM, fill = Q1),
               position = position_dodge())
 
-## INCOME
-xtab(PPINCIMP ~ Q1, data2)
+#### INCOME
+(or3 <- oddsratio(with(data2, table(PPINCIMP, Q1)), rev = "columns"))
 g1 + geom_bar(mapping = aes(x = PPINCIMP, fill = Q1),
               position = position_dodge()) + coord_flip()
 
