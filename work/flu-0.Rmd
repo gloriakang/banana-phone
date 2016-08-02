@@ -4,9 +4,10 @@ output:
   html_document:
     fig_height: 3
     fig_width: 6
-    highlight: kate
+    css: reports/default.css
+    highlight: default
     keep_md: yes
-    theme: spacelab
+    theme: cosmo
     toc: yes
     toc_depth: 2
 ---
