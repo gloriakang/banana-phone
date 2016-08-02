@@ -10,10 +10,10 @@ The 95% CI is used to estimate the precision of the OR. A large CI indicates a l
   
 
 
-### Load data and recoded variables.
-
 
 ```r
+## Load data and recoded variables.
+
 load("clean/cleaning2.RData")
 data <- data2
 names(data) <- old_name  # give data old names
@@ -25,10 +25,10 @@ df <- datar  # datar contains recoded variables
 #tail(df)
 ```
 
-### Create a survey object with weights.
-
 
 ```r
+## Create survey object with weights = des
+
 options(digits = 4)
 options(survey.lonely.psu = "adjust")
 des <- svydesign(ids = ~1, weights = ~weight, data = data[is.na(data$weight) == F, ])
@@ -36,13 +36,15 @@ des <- svydesign(ids = ~1, weights = ~weight, data = data[is.na(data$weight) == 
 ```
 
 # Survey questions
+
 ## Q1. Before receiving this survey, did you know influenza is different from the stomach flu?
   
 ### Compare sex ratios in unweighted and weighted data frames for Q1.
-  
+
 
 ```r
-with(data, addmargins(table(Q1, PPGENDER)))  # unweighted Q1
+# unweighted Q1
+with(data, addmargins(table(Q1, PPGENDER)))
 ```
 
 ```
@@ -54,7 +56,8 @@ with(data, addmargins(table(Q1, PPGENDER)))  # unweighted Q1
 ```
 
 ```r
-svytable(~Q1 + PPGENDER, design = des, round = T)  # weighted Q1
+# weighted Q1
+svytable(~Q1 + PPGENDER, design = des, round = T)
 ```
 
 ```
@@ -65,7 +68,8 @@ svytable(~Q1 + PPGENDER, design = des, round = T)  # weighted Q1
 ```
 
 ```r
-(u <- with(data, prop.table(table(Q1, PPGENDER), margin = 1))*100)  # unweighted prop
+# unweighted prop
+(u <- with(data, prop.table(table(Q1, PPGENDER), margin = 1))*100)  
 ```
 
 ```
@@ -76,7 +80,8 @@ svytable(~Q1 + PPGENDER, design = des, round = T)  # weighted Q1
 ```
 
 ```r
-(w <- prop.table(svytable(~Q1 + PPGENDER, design = des), margin = 1)*100)  # weighted prop
+# weighted prop
+(w <- prop.table(svytable(~Q1 + PPGENDER, design = des), margin = 1)*100)
 ```
 
 ```
@@ -86,13 +91,12 @@ svytable(~Q1 + PPGENDER, design = des, round = T)  # weighted Q1
 ##   No   43.12 56.88
 ```
 
-In the unweighted data frame, 53.3654% of females answered Yes to Q1; males = 46.6346%  
-57.9918% of males answered No; females = 57.9918%  
-In the weighted data frame, 55.0212% of females answered Yes; males = 44.9788%;  
-56.8791% of males answered No; females = 43.1209%  
-  
-
 ```r
+# figure out how to plot weighted survey designs
+#g1 <- ggplot(data2[!is.na(data2$Q1), ]) + theme(text = element_text(size = 10), axis.text.x = element_text(angle = 45, hjust = 1))
+#g1 + geom_bar(mapping = aes(x = Q1, fill = Q1),
+#              position = position_dodge()) + facet_wrap(~PPGENDER)
+
 # table above with standard errors
 svyby(formula = ~Q1, by = ~PPGENDER, design = des, FUN = svymean, na.rm = T)
 ```
@@ -101,36 +105,6 @@ svyby(formula = ~Q1, by = ~PPGENDER, design = des, FUN = svymean, na.rm = T)
 ##        PPGENDER  Q1Yes   Q1No se.Q1Yes se.Q1No
 ## Female   Female 0.7937 0.2063  0.01373 0.01373
 ## Male       Male 0.7045 0.2955  0.01562 0.01562
-```
-
-```r
-# prop table with SE, by gender + race
-svyby(formula = ~Q1, by = ~PPGENDER + PPETHM, design = des, FUN = svymean, na.rm = T)
-```
-
-```
-##                               PPGENDER                 PPETHM  Q1Yes
-## Female.White, Non-Hispanic      Female    White, Non-Hispanic 0.8249
-## Male.White, Non-Hispanic          Male    White, Non-Hispanic 0.7287
-## Female.Black, Non-Hispanic      Female    Black, Non-Hispanic 0.7116
-## Male.Black, Non-Hispanic          Male    Black, Non-Hispanic 0.7143
-## Female.Hispanic                 Female               Hispanic 0.7555
-## Male.Hispanic                     Male               Hispanic 0.6242
-## Female.Other, Non-Hispanic      Female    Other, Non-Hispanic 0.7192
-## Male.Other, Non-Hispanic          Male    Other, Non-Hispanic 0.6496
-## Female.2+ Races, Non-Hispanic   Female 2+ Races, Non-Hispanic 0.7719
-## Male.2+ Races, Non-Hispanic       Male 2+ Races, Non-Hispanic 0.7314
-##                                 Q1No se.Q1Yes se.Q1No
-## Female.White, Non-Hispanic    0.1751  0.01438 0.01438
-## Male.White, Non-Hispanic      0.2713  0.01750 0.01750
-## Female.Black, Non-Hispanic    0.2884  0.04794 0.04794
-## Male.Black, Non-Hispanic      0.2857  0.05113 0.05113
-## Female.Hispanic               0.2445  0.04366 0.04366
-## Male.Hispanic                 0.3758  0.04690 0.04690
-## Female.Other, Non-Hispanic    0.2808  0.07333 0.07333
-## Male.Other, Non-Hispanic      0.3504  0.06920 0.06920
-## Female.2+ Races, Non-Hispanic 0.2281  0.06514 0.06514
-## Male.2+ Races, Non-Hispanic   0.2686  0.08201 0.08201
 ```
 
 ```r
@@ -145,20 +119,42 @@ svyby(formula = ~Q1, by = ~PPGENDER + PPETHM, design = des, FUN = svymean, na.rm
 ##   No   20.63 29.55
 ```
 
-79.3709% of females answered Yes to Q1; 20.6291% said No  
-70.4534% of males answered Yes to Q1; 29.5466% said No  
+In the unweighted data frame for Q1, 53.3654% of females and 46.6346% of males answered Yes. 57.9918% of males and 57.9918% of females answered No.  
+In the weighted data frame, 79.3709% of females and 70.4534% of males answered Yes. 29.5466% of males and 20.6291% of females answered No.  
   
+79.3709% of all females answered Yes, and 20.6291% said No.  
+70.4534% of all males answered Yes, and 29.5466% said No.  
   
+
 ## Q2. Have you had an illness with influenza-like symptoms since August 2015?
 
-### Without weights.
+### First look at unweighted data. Calculate unadjusted OR for being sick by gender.
 
 
 ```r
-# recode Q2
-df$sick <- car::recode(datar$Q2, recodes = "'Yes' = 1; 'No' = 0; NA = NA")
+## without weights
 
-# Q2 by gender
+# recode datar$Q2
+head(datar$Q2)
+```
+
+```
+## [1] No No No No No No
+## Levels: Yes No
+```
+
+```r
+df$sick <- car::recode(datar$Q2, recodes = "'Yes' = 1; 'No' = 0; NA = NA")
+head(df$sick)
+```
+
+```
+## [1] 0 0 0 0 0 0
+## Levels: 0 1
+```
+
+```r
+# table Q2 by gender
 with(df, table(Q2, PPGENDER))
 ```
 
@@ -170,7 +166,8 @@ with(df, table(Q2, PPGENDER))
 ```
 
 ```r
-fit1 <- glm(sick ~ PPGENDER, data = df, family = binomial())  # unweighted
+# glm without weights
+fit1 <- glm(sick ~ PPGENDER, data = df, family = binomial())
 summary(fit1)
 ```
 
@@ -201,7 +198,7 @@ summary(fit1)
 ```
 
 ```r
-(q2.u <- exp(coefficients(fit1)))
+(q2.u <- exp(coefficients(fit1)))  # OR
 ```
 
 ```
@@ -209,61 +206,25 @@ summary(fit1)
 ##       0.2727       0.7526
 ```
 
-In the unweighted data frame, the odds ratio of being sick as a male is 0.7526 the odds of a female.
+The unadjusted odds ratio of being sick as a male is 0.7526 compared to females.
 
 
-### Apply survey design + weights for Q2. Analyze sick vs. not sick, by gender.
+### Apply survey design and weights for Q2. Calculate unadjusted OR for getting sick by gender.
 
 
 ```r
-# recode
-df$female <- car::recode(datar$PPGENDER, recodes = "'Female' = 1; 'Male' = 0")
-# create survey object + weights
+## With survey weights
+
+# relevel PPGENDER
+df$PPGENDER <- relevel(datar$PPGENDER, "Male")
+
+# create updated survey object with weights = des2
 options(survey.lonely.psu = "adjust")
 des2 <- svydesign(ids = ~1, weights = ~weight, data = df)  # data = df
 
-# Q2: being sick, by female gender
-m1 <- svyglm(sick ~ female, des2, family = quasibinomial())
+# svyglm with weighted model
+m1 <- svyglm(sick ~ PPGENDER, des2, family = quasibinomial())
 summary(m1)
-```
-
-```
-## 
-## Call:
-## svyglm(formula = sick ~ female, des2, family = quasibinomial())
-## 
-## Survey design:
-## svydesign(ids = ~1, weights = ~weight, data = df)
-## 
-## Coefficients:
-##             Estimate Std. Error t value Pr(>|t|)    
-## (Intercept)  -1.5559     0.0888  -17.53   <2e-16 ***
-## female1       0.2981     0.1188    2.51    0.012 *  
-## ---
-## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-## 
-## (Dispersion parameter for quasibinomial family taken to be 0.9992)
-## 
-## Number of Fisher Scoring iterations: 4
-```
-
-```r
-# odds ratios
-(or1 <- exp(coefficients(m1)))
-```
-
-```
-## (Intercept)     female1 
-##       0.211       1.347
-```
-
-In the weighted data frame, females have 1.3474 the odds of being sick compared to males.
-
-
-```r
-# Q2: being sick, by male gender
-m2 <- svyglm(sick ~ PPGENDER, des2, family = quasibinomial())
-summary(m2)
 ```
 
 ```
@@ -275,9 +236,9 @@ summary(m2)
 ## svydesign(ids = ~1, weights = ~weight, data = df)
 ## 
 ## Coefficients:
-##              Estimate Std. Error t value Pr(>|t|)    
-## (Intercept)   -1.2578     0.0789  -15.94   <2e-16 ***
-## PPGENDERMale  -0.2981     0.1188   -2.51    0.012 *  
+##                Estimate Std. Error t value Pr(>|t|)    
+## (Intercept)     -1.5559     0.0888  -17.53   <2e-16 ***
+## PPGENDERFemale   0.2981     0.1188    2.51    0.012 *  
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ## 
@@ -287,25 +248,33 @@ summary(m2)
 ```
 
 ```r
-# odds ratios
-(or2 <- exp(coefficients(m2)))
+(or1 <- exp(coefficients(m1)))  # unadjusted OR
 ```
 
 ```
-##  (Intercept) PPGENDERMale 
-##       0.2843       0.7422
+##    (Intercept) PPGENDERFemale 
+##          0.211          1.347
 ```
 
-In the weighted data frame, males have 0.7422 the odds of being sick compared to females.  
+```r
+exp(confint(m1))  # 95% CI 
+```
 
+```
+##                 2.5 % 97.5 %
+## (Intercept)    0.1773 0.2511
+## PPGENDERFemale 1.0676 1.7005
+```
 
-### by ethnicity
+In the weighted data frame, females had 1.3474 times the odds of being sick compared to males.
+
+### Calculate OR for being sick, adjusted by ethnicity
 
 
 ```r
-# Q2: being sick, by ethnicity
-m3 <- svyglm(sick ~ PPETHM, des2, family = quasibinomial())
-summary(m3)
+# being sick, by ethnicity
+m2 <- svyglm(sick ~ PPETHM, des2, family = quasibinomial())
+summary(m2)
 ```
 
 ```
@@ -332,7 +301,7 @@ summary(m3)
 ```
 
 ```r
-(or3 <- exp(coefficients(m3)))  # odds ratios
+(or2 <- exp(coefficients(m2)))  # OR adjusted for race
 ```
 
 ```
@@ -345,61 +314,36 @@ summary(m3)
 ```
 
 ```r
-# same as above, but binomial -- remove reference variable (white)
-m4 <- svyglm(sick ~ black+hispanic+otherrace+mixedrace, des2, family = quasibinomial())
-summary(m4)
+exp(confint(m2))  # note 95% CI for hispanic group
 ```
 
 ```
-## 
-## Call:
-## svyglm(formula = sick ~ black + hispanic + otherrace + mixedrace, 
-##     des2, family = quasibinomial())
-## 
-## Survey design:
-## svydesign(ids = ~1, weights = ~weight, data = df)
-## 
-## Coefficients:
-##             Estimate Std. Error t value Pr(>|t|)    
-## (Intercept)  -1.5566     0.0699  -22.28  < 2e-16 ***
-## black1        0.1689     0.1998    0.85  0.39789    
-## hispanic1     0.5917     0.1677    3.53  0.00043 ***
-## otherrace1    0.4717     0.2612    1.81  0.07106 .  
-## mixedrace1    0.4078     0.2799    1.46  0.14526    
-## ---
-## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-## 
-## (Dispersion parameter for quasibinomial family taken to be 0.9992)
-## 
-## Number of Fisher Scoring iterations: 4
+##                               2.5 % 97.5 %
+## (Intercept)                  0.1839 0.2418
+## PPETHMBlack, Non-Hispanic    0.8004 1.7514
+## PPETHMHispanic               1.3008 2.5104
+## PPETHMOther, Non-Hispanic    0.9606 2.6743
+## PPETHM2+ Races, Non-Hispanic 0.8687 2.6023
 ```
 
-```r
-(or4 <- exp(coefficients(m4)))  # odds ratios
-```
+Compared to whites, OR for being sick are 1.184, 1.8071, 1.6028, 1.5035 for blacks, hispanics, others, and 2+ races, respectively.  
 
-```
-## (Intercept)      black1   hispanic1  otherrace1  mixedrace1 
-##      0.2109      1.1840      1.8071      1.6028      1.5035
-```
 
-Compared to white ethnicity, odds ratio for being sick are 1.184, 1.8071, 1.6028, 1.5035 for black, hispanic, other, and 2+ mixed race groups, respectively.  
-  
+
 ***
 
-### Create and compare models for sick vs. not sick.
+### Compare model variables for being sick.
 
 
 ```r
-# relevel gender and update survey object
-df$PPGENDER <- relevel(datar$PPGENDER, "Male")
-des2 <- svydesign(ids = ~1, weights = ~weight, data = df)
+#des2 <- svydesign(ids = ~1, weights = ~weight, data = df)
 
-# adding variables to model with weights
-a1 <- svyglm(sick ~ PPGENDER, des2, family = quasibinomial())
-a2 <- update(a1, ~ . + PPETHM)  # add race
-a3 <- update(a2, ~ . + work)  # add work
-a4 <- update(a3, ~ . + marital)  # add marital status
+## sick = 1, not sick = 0
+# add variables to glm with survey design
+a1 <- svyglm(sick ~ PPGENDER, des2, family = quasibinomial())  # by gender
+a2 <- update(a1, ~ . + PPETHM)  # adjust for race
+a3 <- update(a2, ~ . + work)  #  work
+a4 <- update(a3, ~ . + marital)  # marital status
 
 # memisc: need to modify summary function
 mtable(a1, a2, a3, a4)
@@ -448,43 +392,46 @@ mtable(a1, a2, a3, a4)
 ```
 
 ```r
-# OR for a3
-(or <- exp(coefficients(a3)))
+# AOR for last glm
+(or <- exp(coefficients(a4)))
 ```
 
 ```
 ##                  (Intercept)               PPGENDERFemale 
-##                       0.1516                       1.4010 
+##                       0.1521                       1.4011 
 ##    PPETHMBlack, Non-Hispanic               PPETHMHispanic 
-##                       1.1778                       1.8508 
+##                       1.1763                       1.8491 
 ##    PPETHMOther, Non-Hispanic PPETHM2+ Races, Non-Hispanic 
-##                       1.5801                       1.4880 
-##                 workemployed 
-##                       1.2678
+##                       1.5806                       1.4872 
+##                 workemployed             maritalpartnered 
+##                       1.2682                       0.9943
 ```
 
-When adjusting for gender, ethnicity, and work status, significant explanatory variables for being sick include being female 1.401 and being hispanic 1.8508
+When adjusting for gender, ethnicity, employment, and marital status, significant predictors of being sick included female gender (AOR = 1.4011) and hispanic ethnicity (AOR = 1.8491)
 
 ***
 
-## Q13. Do you get an influenza vaccine?
+## Q13. Do you get an influenza vaccine? (Yes, every year; Yes, some years; No, never)
 
 
 ```r
-# check to make sure Q13 has been re-grouped
-str(datar$Q13)  # original
+# first make sure Q13 has been re-grouped
+head(datar$Q13)  # original
 ```
 
 ```
-##  Factor w/ 3 levels "Yes, every year",..: 1 NA 1 2 1 2 3 1 2 3 ...
+## [1] Yes, every year <NA>            Yes, every year Yes, some years
+## [5] Yes, every year Yes, some years
+## Levels: Yes, every year Yes, some years No, never
 ```
 
 ```r
-str(df$q13)  # updated
+head(df$q13)  # updated
 ```
 
 ```
-##  Factor w/ 2 levels "Yes","No": 1 NA 1 1 1 1 2 1 1 2 ...
+## [1] Yes  <NA> Yes  Yes  Yes  Yes 
+## Levels: Yes No
 ```
 
 ```r
@@ -493,17 +440,17 @@ df$q13 <- relevel(df$q13, "No")
 
 # update survey object
 options(survey.lonely.psu = "adjust")
-des2 <- svydesign(ids = ~1, weights = ~weight, data = df)
+des3 <- svydesign(ids = ~1, weights = ~weight, data = df)
 
 # getting sick ~ getting vaccine
-m5 <- svyglm(sick ~ q13, des2, family = quasibinomial)
+m5 <- svyglm(sick ~ q13, des3, family = quasibinomial)
 summary(m5)
 ```
 
 ```
 ## 
 ## Call:
-## svyglm(formula = sick ~ q13, des2, family = quasibinomial)
+## svyglm(formula = sick ~ q13, des3, family = quasibinomial)
 ## 
 ## Survey design:
 ## svydesign(ids = ~1, weights = ~weight, data = df)
@@ -534,7 +481,7 @@ Those who get the vaccine had 1.3231 the odds of getting sick compared to those 
 
 ```r
 # Q2 + Q13 tables with weights
-svytable(~q13 + sick, design = des2, round = T)  # sick = 1, not sick = 0
+svytable(~q13 + sick, design = des3, round = T)  # sick = 1, not sick = 0
 ```
 
 ```
@@ -551,8 +498,8 @@ svytable(~q13 + sick, design = des2, round = T)  # sick = 1, not sick = 0
 ```
 ##      sick
 ## q13       0     1
-##   No  41.57 34.97
 ##   Yes 58.43 65.03
+##   No  41.57 34.97
 ```
 
 ```r
@@ -562,22 +509,22 @@ svytable(~q13 + sick, design = des2, round = T)  # sick = 1, not sick = 0
 ```
 ##      sick
 ## q13       0     1
-##   No  82.70 17.30
 ##   Yes 78.33 21.67
+##   No  82.70 17.30
 ```
 
-Out of those who reported being sick, 65.0288% reported receiving vaccine.  
-Out of those who were healthy, 34.9712% received vaccine (41.573% did not).  
-Vaccinated group: 17.2955% report no illness.  
-Unvaccinated group: 82.7045% report no illness.  
+Out of those who reported being sick, 34.9712% reported receiving vaccine.  
+Out of those who were healthy, 65.0288% received vaccine (58.427% did not).  
+Vaccinated group: 21.6726% report no illness.  
+Unvaccinated group: 78.3274% report no illness.  
   
+***
 
-### Regression analysis for Q2 and Q13
-Subset sick + vaccinated group. Run regression and adjust for demographic variables.
+### Regression analysis for Q2 and Q13. Subset sick + vaccinated group. 
 
 
 ```r
-# subset sick and vaccinated
+# subset sick and vaccinated into new df2
 df2 <- df %>%
   mutate(sickq13 = ifelse((sick == 1 & q13 == "Yes"), 1, 0))
 
@@ -602,7 +549,7 @@ xtabs(~sick + q13, df2)
 ```
 
 ```r
-# 1 = sick and vaccinated, else = 0
+# sick and vaccinated = 1, else = 0
 table(df2$sickq13)
 ```
 
@@ -612,28 +559,31 @@ table(df2$sickq13)
 ## 1880  269
 ```
 
+### Run regression and adjust for demographic variables.
+
+
 ```r
 # update survey object
 options(survey.lonely.psu = "adjust")
-des3 <- svydesign(ids = ~1, weights = ~weight, data = df2)
+des4 <- svydesign(ids = ~1, weights = ~weight, data = df2)
 
-m1 <- svyglm(sickq13 ~ PPGENDER, des3, family = quasibinomial())
+m1 <- svyglm(sickq13 ~ PPGENDER, des4, family = quasibinomial())
 m2 <- update(m1, ~ . + PPETHM)  # add race
 m3 <- update(m2, ~ . + work)  # add work
 m4 <- update(m3, ~ . + ppagecat)  # add age
 
 # memisc, need to modify summary function
-mtable(m1, m2, m3, m4)
+mtable(m1, m2, m3, m4)  # this isn't very helpful
 ```
 
 ```
 ## 
 ## Calls:
-## m1: svyglm(formula = sickq13 ~ PPGENDER, des3, family = quasibinomial())
-## m2: svyglm(formula = sickq13 ~ PPGENDER + PPETHM, des3, family = quasibinomial())
-## m3: svyglm(formula = sickq13 ~ PPGENDER + PPETHM + work, des3, family = quasibinomial())
+## m1: svyglm(formula = sickq13 ~ PPGENDER, des4, family = quasibinomial())
+## m2: svyglm(formula = sickq13 ~ PPGENDER + PPETHM, des4, family = quasibinomial())
+## m3: svyglm(formula = sickq13 ~ PPGENDER + PPETHM + work, des4, family = quasibinomial())
 ## m4: svyglm(formula = sickq13 ~ PPGENDER + PPETHM + work + ppagecat, 
-##     des3, family = quasibinomial())
+##     des4, family = quasibinomial())
 ## 
 ## ==================================================================================================
 ##                                                          m1         m2         m3         m4      
@@ -680,7 +630,7 @@ mtable(m1, m2, m3, m4)
 
 ```r
 # who is getting sick after vaccinations?
-svyby(formula = ~ppagecat, by = ~sickq13, design = des3, FUN = svymean, na.rm = T)
+svyby(formula = ~ppagecat, by = ~sickq13, design = des4, FUN = svymean, na.rm = T)
 ```
 
 ```
@@ -699,7 +649,7 @@ svyby(formula = ~ppagecat, by = ~sickq13, design = des3, FUN = svymean, na.rm = 
 ```
 
 ```r
-svyby(formula = ~PPGENDER, by = ~sick + q13, design = des3, FUN = svymean, na.rm = T)
+svyby(formula = ~PPGENDER, by = ~sick + q13, design = des4, FUN = svymean, na.rm = T)
 ```
 
 ```
@@ -715,11 +665,8 @@ svyby(formula = ~PPGENDER, by = ~sick + q13, design = des3, FUN = svymean, na.rm
 ## 1.Yes           0.03236
 ```
 
-```r
-#with(df2, table(sickq13, 
-```
 
-
+## in progress
 
 
 
