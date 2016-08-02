@@ -2,11 +2,7 @@
 
 ### Bivariate and multivariate analyses
   
-An odds ratio is a measure of association between an exposure and an outcome. The OR represents the odds that an outcome will occur given a particular exposure, compared to the odds of the outcome occurring in the absence of that exposure.  
-  
-When a logistic regression is calculated, the regression coefficient (b1) is the estimated increase in the log odds of the outcome per unit increase in the value of the exposure. In other words, the exponential function of the regression coefficient (e^b1) is the odds ratio associated with a one-unit increase in the exposure.  
-  
-The 95% CI is used to estimate the precision of the OR. A large CI indicates a low level of precision of the OR, whereas a small CI indicates a higher precision of the OR. It is important to note however, that unlike the p value, the 95% CI does not report a measure’s statistical significance. In practice, the 95% CI is often used as a proxy for the presence of statistical significance if it does not overlap the null value (OR=1). Nevertheless, it would be inappropriate to interpret an OR with 95% CI that spans the null value as indicating evidence for lack of association between the exposure and outcome.  
+When a logistic regression is calculated, the regression coefficient (b1) is the estimated increase in the log odds of the outcome per unit increase in the value of the exposure; the exponential function of the regression coefficient (e^b1) is the odds ratio associated with a one-unit increase in the exposure.  
   
 
 
@@ -69,26 +65,26 @@ svytable(~Q1 + PPGENDER, design = des, round = T)
 
 ```r
 # unweighted prop
-(u <- with(data, prop.table(table(Q1, PPGENDER), margin = 1))*100)  
+(u <- with(data, prop.table(table(Q1, PPGENDER), margin = 2))*100)  
 ```
 
 ```
 ##      PPGENDER
 ## Q1    Female  Male
-##   Yes  53.37 46.63
-##   No   42.01 57.99
+##   Yes  81.24 73.28
+##   No   18.76 26.72
 ```
 
 ```r
 # weighted prop
-(w <- prop.table(svytable(~Q1 + PPGENDER, design = des), margin = 1)*100)
+(w <- prop.table(svytable(~Q1 + PPGENDER, design = des), margin = 2)*100)
 ```
 
 ```
 ##      PPGENDER
 ## Q1    Female  Male
-##   Yes  55.02 44.98
-##   No   43.12 56.88
+##   Yes  79.37 70.45
+##   No   20.63 29.55
 ```
 
 ```r
@@ -107,23 +103,8 @@ svyby(formula = ~Q1, by = ~PPGENDER, design = des, FUN = svymean, na.rm = T)
 ## Male       Male 0.7045 0.2955  0.01562 0.01562
 ```
 
-```r
-# out of all females and males
-(w <- prop.table(svytable(~Q1 + PPGENDER, design = des), margin = 2)*100)
-```
-
-```
-##      PPGENDER
-## Q1    Female  Male
-##   Yes  79.37 70.45
-##   No   20.63 29.55
-```
-
-In the unweighted data frame for Q1, 53.3654% of females and 46.6346% of males answered Yes. 57.9918% of males and 57.9918% of females answered No.  
+In the unweighted data frame, 81.2443% of females and 73.2767% of males answered Yes. 26.7233% of males and 18.7557% of females answered No.  
 In the weighted data frame, 79.3709% of females and 70.4534% of males answered Yes. 29.5466% of males and 20.6291% of females answered No.  
-  
-79.3709% of all females answered Yes, and 20.6291% said No.  
-70.4534% of all males answered Yes, and 29.5466% said No.  
   
 
 ## Q2. Have you had an illness with influenza-like symptoms since August 2015?
@@ -268,7 +249,7 @@ exp(confint(m1))  # 95% CI
 
 In the weighted data frame, females had 1.3474 times the odds of being sick compared to males.
 
-### Calculate OR for being sick, adjusted by ethnicity
+### Calculate OR for being sick, adjusted for ethnicity
 
 
 ```r
@@ -407,7 +388,7 @@ mtable(a1, a2, a3, a4)
 ##                       1.2682                       0.9943
 ```
 
-When adjusting for gender, ethnicity, employment, and marital status, significant predictors of being sick included female gender (AOR = 1.4011) and hispanic ethnicity (AOR = 1.8491)
+When adjusting for gender, ethnicity, employment, and marital status, significant variables for being sick included female gender (OR = 1.4011) and hispanic ethnicity (OR = 1.8491)
 
 ***
 
@@ -515,12 +496,13 @@ svytable(~q13 + sick, design = des3, round = T)  # sick = 1, not sick = 0
 
 Out of those who reported being sick, 34.9712% reported receiving vaccine.  
 Out of those who were healthy, 65.0288% received vaccine (58.427% did not).  
+  
 Vaccinated group: 21.6726% report no illness.  
 Unvaccinated group: 78.3274% report no illness.  
   
 ***
 
-### Regression analysis for Q2 and Q13. Subset sick + vaccinated group. 
+### Logistic regression for Q2 and Q13. Subset sick + vaccinated group. 
 
 
 ```r
