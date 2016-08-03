@@ -132,19 +132,16 @@ $(document).ready(function () {
 
 <div id="bivariate-and-multivariate-analyses" class="section level3">
 <h3>Bivariate and multivariate analyses</h3>
-<p>When a logistic regression is calculated, the regression coefficient (b1) is the estimated increase in the log odds of the outcome per unit increase in the value of the exposure; the exponential function of the regression coefficient (e^b1) is the odds ratio associated with a one-unit increase in the exposure.</p>
 <pre class="r"><code>## Load data and recoded variables.
 
 load(&quot;clean/cleaning2.RData&quot;)
 data &lt;- data2
-names(data) &lt;- old_name  # give data old names
-rm(data2)
 
 #source(recoding.R)
 load(&quot;clean/recoding1.RData&quot;)
 df &lt;- datar  # datar contains recoded variables
 #tail(df)</code></pre>
-<pre class="r"><code>## Create survey object with weights = des
+<pre class="r"><code>## Create survey object with weights, des
 
 options(digits = 4)
 options(survey.lonely.psu = &quot;adjust&quot;)
@@ -327,6 +324,7 @@ summary(m2)</code></pre>
 ## PPETHMOther, Non-Hispanic    0.9606 2.6743
 ## PPETHM2+ Races, Non-Hispanic 0.8687 2.6023</code></pre>
 <p>Compared to whites, OR for being sick are 1.184, 1.8071, 1.6028, 1.5035 for blacks, hispanics, others, and 2+ races, respectively.</p>
+<p>Notes: When a logistic regression is calculated, the regression coefficient (b1) is the estimated increase in the log odds of the outcome per unit increase in the value of the exposure; the exponential function of the regression coefficient (e^b1) is the odds ratio associated with a one-unit increase in the exposure.</p>
 <hr />
 </div>
 <div id="compare-model-variables-for-being-sick." class="section level3">

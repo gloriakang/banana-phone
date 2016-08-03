@@ -3,10 +3,9 @@
 rm(list = ls(all.names = TRUE))
 library(ggplot2)
 
-# load data2
 load("clean/cleaning2.RData")
 
-
+# data2
 
 g1 <- ggplot(data2[!is.na(data2$Q1), ]) + theme(text = element_text(size = 10), axis.text.x = element_text(angle = 45, hjust = 1))
 g2 <- ggplot(data2[!is.na(data2$Q2), ]) + theme(text = element_text(size = 10), axis.text.x = element_text(angle = 45, hjust = 1))

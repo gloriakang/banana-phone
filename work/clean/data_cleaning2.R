@@ -1,6 +1,5 @@
 # Data cleaning part 2
-# load renamed file, switch back to old names, level factors
-# apply new names, save as data2
+# re-order factor levels, apply new names, save as data2
 # output = cleaning2.Rdata
 
 rm(list = ls(all.names = TRUE))
@@ -8,8 +7,7 @@ rm(list = ls(all.names = TRUE))
 library(car)
 load("clean/cleaning1.RData")
 
-data <- read.csv("clean/data_rename.csv", na = c("#NULL!", "", "Refused", "NA"))
-names(data) <- old_name
+# new data frame
 dataf <- data
 
 ############### list and sort demographic factors ################
@@ -302,7 +300,7 @@ levels(dataf$Q50)
 
 
 ## save
-# data = original, dataf = cleaned factors, data2 = copy of dataf
+# data = original, data2 = re-ordered factors
 data2 <- dataf
 save(data2, new_name, old_name, file = "clean/cleaning2.RData")
 

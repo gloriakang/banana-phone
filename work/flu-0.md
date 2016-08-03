@@ -2,8 +2,6 @@
 
 ### Bivariate and multivariate analyses
   
-When a logistic regression is calculated, the regression coefficient (b1) is the estimated increase in the log odds of the outcome per unit increase in the value of the exposure; the exponential function of the regression coefficient (e^b1) is the odds ratio associated with a one-unit increase in the exposure.  
-  
 
 
 
@@ -12,8 +10,6 @@ When a logistic regression is calculated, the regression coefficient (b1) is the
 
 load("clean/cleaning2.RData")
 data <- data2
-names(data) <- old_name  # give data old names
-rm(data2)
 
 #source(recoding.R)
 load("clean/recoding1.RData")
@@ -23,7 +19,7 @@ df <- datar  # datar contains recoded variables
 
 
 ```r
-## Create survey object with weights = des
+## Create survey object with weights, des
 
 options(digits = 4)
 options(survey.lonely.psu = "adjust")
@@ -308,7 +304,9 @@ exp(confint(m2))  # note 95% CI for hispanic group
 ```
 
 Compared to whites, OR for being sick are 1.184, 1.8071, 1.6028, 1.5035 for blacks, hispanics, others, and 2+ races, respectively.  
-
+  
+Notes: When a logistic regression is calculated, the regression coefficient (b1) is the estimated increase in the log odds of the outcome per unit increase in the value of the exposure; the exponential function of the regression coefficient (e^b1) is the odds ratio associated with a one-unit increase in the exposure.  
+  
 
 
 ***

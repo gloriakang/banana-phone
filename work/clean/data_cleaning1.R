@@ -1,14 +1,12 @@
 # Data cleaning part 1
-# Reads original data file, renames columns, and saves 'cleaning1.Rdata'
-# output = new_name, old_name
+# read original data, create list of names for multi-column questions
+# output: cleaning1.RData (data, new_name, old_name)
 
 rm(list = ls(all.names = TRUE))
-#setwd("~/git/banana-phone/work")
 library(dplyr)
-library(tidyr)
 
-## load surveydata.csv (change input files as needed)
-data <- read.csv("data/surveydata.csv", na = c("#NULL!", "", "Refused", "NA"), stringsAsFactors = F)
+## load surveydata.csv
+data <- read.csv("data/surveydata.csv", na = c("#NULL!", "", "Refused", "NA"))
 
 ## rename sub-columns
 data_rename <- data %>%
@@ -146,16 +144,7 @@ data_rename <- data %>%
 old_name <- names(data)
 new_name <- names(data_rename)
 
-#save(old_name, file = "clean/old_name")
-#save(new_name, file = "clean/new_name")
+save(data, old_name, new_name, file = "clean/cleaning1.RData")
 
-# save data_new_name as csv
-write.csv(data_rename, file = "clean/data_rename.csv", row.names = FALSE)
-
-# save Rdata
-rm(data_rename)
-rm(data)
-
-save(list = ls(all.names = TRUE), file = "clean/cleaning1.RData")
 
 

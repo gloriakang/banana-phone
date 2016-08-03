@@ -29,8 +29,6 @@ library(survey); library(car); library(memisc)
 
 load("clean/cleaning2.RData")
 data <- data2
-names(data) <- old_name  # give data old names
-rm(data2)
 
 #source(recoding.R)
 load("clean/recoding1.RData")
@@ -136,7 +134,7 @@ Compared to whites, OR for being sick are `r or2[2:5]` for blacks, hispanics, ot
   
 Notes: When a logistic regression is calculated, the regression coefficient (b1) is the estimated increase in the log odds of the outcome per unit increase in the value of the exposure; the exponential function of the regression coefficient (e^b1) is the odds ratio associated with a one-unit increase in the exposure.  
   
-```{r, echo=TRUE}
+```{r, eval=FALSE, include=FALSE}
 ########## do not run ############
 
 ## same as above but with recoded 1,0 variables; can change reference variable to remove (e.g. white)
