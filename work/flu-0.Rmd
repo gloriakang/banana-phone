@@ -14,8 +14,6 @@ output:
 
 ### Bivariate and multivariate analyses
   
-When a logistic regression is calculated, the regression coefficient (b1) is the estimated increase in the log odds of the outcome per unit increase in the value of the exposure; the exponential function of the regression coefficient (e^b1) is the odds ratio associated with a one-unit increase in the exposure.  
-  
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = T, warning = F, message = F, tidy = F, size = "small")
 rm(list = ls(all.names = TRUE))
@@ -41,7 +39,7 @@ df <- datar  # datar contains recoded variables
 ```
 
 ```{r survey-object}
-## Create survey object with weights = des
+## Create survey object with weights, des
 
 options(digits = 4)
 options(survey.lonely.psu = "adjust")
@@ -135,24 +133,26 @@ exp(confint(m2))  # note 95% CI for hispanic group
 ```
 
 Compared to whites, OR for being sick are `r or2[2:5]` for blacks, hispanics, others, and 2+ races, respectively.  
-
-```{r, eval=FALSE, include=FALSE} 
-########## not run ##########
+  
+Notes: When a logistic regression is calculated, the regression coefficient (b1) is the estimated increase in the log odds of the outcome per unit increase in the value of the exposure; the exponential function of the regression coefficient (e^b1) is the odds ratio associated with a one-unit increase in the exposure.  
+  
+```{r, echo=TRUE}
+########## do not run ############
 
 ## same as above but with recoded 1,0 variables; can change reference variable to remove (e.g. white)
-# first recode x variables
+# first recode xi variables
 summary(datar$PPETHM)
 df$white <- car::recode(datar$PPETHM, recodes = "'White, Non-Hispanic' = 1; NA = NA; else = 0")
 df$black <- car::recode(datar$PPETHM, recodes = "'Black, Non-Hispanic' = 1; NA = NA; else = 0")
 df$hispanic <- car::recode(datar$PPETHM, recodes = "'Hispanic' = 1; NA = NA; else = 0")
 df$otherrace <- car::recode(datar$PPETHM, recodes = "'Other, Non-Hispanic' = 1; NA = NA; else = 0")
-df$mixedrace <- car::recode(datar$PPETHM, recodes = "'2+ Races, Non-Hispanic' = 1; NA = NA; else = 0")
+df$more2race <- car::recode(datar$PPETHM, recodes = "'2+ Races, Non-Hispanic' = 1; NA = NA; else = 0")
 tail(df)
 
-# create survey design = mx
+# create survey design mx
 options(survey.lonely.psu = "adjust")
 desx <- svydesign(ids = ~1, weights = ~weight, data = df)  # data = df
-mx <- svyglm(sick ~ black+hispanic+otherrace+mixedrace, desx, family = quasibinomial())  # white is reference
+mx <- svyglm(sick ~ black+hispanic+otherrace+mixedrace, desx, family = quasibinomial())  # white is reference?
 summary(mx)
 (orx <- exp(coefficients(mx)))  # odds ratios
 ```
